@@ -1,9 +1,19 @@
-import { Text, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 export default function Index() {
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
       <Text>Hello world !</Text>
-    </View>
+    </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  body: {
+
+  },
+})
