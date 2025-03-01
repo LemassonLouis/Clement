@@ -132,12 +132,10 @@ const styles = StyleSheet.create({
   },
   monthButtonText: {
     fontSize: 20,
-    color: '#333',
   },
   monthText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
   },
   calendarDaysOfWeek: {
     flexDirection: 'row',

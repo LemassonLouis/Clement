@@ -1,10 +1,15 @@
 import Calendar from "@/components/Calendar";
+import SessionButtons from "@/components/SessionButtons";
 import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 export default function Index() {
+  const now = new Date();
+
   return (
     <SafeAreaView style={styles.container}>
       <Calendar/>
+      <Text style={styles.text}>Accès rapide - {now.toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</Text>
+      <SessionButtons/>
     </SafeAreaView>
   )
 }
@@ -14,4 +19,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flex: 1,
   },
+  text: {
+    marginTop: 20,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold'
+  }
 })
