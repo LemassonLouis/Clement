@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarDay from "./CalendarDay";
+import DayInterface from "@/interfaces/DayInterface";
 
 
 const getCalendarDays = (year: number, month: number) => {
@@ -14,22 +15,22 @@ const getCalendarDays = (year: number, month: number) => {
   const getRandomStatus = () => states[Math.floor(Math.random() * states.length)];
   const getRandomHadSex = () => Math.random() > 0.5;
 
-  const days = [];
+  const days: Array<DayInterface> = [];
 
   // Start with days before current month
   for (let i = firstDayWeekday; i > 0; i--) {
     days.push({
-      number: lastDayOfPrevMonth - i + 1,
+      daytime: lastDayOfPrevMonth - i + 1,
       isCurrentMonth: false,
       status: getRandomStatus(),
-      hadSex: getRandomHadSex(),
+      hadSex: getRandomHadSex()
     });
   }
 
   // Add days in current month
   for (let i = 1; i <= numDaysInCurrentMonth; i++) {
     days.push({
-      number: i,
+      daytime: i,
       isCurrentMonth: true,
       status: getRandomStatus(),
       hadSex: getRandomHadSex(),
@@ -39,7 +40,7 @@ const getCalendarDays = (year: number, month: number) => {
   // Complete with days after current month
   while (days.length % 7 !== 0) {
     days.push({
-      number: days.length - numDaysInCurrentMonth - firstDayWeekday + 1,
+      daytime: days.length - numDaysInCurrentMonth - firstDayWeekday + 1,
       isCurrentMonth: false,
       status: getRandomStatus(),
       hadSex: getRandomHadSex(),
@@ -101,8 +102,8 @@ export default function Calendar() {
         numColumns={7}
         data={days}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({item}) => (<CalendarDay {...item}/>)
-      }/>
+        renderItem={({item}) => <CalendarDay {...item}/>}
+      />
     </View>
   )
 }

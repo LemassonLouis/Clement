@@ -15,7 +15,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flex: 1,
   },
-  body: {
-
-  },
 })
