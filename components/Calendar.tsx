@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarDay from "./CalendarDay";
 
+
 const getCalendarDays = (year: number, month: number) => {
   const firstDayOfMonth = new Date(year, month, 1);
   const firstDayWeekday = (firstDayOfMonth.getDay() + 6) % 7;
@@ -48,6 +49,7 @@ const getCalendarDays = (year: number, month: number) => {
   return days;
 };
 
+
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -71,6 +73,7 @@ export default function Calendar() {
     const newDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
     setCurrentDate(newDate);
   };
+
 
   return (
     <View style={styles.calendar}>
@@ -103,6 +106,7 @@ export default function Calendar() {
     </View>
   )
 }
+
 
 const styles = StyleSheet.create({
   calendar: {
