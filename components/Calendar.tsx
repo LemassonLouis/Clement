@@ -12,6 +12,7 @@ const getCalendarDays = (year: number, month: number) => {
   // TEMP
   const states = ['none', 'failed', 'warning', 'successed', 'reached', 'exceeded'];
   const getRandomStatus = () => states[Math.floor(Math.random() * states.length)];
+  const getRandomHadSex = () => Math.random() > 0.5;
 
   const days = [];
 
@@ -21,6 +22,7 @@ const getCalendarDays = (year: number, month: number) => {
       day: lastDayOfPrevMonth - i + 1,
       isCurrentMonth: false,
       status: getRandomStatus(),
+      hadSex: getRandomHadSex(),
     });
   }
 
@@ -30,6 +32,7 @@ const getCalendarDays = (year: number, month: number) => {
       day: i,
       isCurrentMonth: true,
       status: getRandomStatus(),
+      hadSex: getRandomHadSex(),
     });
   }
 
@@ -39,6 +42,7 @@ const getCalendarDays = (year: number, month: number) => {
       day: days.length - numDaysInCurrentMonth - firstDayWeekday + 1,
       isCurrentMonth: false,
       status: getRandomStatus(),
+      hadSex: getRandomHadSex(),
     });
   }
 
@@ -69,21 +73,29 @@ export default function Calendar() {
     setCurrentDate(newDate);
   };
 
-  const getIconForStatus = (status: string) => {
-    switch (status) {
-      case 'failed':
-        return <Feather name="x-circle" size={25} color="#FF5656" />;
-      case 'warning':
-        return <Feather name="alert-circle" size={25} color="#FFC249" />;
-      case 'successed':
-        return <Feather name="check-circle" size={25} color="#49B24E" />;
-      case 'reached':
-        return <Feather name="check-circle" size={25} color="#6DDAFF" />;
-      case 'exceeded':
-        return <Feather name="check-circle" size={25} color="#D67FFF" />;
-      default:
-        return <Feather name="help-circle" size={25} color="#B5B5B5" />;
-    }
+  const getIconForStatus = (status: string, hadSex: boolean) => {
+    const icon = (() => {
+      switch (status) {
+        case 'failed':
+          return <Feather name="x-circle" size={25} color="#FF5656" />;
+        case 'warning':
+          return <Feather name="alert-circle" size={25} color="#FFC249" />;
+        case 'successed':
+          return <Feather name="check-circle" size={25} color="#49B24E" />;
+        case 'reached':
+          return <Feather name="check-circle" size={25} color="#6DDAFF" />;
+        case 'exceeded':
+          return <Feather name="check-circle" size={25} color="#D67FFF" />;
+        default:
+          return <Feather name="help-circle" size={25} color="#B5B5B5" />;
+      }
+    })();
+  
+    return (
+      <View style={styles.iconContainer}>
+        {hadSex ? <View style={styles.circleOutline}>{icon}</View> : icon}
+      </View>
+    );
   };
 
 
@@ -115,7 +127,9 @@ export default function Calendar() {
         renderItem={({item}) => (
           <View style={[styles.calendarDay, !item.isCurrentMonth && styles.calendarDayNonCurrentMonth]}>
             <Text style={styles.calendarDayText}>{item.day}</Text>
-            {getIconForStatus(item.status)}
+            <View>
+              {getIconForStatus(item.status, item.hadSex)}
+            </View>
           </View>
         )
       }/>
@@ -170,5 +184,20 @@ const styles = StyleSheet.create({
   },
   calendarDayText: {
     marginBottom: 5
+  },
+  iconContainer: {
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  circleOutline: {
+    width: 35,
+    height: 35,
+    borderRadius: 35 / 2,
+    borderWidth: 2,
+    borderColor: '#777',
+    borderStyle: 'dotted',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
