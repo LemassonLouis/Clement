@@ -113,7 +113,7 @@ export default function Calendar() {
 
 const styles = StyleSheet.create({
   calendar: {
-
+    marginTop: 10
   },
   monthBar: {
     flexDirection: 'row',
