@@ -2,6 +2,8 @@ import { useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarDay from "./CalendarDay";
 import DayInterface from "@/interfaces/DayInterface";
+import { DaysOfWeek } from "@/enums/DaysOfWeek";
+import { MonthNames } from "@/enums/MonthNames";
 
 
 const getCalendarDays = (year: number, month: number) => {
@@ -59,8 +61,8 @@ export default function Calendar() {
 
   const days = getCalendarDays(year, month);
 
-  const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-  const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+  const daysOfWeek = Object.values(DaysOfWeek);
+  const monthNames = Object.values(MonthNames);
   const currentMonthName = monthNames[month];
 
   // Navigate to previous month
@@ -93,8 +95,8 @@ export default function Calendar() {
       </View>
 
       <View style={styles.calendarDaysOfWeek}>
-        {daysOfWeek.map(dayOfWeek => (
-          <Text>{dayOfWeek}</Text>
+        {daysOfWeek.map((dayOfWeek, index) => (
+          <Text key={index}>{dayOfWeek}</Text>
         ))}
       </View>
 
