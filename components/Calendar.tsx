@@ -1,7 +1,6 @@
-import { Feather } from "@expo/vector-icons";
-import { Link } from "expo-router";
 import { useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import CalendarDay from "./CalendarDay";
 
 const getCalendarDays = (year: number, month: number) => {
   const firstDayOfMonth = new Date(year, month, 1);
@@ -16,30 +15,30 @@ const getCalendarDays = (year: number, month: number) => {
 
   const days = [];
 
-  // Jours du mois précédent
+  // Start with days before current month
   for (let i = firstDayWeekday; i > 0; i--) {
     days.push({
-      day: lastDayOfPrevMonth - i + 1,
+      number: lastDayOfPrevMonth - i + 1,
       isCurrentMonth: false,
       status: getRandomStatus(),
       hadSex: getRandomHadSex(),
     });
   }
 
-  // Jours du mois en cours
+  // Add days in current month
   for (let i = 1; i <= numDaysInCurrentMonth; i++) {
     days.push({
-      day: i,
+      number: i,
       isCurrentMonth: true,
       status: getRandomStatus(),
       hadSex: getRandomHadSex(),
     });
   }
 
-  // Compléter avec les jours du mois suivant pour avoir une grille complète
+  // Complete with days after current month
   while (days.length % 7 !== 0) {
     days.push({
-      day: days.length - numDaysInCurrentMonth - firstDayWeekday + 1,
+      number: days.length - numDaysInCurrentMonth - firstDayWeekday + 1,
       isCurrentMonth: false,
       status: getRandomStatus(),
       hadSex: getRandomHadSex(),
@@ -61,43 +60,17 @@ export default function Calendar() {
   const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
   const currentMonthName = monthNames[month];
 
-  // Fonction pour naviguer vers le mois précédent
+  // Navigate to previous month
   const goToPreviousMonth = () => {
     const newDate = new Date(currentDate.setMonth(currentDate.getMonth() - 1));
     setCurrentDate(newDate);
   };
 
-  // Fonction pour naviguer vers le mois suivant
+  // Navigate to next month
   const goToNextMonth = () => {
     const newDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
     setCurrentDate(newDate);
   };
-
-  const getIconForStatus = (status: string, hadSex: boolean) => {
-    const icon = (() => {
-      switch (status) {
-        case 'failed':
-          return <Feather name="x-circle" size={25} color="#FF5656" />;
-        case 'warning':
-          return <Feather name="alert-circle" size={25} color="#FFC249" />;
-        case 'successed':
-          return <Feather name="check-circle" size={25} color="#49B24E" />;
-        case 'reached':
-          return <Feather name="check-circle" size={25} color="#6DDAFF" />;
-        case 'exceeded':
-          return <Feather name="check-circle" size={25} color="#D67FFF" />;
-        default:
-          return <Feather name="help-circle" size={25} color="#B5B5B5" />;
-      }
-    })();
-  
-    return (
-      <View style={styles.iconContainer}>
-        {hadSex ? <View style={styles.circleOutline}>{icon}</View> : icon}
-      </View>
-    );
-  };
-
 
   return (
     <View style={styles.calendar}>
@@ -105,33 +78,27 @@ export default function Calendar() {
         <TouchableOpacity onPress={goToPreviousMonth} style={styles.monthButton}>
           <Text style={styles.monthButtonText}>{'<'}</Text>
         </TouchableOpacity>
+
         <Text style={styles.monthText}>
           {currentMonthName} {year}
         </Text>
+
         <TouchableOpacity onPress={goToNextMonth} style={styles.monthButton}>
           <Text style={styles.monthButtonText}>{'>'}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.calendarDaysOfWeek}>
-        {daysOfWeek.map(day => (
-          <Text>{day}</Text>
+        {daysOfWeek.map(dayOfWeek => (
+          <Text>{dayOfWeek}</Text>
         ))}
       </View>
 
       <FlatList
-        style={styles.calendarDays}
         numColumns={7}
         data={days}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({item}) => (
-          <View style={[styles.calendarDay, !item.isCurrentMonth && styles.calendarDayNonCurrentMonth]}>
-            <Text style={styles.calendarDayText}>{item.day}</Text>
-            <View>
-              {getIconForStatus(item.status, item.hadSex)}
-            </View>
-          </View>
-        )
+        renderItem={({item}) => (<CalendarDay {...item}/>)
       }/>
     </View>
   )
@@ -169,35 +136,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 10,
-  },
-  calendarDays: {
-
-  },
-  calendarDay: {
-    flex: 1/7,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  calendarDayNonCurrentMonth: {
-    opacity: 0.25
-  },
-  calendarDayText: {
-    marginBottom: 5
-  },
-  iconContainer: {
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  circleOutline: {
-    width: 35,
-    height: 35,
-    borderRadius: 35 / 2,
-    borderWidth: 2,
-    borderColor: '#777',
-    borderStyle: 'dotted',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 })
