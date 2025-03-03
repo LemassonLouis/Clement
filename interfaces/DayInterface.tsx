@@ -1,5 +1,5 @@
 export default interface DayInterface {
-  daytime: number,
+  date: Date,
   status: string,
   isCurrentMonth: boolean,
   sexWithoutProtection: boolean,

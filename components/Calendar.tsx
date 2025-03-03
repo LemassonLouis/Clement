@@ -21,8 +21,9 @@ const getCalendarDays = (year: number, month: number) => {
 
   // Start with days before current month
   for (let i = firstDayWeekday; i > 0; i--) {
+    const date = new Date(year, ((month-1 % 12) + 12) % 12, lastDayOfPrevMonth - i + 1);
     days.push({
-      daytime: lastDayOfPrevMonth - i + 1,
+      date: date,
       isCurrentMonth: false,
       status: getRandomStatus(),
       sexWithoutProtection: getRandomSexWithoutProtection()
@@ -31,8 +32,9 @@ const getCalendarDays = (year: number, month: number) => {
 
   // Add days in current month
   for (let i = 1; i <= numDaysInCurrentMonth; i++) {
+    const date = new Date(year, month, i);
     days.push({
-      daytime: i,
+      date: date,
       isCurrentMonth: true,
       status: getRandomStatus(),
       sexWithoutProtection: getRandomSexWithoutProtection(),
@@ -41,8 +43,9 @@ const getCalendarDays = (year: number, month: number) => {
 
   // Complete with days after current month
   while (days.length % 7 !== 0) {
+    const date = new Date(year, month + 1, days.length - numDaysInCurrentMonth - firstDayWeekday + 1);
     days.push({
-      daytime: days.length - numDaysInCurrentMonth - firstDayWeekday + 1,
+      date: date,
       isCurrentMonth: false,
       status: getRandomStatus(),
       sexWithoutProtection: getRandomSexWithoutProtection(),
