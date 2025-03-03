@@ -15,7 +15,7 @@ const getCalendarDays = (year: number, month: number) => {
   // TEMP
   const states = ['none', 'failed', 'warning', 'successed', 'reached', 'exceeded'];
   const getRandomStatus = () => states[Math.floor(Math.random() * states.length)];
-  const getRandomHadSex = () => Math.random() > 0.5;
+  const getRandomHadSex = () => Math.random() > 0.7;
 
   const days: Array<DayInterface> = [];
 
@@ -113,7 +113,9 @@ export default function Calendar() {
 
 const styles = StyleSheet.create({
   calendar: {
-    marginTop: 10
+    paddingTop: 10,
+    paddingBottom: 5,
+    backgroundColor: '#f9f9f9'
   },
   monthBar: {
     flexDirection: 'row',
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingRight: 20,
     paddingLeft: 20,
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#e5e5e5',
     borderRadius: 5,
   },
   monthButtonText: {
@@ -140,6 +142,9 @@ const styles = StyleSheet.create({
   calendarDaysOfWeek: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 10,
+    marginBottom: 5,
+    // paddingBottom: 5,
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#ddd'
   },
 })

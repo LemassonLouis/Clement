@@ -31,14 +31,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
+    paddingBottom: 7,
+    paddingTop: 7,
+    borderRightWidth: 1,
+    borderTopWidth: 1,
+    borderRightColor: '#ddd',
+    borderTopColor: '#ddd',
   },
   calendarDay: {
     alignItems: 'center',
     width: '100%',
   },
   calendarDayNonCurrentMonth: {
-    opacity: 0.25
+    opacity: 0.3
   },
   calendarDayText: {
     marginBottom: 5
