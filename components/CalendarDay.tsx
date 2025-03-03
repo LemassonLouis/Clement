@@ -12,9 +12,9 @@ export default function CalendarDay(day: DayInterface) { // FIXME : type day
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={[styles.calendarLink, (day.isCurrentMonth && day.daytime == (new Date).getDate()) && styles.calendarDayCurrentDay]}>
+    <TouchableOpacity onPress={handlePress} style={[styles.calendarLink, (day.isCurrentMonth && day.date.getDate() == (new Date).getDate()) && styles.calendarDayCurrentDay]}>
       <View style={[styles.calendarDay, !day.isCurrentMonth && styles.calendarDayNonCurrentMonth]}>
-        <Text style={styles.calendarDayText}>{day.daytime}</Text>
+        <Text style={styles.calendarDayText}>{day.date.getDate()}</Text>
         <View>
           <CalendarIcon status={day.status} sexWithoutProtection={day.sexWithoutProtection} />
         </View>
