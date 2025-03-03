@@ -15,7 +15,7 @@ const getCalendarDays = (year: number, month: number) => {
   // TEMP
   const states = ['none', 'failed', 'warning', 'successed', 'reached', 'exceeded'];
   const getRandomStatus = () => states[Math.floor(Math.random() * states.length)];
-  const getRandomHadSex = () => Math.random() > 0.7;
+  const getRandomSexWithoutProtection = () => Math.random() > 0.7;
 
   const days: Array<DayInterface> = [];
 
@@ -25,7 +25,7 @@ const getCalendarDays = (year: number, month: number) => {
       daytime: lastDayOfPrevMonth - i + 1,
       isCurrentMonth: false,
       status: getRandomStatus(),
-      hadSex: getRandomHadSex()
+      sexWithoutProtection: getRandomSexWithoutProtection()
     });
   }
 
@@ -35,7 +35,7 @@ const getCalendarDays = (year: number, month: number) => {
       daytime: i,
       isCurrentMonth: true,
       status: getRandomStatus(),
-      hadSex: getRandomHadSex(),
+      sexWithoutProtection: getRandomSexWithoutProtection(),
     });
   }
 
@@ -45,7 +45,7 @@ const getCalendarDays = (year: number, month: number) => {
       daytime: days.length - numDaysInCurrentMonth - firstDayWeekday + 1,
       isCurrentMonth: false,
       status: getRandomStatus(),
-      hadSex: getRandomHadSex(),
+      sexWithoutProtection: getRandomSexWithoutProtection(),
     });
   }
 

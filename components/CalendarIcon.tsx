@@ -4,11 +4,11 @@ import { StyleSheet, View } from "react-native";
 
 interface CalendarIconInterface {
   status: string,
-  hadSex: boolean
+  sexWithoutProtection: boolean
 }
 
 
-export default function CalendarIcon({ status, hadSex }: CalendarIconInterface) {
+export default function CalendarIcon({ status, sexWithoutProtection }: CalendarIconInterface) {
   const icon = () => {
     switch (status) {
       case 'failed':
@@ -29,7 +29,7 @@ export default function CalendarIcon({ status, hadSex }: CalendarIconInterface) 
 
   return (
     <View style={styles.iconContainer}>
-      {hadSex ? <View style={styles.circleOutline}>{icon()}</View> : icon()}
+      {sexWithoutProtection ? <View style={styles.circleOutline}>{icon()}</View> : icon()}
     </View>
   )
 }

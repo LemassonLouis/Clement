@@ -9,7 +9,7 @@ export default function dayDetail() {
       <Text style={styles.title}>Détails du jour</Text>
       <Text>Jour : {day.daytime}</Text>
       <Text>Statut : {day.status}</Text>
-      <Text>Had Sex : {day.hadSex ? "Oui" : "Non"}</Text>
+      <Text>Had Sex : {day.sexWithoutProtection ? "Oui" : "Non"}</Text>
     </View>
   );
 }

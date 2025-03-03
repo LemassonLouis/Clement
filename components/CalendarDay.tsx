@@ -16,7 +16,7 @@ export default function CalendarDay(day: DayInterface) { // FIXME : type day
       <View style={[styles.calendarDay, !day.isCurrentMonth && styles.calendarDayNonCurrentMonth]}>
         <Text style={styles.calendarDayText}>{day.daytime}</Text>
         <View>
-          <CalendarIcon status={day.status} hadSex={day.hadSex} />
+          <CalendarIcon status={day.status} sexWithoutProtection={day.sexWithoutProtection} />
         </View>
       </View>
     </TouchableOpacity>

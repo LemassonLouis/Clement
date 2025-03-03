@@ -5,7 +5,7 @@ export default function SessionButtons() {
   const [sessionStarted, setSessionStarted] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [sessionEndTime, setSessionEndTime] = useState<Date | null>(null);
-  const [hadSex, setHadSex] = useState(false);
+  const [sexWithoutProtection, setSexWithoutProtection] = useState(false);
 
   const startSession = () => {
     setSessionStarted(true);
@@ -18,8 +18,8 @@ export default function SessionButtons() {
     setSessionEndTime(endTime);
   };
 
-  const toggleHadSex = (value: boolean) => {
-    setHadSex(value);
+  const toggleSexWithoutProtection = (value: boolean) => {
+    setSexWithoutProtection(value);
   };
 
 
@@ -31,7 +31,7 @@ export default function SessionButtons() {
 
       <View style={styles.switchContainer}>
         <Text style={styles.switchText}>Had Sex</Text>
-        <Switch value={hadSex} onValueChange={toggleHadSex} />
+        <Switch value={sexWithoutProtection} onValueChange={toggleSexWithoutProtection} />
       </View>
     </View>
   )
