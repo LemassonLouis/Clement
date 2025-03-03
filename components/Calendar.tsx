@@ -1,31 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarDay from "./CalendarDay";
 import DayInterface from "@/interfaces/DayInterface";
 import { DaysOfWeek } from "@/enums/DaysOfWeek";
 import { MonthNames } from "@/enums/MonthNames";
+import { getSessionByDate } from "@/database/session";
+import { getStatusFromTotalWearing, getTotalWearing } from "@/services/session";
 
+const getDaySessions = async (date: Date) => {
+  const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+  const dateEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
 
-const getCalendarDays = (year: number, month: number) => {
+  return await getSessionByDate(dateStart.toISOString(), dateEnd.toISOString());
+}
+
+const getCalendarDays = async (year: number, month: number) => {
   const firstDayOfMonth = new Date(year, month, 1);
   const firstDayWeekday = (firstDayOfMonth.getDay() + 6) % 7;
   const numDaysInCurrentMonth = new Date(year, month + 1, 0).getDate();
   const lastDayOfPrevMonth = new Date(year, month, 0).getDate();
 
-  // TEMP
-  const states = ['none', 'failed', 'warning', 'successed', 'reached', 'exceeded'];
-  const getRandomStatus = () => states[Math.floor(Math.random() * states.length)];
-  const getRandomSexWithoutProtection = () => Math.random() > 0.7;
+  const getRandomSexWithoutProtection = () => Math.random() > 0.7; // TEMP
 
   const days: Array<DayInterface> = [];
 
   // Start with days before current month
   for (let i = firstDayWeekday; i > 0; i--) {
     const date = new Date(year, ((month-1 % 12) + 12) % 12, lastDayOfPrevMonth - i + 1);
+    const daySessions = await getDaySessions(date);
+    const totalWearing = getTotalWearing(daySessions);
+
     days.push({
       date: date,
       isCurrentMonth: false,
-      status: getRandomStatus(),
+      status:getStatusFromTotalWearing(totalWearing),
       sexWithoutProtection: getRandomSexWithoutProtection()
     });
   }
@@ -33,10 +41,13 @@ const getCalendarDays = (year: number, month: number) => {
   // Add days in current month
   for (let i = 1; i <= numDaysInCurrentMonth; i++) {
     const date = new Date(year, month, i);
+    const daySessions = await getDaySessions(date);
+    const totalWearing = getTotalWearing(daySessions);
+
     days.push({
       date: date,
       isCurrentMonth: true,
-      status: getRandomStatus(),
+      status: getStatusFromTotalWearing(totalWearing),
       sexWithoutProtection: getRandomSexWithoutProtection(),
     });
   }
@@ -44,10 +55,13 @@ const getCalendarDays = (year: number, month: number) => {
   // Complete with days after current month
   while (days.length % 7 !== 0) {
     const date = new Date(year, month + 1, days.length - numDaysInCurrentMonth - firstDayWeekday + 1);
+    const daySessions = await getDaySessions(date);
+    const totalWearing = getTotalWearing(daySessions);
+
     days.push({
       date: date,
       isCurrentMonth: false,
-      status: getRandomStatus(),
+      status: getStatusFromTotalWearing(totalWearing),
       sexWithoutProtection: getRandomSexWithoutProtection(),
     });
   }
@@ -58,11 +72,10 @@ const getCalendarDays = (year: number, month: number) => {
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [days, setDays] = useState<Array<DayInterface>>([]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-
-  const days = getCalendarDays(year, month);
 
   const daysOfWeek = Object.values(DaysOfWeek);
   const monthNames = Object.values(MonthNames);
@@ -79,6 +92,16 @@ export default function Calendar() {
     const newDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
     setCurrentDate(newDate);
   };
+
+
+  useEffect(() => {
+      const fetchData = async () => {
+        const calendarDays = await getCalendarDays(year, month);
+        setDays(calendarDays);
+      };
+
+      fetchData();
+  }, [currentDate]);
 
 
   return (
