@@ -1,3 +1,4 @@
+import { Status } from "@/enums/Status";
 import { Feather } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 
@@ -11,15 +12,15 @@ interface CalendarIconInterface {
 export default function CalendarIcon({ status, sexWithoutProtection }: CalendarIconInterface) {
   const icon = () => {
     switch (status) {
-      case 'failed':
+      case Status.FAILED:
         return <Feather name="x-circle" size={25} color="#FF5656" />;
-      case 'warning':
+      case Status.WARNED:
         return <Feather name="alert-circle" size={25} color="#FFC249" />;
-      case 'successed':
+      case Status.SUCCESSED:
         return <Feather name="check-circle" size={25} color="#49B24E" />;
-      case 'reached':
+      case Status.REACHED:
         return <Feather name="check-circle" size={25} color="#6DDAFF" />;
-      case 'exceeded':
+      case Status.EXCEEDED:
         return <Feather name="check-circle" size={25} color="#D67FFF" />;
       default:
         return <Feather name="help-circle" size={25} color="#B5B5B5" />;
