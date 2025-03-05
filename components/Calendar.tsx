@@ -1,24 +1,23 @@
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarDay from "./CalendarDay";
-import DayInterface from "@/interfaces/DayInterface";
 import { DaysOfWeek } from "@/enums/DaysOfWeek";
 import { MonthNames } from "@/enums/MonthNames";
 import { getAllSessionsBetweenDates } from "@/database/session";
 import { Feather } from "@expo/vector-icons";
-import { getFirstMonday, getLastSunday, getStartAndEndDate, isDateBetween } from "@/services/date";
+import { getCalendarStartMonday, getCalendarLastSunday, getStartAndEndDate, isDateBetween } from "@/services/date";
 
 
 const getCalendarDays = async (year: number, month: number): Promise<DayInterface[]> => {
   const firstDayOfMonth: Date = new Date(year, month, 1);
-  const firstMonday: Date = getStartAndEndDate(getFirstMonday(firstDayOfMonth)).dateStart;
-  const lastSunday: Date = getStartAndEndDate(getLastSunday(firstDayOfMonth)).dateEnd;
-  const sessions: SessionInterface[] = await getAllSessionsBetweenDates(firstMonday.toISOString(), lastSunday.toISOString());
+  const calendarFirstMonday: Date = getStartAndEndDate(getCalendarStartMonday(firstDayOfMonth)).dateStart;
+  const calendarLastSunday: Date = getStartAndEndDate(getCalendarLastSunday(firstDayOfMonth)).dateEnd;
+  const sessions: SessionInterface[] = await getAllSessionsBetweenDates(calendarFirstMonday.toISOString(), calendarLastSunday.toISOString());
 
   const days: DayInterface[] = [];
 
-  let currentDate: Date = new Date(firstMonday);
-  while (currentDate <= lastSunday) {
+  let currentDate: Date = new Date(calendarFirstMonday);
+  while (currentDate <= calendarLastSunday) {
     const { dateStart, dateEnd } = getStartAndEndDate(currentDate);
     const daySessions = sessions.filter(session =>
       isDateBetween(session.date_time_start, dateStart, dateEnd) &&

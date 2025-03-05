@@ -1,7 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarIcon from "./CalendarIcon";
 import { useNavigation } from "expo-router";
-import DayInterface from "@/interfaces/DayInterface";
 import { isDateCurrentDay } from "@/services/date";
 import { getStatusFromTotalWearing, getTotalWearing } from "@/services/session";
 

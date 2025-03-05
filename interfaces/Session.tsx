@@ -1,3 +1,6 @@
+/**
+ * Represente a session.
+ */
 interface SessionInterface {
   id: number,
   date_time_start: Date,

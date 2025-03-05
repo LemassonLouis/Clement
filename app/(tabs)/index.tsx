@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 export default function Index() {
-  const now = new Date();
+  const now: Date = new Date();
 
   return (
     <SafeAreaView style={styles.container}>

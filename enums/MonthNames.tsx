@@ -1,3 +1,6 @@
+/**
+ * MonthNames object (Jan, Feb, ...).
+ */
 export enum MonthNames {
   JANUARY = "Janvier",
   FEBRUARY = "Février",

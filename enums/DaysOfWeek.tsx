@@ -1,3 +1,6 @@
+/**
+ * Days of week object (Mon, Thu, ...).
+ */
 export enum DaysOfWeek {
   MONDAY = "Lun",
   TUESDAY = "Mar",

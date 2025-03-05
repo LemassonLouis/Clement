@@ -1,3 +1,6 @@
+/**
+ * AndroSwitch object.
+ */
 export enum AndroSwitch {
   NAME = "Anneau contraceptif",
   OBJECTIVE_MIN_EXTRA = 43_200_000, // 12h (ms)

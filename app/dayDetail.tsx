@@ -7,7 +7,7 @@ export default function dayDetail() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Détails du jour</Text>
-      <Text>Jour : {day.daytime}</Text>
+      <Text>Jour : {day.date}</Text>
       <Text>Statut : {day.status}</Text>
       <Text>Had Sex : {day.sexWithoutProtection ? "Oui" : "Non"}</Text>
     </View>

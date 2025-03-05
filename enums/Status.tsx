@@ -1,3 +1,6 @@
+/**
+ * Status object.
+ */
 export enum Status {
   NONE = 'none',
   FAILED = 'failed',

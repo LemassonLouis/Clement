@@ -1,5 +1,4 @@
 import { Status } from "@/enums/Status";
-import CalendarIconInterface from "@/interfaces/CalendarIcon";
 import { Feather } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 
