@@ -5,7 +5,7 @@ import { StyleSheet, View } from "react-native";
 
 
 export default function CalendarIcon({ status, sexWithoutProtection }: CalendarIconInterface) {
-  const icon = () => {
+  const icon = (): React.JSX.Element => {
     switch (status) {
       case Status.FAILED:
         return <Feather name="x-circle" size={25} color="#FF5656" />;

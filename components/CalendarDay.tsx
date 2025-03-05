@@ -2,7 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarIcon from "./CalendarIcon";
 import { useNavigation } from "expo-router";
 import DayInterface from "@/interfaces/DayInterface";
-import { dateIsCurrentDay } from "@/services/date";
+import { isDateCurrentDay } from "@/services/date";
+import { getStatusFromTotalWearing, getTotalWearing } from "@/services/session";
 
 
 export default function CalendarDay(day: DayInterface) { // FIXME : type day
@@ -12,12 +13,16 @@ export default function CalendarDay(day: DayInterface) { // FIXME : type day
     navigation.navigate("dayDetail", day);
   };
 
+  const totalWearing: number = getTotalWearing(day.sessions);
+  const status: string = getStatusFromTotalWearing(totalWearing);
+  const sexWithoutProtection: boolean = day.sessions.every(session => session.sexWithoutProtection);
+
   return (
-    <TouchableOpacity onPress={handlePress} style={[styles.calendarLink, dateIsCurrentDay(day.date) && styles.calendarDayCurrentDay]}>
+    <TouchableOpacity onPress={handlePress} style={[styles.calendarLink, isDateCurrentDay(day.date) && styles.calendarDayCurrentDay]}>
       <View style={[styles.calendarDay, !day.isCurrentMonth && styles.calendarDayNonCurrentMonth]}>
         <Text style={styles.calendarDayText}>{day.date.getDate()}</Text>
         <View>
-          <CalendarIcon status={day.status} sexWithoutProtection={day.sexWithoutProtection} />
+          <CalendarIcon status={status} sexWithoutProtection={sexWithoutProtection} />
         </View>
       </View>
     </TouchableOpacity>

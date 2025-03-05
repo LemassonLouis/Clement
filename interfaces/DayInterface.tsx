@@ -1,6 +1,5 @@
 export default interface DayInterface {
   date: Date,
-  status: string,
+  sessions: SessionInterface[],
   isCurrentMonth: boolean,
-  sexWithoutProtection: boolean,
 }
