@@ -5,7 +5,7 @@ import { isDateCurrentDay } from "@/services/date";
 import { getStatusFromTotalWearing, getTotalWearing } from "@/services/session";
 
 
-export default function CalendarDay(day: DayInterface) { // FIXME : type day
+export default function CalendarDay(day: DayInterface) {
   const navigation = useNavigation();
 
   const handlePress = () => {
