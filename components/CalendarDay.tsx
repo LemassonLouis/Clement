@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarIcon from "./CalendarIcon";
 import { useNavigation } from "expo-router";
 import DayInterface from "@/interfaces/DayInterface";
+import { isCurrentDay } from "@/services/date";
 
 
 export default function CalendarDay(day: DayInterface) { // FIXME : type day
@@ -12,7 +13,7 @@ export default function CalendarDay(day: DayInterface) { // FIXME : type day
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={[styles.calendarLink, (day.isCurrentMonth && day.date.getDate() == (new Date).getDate()) && styles.calendarDayCurrentDay]}>
+    <TouchableOpacity onPress={handlePress} style={[styles.calendarLink, isCurrentDay(day.date) && styles.calendarDayCurrentDay]}>
       <View style={[styles.calendarDay, !day.isCurrentMonth && styles.calendarDayNonCurrentMonth]}>
         <Text style={styles.calendarDayText}>{day.date.getDate()}</Text>
         <View>
