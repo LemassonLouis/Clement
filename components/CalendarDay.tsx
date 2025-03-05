@@ -14,7 +14,7 @@ export default function CalendarDay(day: DayInterface) { // FIXME : type day
 
   const totalWearing: number = getTotalWearing(day.sessions);
   const status: string = getStatusFromTotalWearing(totalWearing);
-  const sexWithoutProtection: boolean = day.sessions.every(session => session.sexWithoutProtection);
+  const sexWithoutProtection: boolean = day.sessions.some(session => session?.sexWithoutProtection);
 
   return (
     <TouchableOpacity onPress={handlePress} style={[styles.calendarLink, isDateCurrentDay(day.date) && styles.calendarDayCurrentDay]}>
