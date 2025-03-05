@@ -6,6 +6,7 @@ import { DaysOfWeek } from "@/enums/DaysOfWeek";
 import { MonthNames } from "@/enums/MonthNames";
 import { getSessionByDate } from "@/database/session";
 import { getStatusFromTotalWearing, getTotalWearing } from "@/services/session";
+import { AntDesign, Feather } from "@expo/vector-icons";
 
 const getDaySessions = async (date: Date) => {
   const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
@@ -108,7 +109,7 @@ export default function Calendar() {
     <View style={styles.calendar}>
       <View style={styles.monthBar}>
         <TouchableOpacity onPress={goToPreviousMonth} style={styles.monthButton}>
-          <Text style={styles.monthButtonText}>{'<'}</Text>
+          <Feather name="chevron-left" size={25} color='#000'/>
         </TouchableOpacity>
 
         <Text style={styles.monthText}>
@@ -116,7 +117,7 @@ export default function Calendar() {
         </Text>
 
         <TouchableOpacity onPress={goToNextMonth} style={styles.monthButton}>
-          <Text style={styles.monthButtonText}>{'>'}</Text>
+        <Feather name="chevron-right" size={25} color='#000'/>
         </TouchableOpacity>
       </View>
 
@@ -153,13 +154,10 @@ const styles = StyleSheet.create({
   monthButton: {
     paddingTop: 10,
     paddingBottom: 10,
-    paddingRight: 20,
-    paddingLeft: 20,
+    paddingRight: 12,
+    paddingLeft: 12,
     backgroundColor: '#e5e5e5',
     borderRadius: 5,
-  },
-  monthButtonText: {
-    fontSize: 20,
   },
   monthText: {
     fontSize: 18,
@@ -169,8 +167,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 5,
-    // paddingBottom: 5,
-    // borderBottomWidth: 1,
-    // borderBottomColor: '#ddd'
   },
 })
