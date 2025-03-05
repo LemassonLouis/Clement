@@ -1,10 +1,10 @@
 import { AndroSwitch } from "@/enums/AndroSwitch";
-import { getDifference } from "./date";
+import { getDateDifference } from "./date";
 import { Status } from "@/enums/Status";
 
 export function getTotalWearing(sessions: any): number {
   return sessions.reduce((previous, current) => {
-    return previous + getDifference(current.date_time_start, current.date_time_end);
+    return previous + getDateDifference(current.date_time_start, current.date_time_end);
   }, 0);
 }
 

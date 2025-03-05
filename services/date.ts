@@ -14,11 +14,11 @@ export function dateIsBetween(date: Date, dateStart: Date, dateEnd: Date, strict
   }
 }
 
-export function getDifference(dateStart: Date, dateEnd: Date): number {
+export function getDateDifference(dateStart: Date, dateEnd: Date): number {
   return dateEnd.getTime() - dateStart.getTime();
 }
 
-export function isCurrentDay(date: Date): boolean {
+export function dateIsCurrentDay(date: Date): boolean {
   const { dateStart, dateEnd } = getStartAndEndDate(new Date());
   return dateIsBetween(date, dateStart, dateEnd);
 }

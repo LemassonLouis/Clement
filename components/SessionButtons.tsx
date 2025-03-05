@@ -1,3 +1,4 @@
+import { createSession } from "@/database/session";
 import { useState } from "react";
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
 

@@ -6,7 +6,7 @@ import { DaysOfWeek } from "@/enums/DaysOfWeek";
 import { MonthNames } from "@/enums/MonthNames";
 import { getSessionByDate } from "@/database/session";
 import { getStatusFromTotalWearing, getTotalWearing } from "@/services/session";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 
 const getDaySessions = async (date: Date) => {
   const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
@@ -28,13 +28,14 @@ const getCalendarDays = async (year: number, month: number) => {
   // Start with days before current month
   for (let i = firstDayWeekday; i > 0; i--) {
     const date = new Date(year, ((month-1 % 12) + 12) % 12, lastDayOfPrevMonth - i + 1);
+    console.log("date", date);
     const daySessions = await getDaySessions(date);
     const totalWearing = getTotalWearing(daySessions);
 
     days.push({
       date: date,
       isCurrentMonth: false,
-      status:getStatusFromTotalWearing(totalWearing),
+      status: getStatusFromTotalWearing(totalWearing),
       sexWithoutProtection: getRandomSexWithoutProtection()
     });
   }
@@ -56,6 +57,7 @@ const getCalendarDays = async (year: number, month: number) => {
   // Complete with days after current month
   while (days.length % 7 !== 0) {
     const date = new Date(year, month + 1, days.length - numDaysInCurrentMonth - firstDayWeekday + 1);
+    console.log("date", date);
     const daySessions = await getDaySessions(date);
     const totalWearing = getTotalWearing(daySessions);
 
