@@ -2,7 +2,7 @@ import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
 
-export default function SessionButtons() {
+export default function CurrentSession() {
   const [sessionStarted, setSessionStarted] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [sessionEndTime, setSessionEndTime] = useState<Date | null>(null);

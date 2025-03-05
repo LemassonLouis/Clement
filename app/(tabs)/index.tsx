@@ -1,5 +1,5 @@
 import Calendar from "@/components/Calendar";
-import SessionButtons from "@/components/SessionButtons";
+import CurrentSession from "@/components/CurrentSession";
 import { Suspense } from "react";
 import { SafeAreaView, StyleSheet, Text } from "react-native";
 
@@ -11,7 +11,7 @@ export default function Index() {
       <Suspense fallback={<Text>Chargement...</Text>}>
         <Calendar/>
         <Text style={styles.text}>Accès rapide - {now.toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</Text>
-        <SessionButtons/>
+        <CurrentSession/>
       </Suspense>
     </SafeAreaView>
   )
