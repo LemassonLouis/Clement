@@ -12,6 +12,7 @@ export default function CurrentSession() {
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
 
 
+  // Load current session
   useEffect(() => {
     const fetchData = async () => {
       const currentSession: SessionInterface | null = await getCurrentSession();
@@ -28,6 +29,7 @@ export default function CurrentSession() {
   }, []);
 
 
+  // Calculate elapsed time
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
@@ -42,6 +44,22 @@ export default function CurrentSession() {
         clearInterval(interval);
       }
     };
+  }, [sessionStarted, sessionStartTime]);
+
+
+  // Manage midnight effect
+  useEffect(() => {
+    const checkMidnight = setInterval(async () => {
+      const now = new Date();
+      if (sessionStarted && sessionStartTime && now.getHours() === 23 && now.getMinutes() === 59 && now.getSeconds() === 59) {
+        await stopSession();
+        setTimeout(() => {
+          startSession();
+        }, 1000);
+      }
+    }, 1000);
+
+    return () => clearInterval(checkMidnight);
   }, [sessionStarted, sessionStartTime]);
 
 
