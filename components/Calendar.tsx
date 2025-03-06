@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarDay from "./CalendarDay";
 import { DaysOfWeek } from "@/enums/DaysOfWeek";
@@ -13,6 +13,8 @@ const getCalendarDays = async (year: number, month: number): Promise<DayInterfac
   const calendarFirstMonday: Date = getStartAndEndDate(getCalendarStartMonday(firstDayOfMonth)).dateStart;
   const calendarLastSunday: Date = getStartAndEndDate(getCalendarLastSunday(firstDayOfMonth)).dateEnd;
   const sessions: SessionInterface[] = await getAllSessionsBetweenDates(calendarFirstMonday.toISOString(), calendarLastSunday.toISOString());
+
+  console.log("sessions", sessions);
 
   const days: DayInterface[] = [];
 
@@ -93,12 +95,14 @@ export default function Calendar() {
         ))}
       </View>
 
-      <FlatList
-        numColumns={7}
-        data={days}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({item}) => <CalendarDay {...item}/>}
-      />
+      <Suspense fallback={<Text>Chargement...</Text>}>
+        <FlatList
+          numColumns={7}
+          data={days}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({item}) => <CalendarDay {...item}/>}
+        />
+      </Suspense>
     </View>
   )
 }
