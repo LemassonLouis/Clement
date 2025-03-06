@@ -1,5 +1,5 @@
-import { createSession, getCurrentSession, updateSessionDateTimeEnd } from "@/database/session";
 import { getDateDifference } from "@/services/date";
+import { createSession, getFirstUnfinishedSession, updateSessionDateTimeEnd } from "@/database/session";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Suspense, useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
@@ -15,7 +15,7 @@ export default function CurrentSession() {
   // Load current session
   useEffect(() => {
     const fetchData = async () => {
-      const currentSession: SessionInterface | null = await getCurrentSession();
+      const currentSession: SessionInterface | null = await getFirstUnfinishedSession();
       console.log("currentSession", currentSession);
       if(currentSession) {
         setSessionStarted(true);

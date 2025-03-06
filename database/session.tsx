@@ -50,10 +50,10 @@ export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTime
 
 
 /**
- * Get the current unfinished session.
+ * Get the first unfinished session.
  * @returns 
  */
-export async function getCurrentSession(): Promise<SessionInterface | null> {
+export async function getFirstUnfinishedSession(): Promise<SessionInterface | null> {
   const db = await getDB();
 
   try {
