@@ -17,10 +17,12 @@ export async function createSession(dateTimeStart: string, dateTimeEnd: string|n
 
   try {
     const result = await statement.executeAsync([dateTimeStart, dateTimeEnd, sexWithoutProtection ? 1 : 0]);
+    console.log('Session created');
 
     return result.lastInsertRowId;
-  } catch (error) {
-    console.error('Erreur lors de la création de la session:', error);
+  }
+  catch (error) {
+    console.error('Erreur lors de la création de la session :', error);
     return null;
   }
 };
@@ -39,11 +41,52 @@ export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTime
     const sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE date_time_start >= ? AND date_time_end <= ?", [dateTimeStart, dateTimeEnd]);
 
     return sessions.map(session => deserializeSession(session));
-  } catch (error) {
-    console.error('Erreur lors de la récupération des sessions:', error);
+  }
+  catch (error) {
+    console.error('Erreur lors de la récupération des sessions :', error);
     return [];
   }
 };
+
+
+/**
+ * Get the current unfinished session.
+ * @returns 
+ */
+export async function getCurrentSession(): Promise<SessionInterface | null> {
+  const db = await getDB();
+
+  try {
+    const session = await db.getFirstAsync<SessionInterface>("SELECT * FROM Session WHERE date_time_end IS NULL");
+
+    if(!session) {
+      return null;
+    }
+
+    return deserializeSession(session);
+  }
+  catch (error) {
+    console.error('Erreur lors de la récupération de la session actuel :', error);
+    return null;
+  }
+}
+
+
+/**
+ * Update a date time end session.
+ * @param id The session id.
+ * @param dateTimeEnd Date as an ISO string.
+ */
+export async function updateSessionDateTimeEnd(id: number, dateTimeEnd: string): Promise<void> {
+  const db = await getDB();
+
+  try {
+    await db.runAsync("UPDATE Session SET date_time_end = ? WHERE id = ?", [dateTimeEnd, id]);
+  }
+  catch (error) {
+    console.error('Erreur lors de la mise à jour du date time de fin de la session :', error);
+  }
+}
 
 
 // const updateSession = async (dateTimeStart: string, dateTimeEnd: string|null, sexWithoutProtection: boolean) => {
