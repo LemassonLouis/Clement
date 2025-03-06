@@ -1,10 +1,10 @@
-import { getDateDifference } from "@/services/date";
-import { createSession, getFirstUnfinishedSession, updateSessionDateTimeEnd } from "@/database/session";
+import { createSession, getAllSessionsBetweenDates, getFirstUnfinishedSession, updateSessionDateTimeEnd, updateSessionSexWithoutProtection } from "@/database/session";
+import { getDateDifference, getStartAndEndDate } from "@/services/date";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Suspense, useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
 
-export default function CurrentSession() {
+export default function CurrentSession({ date }: CurrentSessionInterface) {
   const [sessionStarted, setSessionStarted] = useState<boolean>(false);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
@@ -86,8 +86,10 @@ export default function CurrentSession() {
   };
 
   const toggleSexWithoutProtection = async (value: boolean) => {
+    const { dateStart, dateEnd } = getStartAndEndDate(date);
+    const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
+    sessions.forEach(async session => await updateSessionSexWithoutProtection(session.id, value));
     setSexWithoutProtection(value);
-    
   };
 
   const formatElapsedTime = (seconds: number): string => {

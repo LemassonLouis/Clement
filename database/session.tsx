@@ -89,22 +89,21 @@ export async function updateSessionDateTimeEnd(id: number, dateTimeEnd: string):
 }
 
 
-// const updateSession = async (dateTimeStart: string, dateTimeEnd: string|null, sexWithoutProtection: boolean) => {
-//   const db = await getDB();
+/**
+ * Update the wex without protection session.
+ * @param id The session id
+ * @param sexWithoutProtection 
+ */
+export async function updateSessionSexWithoutProtection(id: number, sexWithoutProtection: boolean): Promise<void> {
+  const db = await getDB();
 
-//   const insertStatement = await db.prepareAsync(
-//     'INSERT INTO Session (date_time_start, date_time_end, sexWithoutProtection) VALUES (?, ?, ?)'
-//   );
-  
-//   try {
-//     await insertStatement.executeAsync([dateTimeStart, dateTimeEnd, sexWithoutProtection ? 1 : 0]);
-//     console.log('Session insérée avec succès');
-//   } catch (error) {
-//     console.error('Erreur lors de la création de la session:', error);
-//   } finally {
-//     await insertStatement.finalizeAsync();
-//   }
-// };
+  try {
+    await db.runAsync("UPDATE Session SET sexWithoutProtection = ? WHERE id = ?", [sexWithoutProtection, id]);
+  }
+  catch (error) {
+    console.error('Errur lors de la mise à jour de rapport sexuel sans protection de la session :', error);
+  }
+}
 
 
 /**

@@ -14,7 +14,7 @@ const getCalendarDays = async (year: number, month: number): Promise<DayInterfac
   const calendarLastSunday: Date = getStartAndEndDate(getCalendarLastSunday(firstDayOfMonth)).dateEnd;
   const sessions: SessionInterface[] = await getAllSessionsBetweenDates(calendarFirstMonday.toISOString(), calendarLastSunday.toISOString());
 
-  console.log("sessions", sessions);
+  console.log("sessions", sessions); // TEMP
 
   const days: DayInterface[] = [];
 
