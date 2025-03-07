@@ -87,6 +87,8 @@ export default function CurrentSession({ date }: CurrentSessionInterface) {
     const startTime: Date = new Date();
     const sessionId = await createSession(startTime.toISOString(), null, sexWithoutProtection);
 
+    if(sessionId) sessionStore.addSession({id: sessionId, date_time_start: startTime, date_time_end: null, sexWithoutProtection: sexWithoutProtection});
+
     setSessionStarted(true);
     setSessionStartTime(startTime);
     setCurrentSessionId(sessionId);
@@ -95,7 +97,10 @@ export default function CurrentSession({ date }: CurrentSessionInterface) {
   const stopSession = async () => {
     const endTime = new Date();
 
-    if(currentSessionId) await updateSessionDateTimeEnd(currentSessionId, endTime.toISOString());
+    if(currentSessionId && sessionStartTime) {
+      sessionStore.updateSession({id: currentSessionId, date_time_start: sessionStartTime, date_time_end: endTime, sexWithoutProtection: sexWithoutProtection});
+      await updateSessionDateTimeEnd(currentSessionId, endTime.toISOString());
+    }
 
     setSessionStarted(false);
     setSessionStartTime(null);
