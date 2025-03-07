@@ -2,7 +2,9 @@ import { useLocalSearchParams } from "expo-router";
 import { View, Text, StyleSheet } from "react-native";
 
 export default function dayDetail() {
-  const day = useLocalSearchParams();
+  const params = useLocalSearchParams();
+  const day: DayInterface = JSON.parse(params.day);
+  console.log("day", day);
 
   return (
     <View style={styles.container}>

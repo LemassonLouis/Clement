@@ -3,13 +3,16 @@ import CalendarIcon from "./CalendarIcon";
 import { useNavigation } from "expo-router";
 import { isDateCurrentDay } from "@/services/date";
 import { getStatusFromTotalWearing, getTotalWearing } from "@/services/session";
+import React from "react";
+import { NavigationProp } from "@react-navigation/native";
 
+type NavigationType = NavigationProp<RootStackParamList, 'dayDetail'>;
 
-export default function CalendarDay(day: DayInterface) {
-  const navigation = useNavigation();
+function CalendarDay(day: DayInterface) {
+  const navigation = useNavigation<NavigationType>();
 
   const handlePress = () => {
-    navigation.navigate("dayDetail", day);
+    navigation.navigate("dayDetail", { day: JSON.stringify(day) });
   };
 
   const totalWearing: number = getTotalWearing(day.sessions);
@@ -27,6 +30,9 @@ export default function CalendarDay(day: DayInterface) {
     </TouchableOpacity>
   )
 }
+
+
+export default React.memo(CalendarDay);
 
 
 const styles = StyleSheet.create({

@@ -10,7 +10,7 @@ import { Status } from "@/enums/Status";
  */
 export function getTotalWearing(sessions: SessionInterface[]): number {
   return sessions.reduce((previous, current) => {
-    return previous + getDateDifference(current.date_time_start, current.date_time_end);
+    return previous + getDateDifference(current.date_time_start, current.date_time_end ?? new Date());
   }, 0);
 }
 

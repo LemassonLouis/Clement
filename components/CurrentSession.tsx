@@ -1,7 +1,8 @@
 import { createSession, getAllSessionsBetweenDates, getFirstUnfinishedSession, updateSessionDateTimeEnd, updateSessionSexWithoutProtection } from "@/database/session";
 import { getDateDifference, getStartAndEndDate } from "@/services/date";
+import { getSessionStore } from "@/store/SessionStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
 
 export default function CurrentSession({ date }: CurrentSessionInterface) {
@@ -10,13 +11,31 @@ export default function CurrentSession({ date }: CurrentSessionInterface) {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
+  const sessionStore = getSessionStore();
+
+  const sessionsStored = useSyncExternalStore(
+    useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
+    useCallback(() => sessionStore.getSessions(), [sessionStore])
+  );
+
+
+  // Load sexWithoutProtectionState
+  useEffect(() => {
+    const fetchData = async () => {
+      const { dateStart, dateEnd } = getStartAndEndDate(date);
+      const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
+      setSexWithoutProtection(sessions.some(session => session.sexWithoutProtection));
+    }
+
+    fetchData();
+  });
 
 
   // Load current session
   useEffect(() => {
     const fetchData = async () => {
       const currentSession: SessionInterface | null = await getFirstUnfinishedSession();
-      console.log("currentSession", currentSession);
+
       if(currentSession) {
         setSessionStarted(true);
         setSessionStartTime(currentSession.date_time_start);
@@ -66,9 +85,7 @@ export default function CurrentSession({ date }: CurrentSessionInterface) {
 
   const startSession = async () => {
     const startTime: Date = new Date();
-    const sessionId = await createSession(startTime.toISOString());
-
-    console.log("sessionId", currentSessionId);
+    const sessionId = await createSession(startTime.toISOString(), null, sexWithoutProtection);
 
     setSessionStarted(true);
     setSessionStartTime(startTime);
@@ -78,7 +95,7 @@ export default function CurrentSession({ date }: CurrentSessionInterface) {
   const stopSession = async () => {
     const endTime = new Date();
 
-    await updateSessionDateTimeEnd(currentSessionId, endTime.toISOString());
+    if(currentSessionId) await updateSessionDateTimeEnd(currentSessionId, endTime.toISOString());
 
     setSessionStarted(false);
     setSessionStartTime(null);
@@ -88,7 +105,18 @@ export default function CurrentSession({ date }: CurrentSessionInterface) {
   const toggleSexWithoutProtection = async (value: boolean) => {
     const { dateStart, dateEnd } = getStartAndEndDate(date);
     const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
-    sessions.forEach(async session => await updateSessionSexWithoutProtection(session.id, value));
+
+    sessions.forEach(async session => {
+      const sessionStored = sessionsStored.find(sessionStored => sessionStored.id === session.id);
+
+      if(sessionStored) {
+        sessionStored.sexWithoutProtection = value;
+        sessionStore.updateSession(sessionStored);
+      }
+
+      await updateSessionSexWithoutProtection(session.id, value)
+    });
+
     setSexWithoutProtection(value);
   };
 

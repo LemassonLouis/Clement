@@ -111,9 +111,9 @@ export async function updateSessionSexWithoutProtection(id: number, sexWithoutPr
  * @param session 
  * @returns 
  */
-function deserializeSession(session: SessionInterface) {
+export function deserializeSession(session: SessionInterface) {
   session.date_time_start = new Date(session.date_time_start);
-  session.date_time_end = new Date(session.date_time_end);
+  session.date_time_end = session.date_time_end === null ? null : new Date(session.date_time_end);
   session.sexWithoutProtection = session.sexWithoutProtection ? true : false;
 
   return session;

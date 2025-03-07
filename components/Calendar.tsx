@@ -1,18 +1,17 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarDay from "./CalendarDay";
 import { DaysOfWeek } from "@/enums/DaysOfWeek";
 import { MonthNames } from "@/enums/MonthNames";
-import { getAllSessionsBetweenDates } from "@/database/session";
 import { Feather } from "@expo/vector-icons";
 import { getCalendarStartMonday, getCalendarLastSunday, getStartAndEndDate, isDateBetween } from "@/services/date";
+import { getSessionStore } from "@/store/SessionStore";
 
 
-const getCalendarDays = async (year: number, month: number): Promise<DayInterface[]> => {
+const getCalendarDays = (year: number, month: number, sessions: SessionInterface[]): DayInterface[] => {
   const firstDayOfMonth: Date = new Date(year, month, 1);
   const calendarFirstMonday: Date = getStartAndEndDate(getCalendarStartMonday(firstDayOfMonth)).dateStart;
   const calendarLastSunday: Date = getStartAndEndDate(getCalendarLastSunday(firstDayOfMonth)).dateEnd;
-  const sessions: SessionInterface[] = await getAllSessionsBetweenDates(calendarFirstMonday.toISOString(), calendarLastSunday.toISOString());
 
   console.log("sessions", sessions); // TEMP
 
@@ -21,10 +20,7 @@ const getCalendarDays = async (year: number, month: number): Promise<DayInterfac
   let currentDate: Date = new Date(calendarFirstMonday);
   while (currentDate <= calendarLastSunday) {
     const { dateStart, dateEnd } = getStartAndEndDate(currentDate);
-    const daySessions = sessions.filter(session =>
-      isDateBetween(session.date_time_start, dateStart, dateEnd) &&
-      isDateBetween(session.date_time_end, dateStart, dateEnd)
-    );
+    const daySessions = sessions.filter(session => isDateBetween(session.date_time_start, dateStart, dateEnd));
 
     days.push({
       date: new Date(currentDate),
@@ -41,7 +37,19 @@ const getCalendarDays = async (year: number, month: number): Promise<DayInterfac
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [days, setDays] = useState<Array<DayInterface>>([]);
+  const sessionStore = getSessionStore();
+
+  const subscribe = useCallback(
+    (callback: () => void) => sessionStore.subscribe(callback),
+    [sessionStore]
+  );
+
+  const getSnapshot = useCallback(
+    () => sessionStore.getSessions(),
+    [sessionStore]
+  );
+
+  const sessions = useSyncExternalStore(subscribe, getSnapshot);
 
   const year: number = currentDate.getFullYear();
   const month: number = currentDate.getMonth();
@@ -62,16 +70,15 @@ export default function Calendar() {
     setCurrentDate(newDate);
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
-      const calendarDays: DayInterface[] = await getCalendarDays(year, month);
-      setDays(calendarDays);
-    };
+      await sessionStore.refreshSessions(year, month);
+    }
 
     fetchData();
-  }, [currentDate]);
+  }, [year, month, sessions]);
 
+  const days = getCalendarDays(year, month, sessions);
 
   return (
     <View style={styles.calendar}>
@@ -99,7 +106,7 @@ export default function Calendar() {
         <FlatList
           numColumns={7}
           data={days}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={day => day.date.toISOString()}
           renderItem={({item}) => <CalendarDay {...item}/>}
         />
       </Suspense>
