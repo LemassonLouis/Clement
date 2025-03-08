@@ -3,5 +3,6 @@
  */
 interface CalendarIconInterface {
   status: string,
-  sexWithoutProtection: boolean
+  sexWithoutProtection: boolean,
+  size: number,
 }

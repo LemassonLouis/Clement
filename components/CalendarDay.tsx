@@ -24,7 +24,7 @@ function CalendarDay(day: DayInterface) {
       <View style={[styles.calendarDay, !day.isCurrentMonth && styles.calendarDayNonCurrentMonth]}>
         <Text style={styles.calendarDayText}>{day.date.getDate()}</Text>
         <View>
-          <CalendarIcon status={status} sexWithoutProtection={sexWithoutProtection} />
+          <CalendarIcon status={status} sexWithoutProtection={sexWithoutProtection} size={25} />
         </View>
       </View>
     </TouchableOpacity>
