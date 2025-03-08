@@ -1,4 +1,5 @@
 import { Status } from "@/enums/Status";
+import { getColorFromStatus } from "@/services/session";
 import { Feather } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 
@@ -7,17 +8,17 @@ export default function CalendarIcon({ status, sexWithoutProtection, size }: Cal
   const icon = (): React.JSX.Element => {
     switch (status) {
       case Status.FAILED:
-        return <Feather name="x-circle" size={size} color="#FF5656" />;
+        return <Feather name="x-circle" size={size} color={getColorFromStatus(status)} />;
       case Status.WARNED:
-        return <Feather name="alert-circle" size={size} color="#FFC249" />;
+        return <Feather name="alert-circle" size={size} color={getColorFromStatus(status)} />;
       case Status.SUCCESSED:
-        return <Feather name="check-circle" size={size} color="#49B24E" />;
+        return <Feather name="check-circle" size={size} color={getColorFromStatus(status)} />;
       case Status.REACHED:
-        return <Feather name="check-circle" size={size} color="#6DDAFF" />;
+        return <Feather name="check-circle" size={size} color={getColorFromStatus(status)} />;
       case Status.EXCEEDED:
-        return <Feather name="alert-circle" size={size} color="#D67FFF" />;
+        return <Feather name="alert-circle" size={size} color={getColorFromStatus(status)} />;
       default:
-        return <Feather name="help-circle" size={size} color="#B5B5B5" />;
+        return <Feather name="help-circle" size={size} color={getColorFromStatus(status)} />;
     }
   };
 

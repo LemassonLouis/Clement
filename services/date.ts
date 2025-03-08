@@ -100,6 +100,29 @@ export function getCalendarLastSunday(date: Date): Date {
 
 
 /**
+ * Format a time : -h -m -s
+ * @param time Miliseconds
+ * @returns 
+ */
+export function formatElapsedTime(time: number, removeZero: boolean = true): string {
+  const seconds = Math.floor(time / 1000);
+
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  let formatedElapsedTime = '';
+  if(h > 0) formatedElapsedTime += `${h}h ${m}m ${s}s`;
+  else if(m > 0) formatedElapsedTime += `${m}m ${s}s`;
+  else formatedElapsedTime += `${s}s`;
+
+  return formatedElapsedTime;
+};
+
+
+
+
+/**
  * Validate or thow if start date is greater or equal than end date.
  * @param dateStart Start date reference.
  * @param dateEnd End date reference.

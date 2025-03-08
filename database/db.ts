@@ -25,7 +25,12 @@ export async function createTables(): Promise<void> {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date_time_start TEXT NOT NULL,
         date_time_end TEXT,
-        sexWithoutProtection INTEGER
+        sexWithoutProtection INTEGER NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS User (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        method TEXT NOT NULL
       );
     `);
   } catch (error) {

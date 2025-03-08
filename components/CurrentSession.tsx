@@ -1,5 +1,5 @@
 import { createSession, getAllSessionsBetweenDates, getFirstUnfinishedSession, updateSessionDateTimeEnd, updateSessionSexWithoutProtection } from "@/database/session";
-import { getDateDifference, getStartAndEndDate } from "@/services/date";
+import { formatElapsedTime, getDateDifference, getStartAndEndDate } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
@@ -55,7 +55,7 @@ export default function CurrentSession() {
 
     if (sessionStarted && sessionStartTime) {
       interval = setInterval(() => {
-        setElapsedTime(Math.floor(getDateDifference(sessionStartTime, new Date()) / 1000));
+        setElapsedTime(getDateDifference(sessionStartTime, new Date()));
       }, 1000);
     }
 
@@ -124,13 +124,6 @@ export default function CurrentSession() {
     });
 
     setSexWithoutProtection(value);
-  };
-
-  const formatElapsedTime = (seconds: number): string => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return `${h}h ${m}m ${s}s`;
   };
 
 

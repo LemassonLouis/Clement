@@ -42,3 +42,24 @@ export function getStatusFromTotalWearing(totalWearing: number): string {
     return Status.NONE;
   }
 }
+
+/**
+ * Get the color of the status.
+ * @param status The status
+ */
+export function getColorFromStatus(status: Status | string): string {
+  switch(status) {
+    case Status.FAILED:
+      return '#FF5656';
+    case Status.WARNED:
+      return '#FFC249';
+    case Status.SUCCESSED:
+      return '#49B24E';
+    case Status.REACHED:
+      return '#6DDAFF';
+    case Status.EXCEEDED:
+      return '#D67FFF';
+    default:
+      return '#B5B5B5';
+  }
+}
