@@ -17,7 +17,7 @@ export async function createSession(dateTimeStart: string, dateTimeEnd: string|n
 
   try {
     const result = await statement.executeAsync([dateTimeStart, dateTimeEnd, sexWithoutProtection ? 1 : 0]);
-    console.log('Session created');
+    console.log('Session created'); // TEMP
 
     return result.lastInsertRowId;
   }

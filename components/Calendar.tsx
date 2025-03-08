@@ -13,8 +13,6 @@ const getCalendarDays = (year: number, month: number, sessions: SessionInterface
   const calendarFirstMonday: Date = getStartAndEndDate(getCalendarStartMonday(firstDayOfMonth)).dateStart;
   const calendarLastSunday: Date = getStartAndEndDate(getCalendarLastSunday(firstDayOfMonth)).dateEnd;
 
-  console.log("sessions", sessions); // TEMP
-
   const days: DayInterface[] = [];
 
   let currentDate: Date = new Date(calendarFirstMonday);

@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarIcon from "./CalendarIcon";
 import { useNavigation } from "expo-router";
 import { isDateCurrentDay } from "@/services/date";
-import { getStatusFromTotalWearing, getTotalWearing } from "@/services/session";
+import { getStatusFromTotalWearing, calculateTotalWearing } from "@/services/session";
 import React from "react";
 import { NavigationProp } from "@react-navigation/native";
 
@@ -15,7 +15,7 @@ function CalendarDay(day: DayInterface) {
     navigation.navigate("dayDetail", { day: JSON.stringify(day) });
   };
 
-  const totalWearing: number = getTotalWearing(day.sessions);
+  const totalWearing: number = calculateTotalWearing(day.sessions);
   const status: string = getStatusFromTotalWearing(totalWearing);
   const sexWithoutProtection: boolean = day.sessions.some(session => session?.sexWithoutProtection);
 
