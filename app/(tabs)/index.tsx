@@ -9,7 +9,7 @@ export default function Index() {
     <SafeAreaView style={styles.container}>
       <Calendar/>
       <Text style={styles.text}>Accès rapide - {now.toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</Text>
-      <CurrentSession date={now}/>
+      <CurrentSession/>
     </SafeAreaView>
   )
 }

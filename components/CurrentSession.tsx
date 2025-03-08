@@ -5,13 +5,14 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
 
-export default function CurrentSession({ date }: CurrentSessionInterface) {
+export default function CurrentSession() {
   const [sessionStarted, setSessionStarted] = useState<boolean>(false);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
   const sessionStore = getSessionStore();
+  const date = new Date();
 
   const sessionsStored = useSyncExternalStore(
     useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
