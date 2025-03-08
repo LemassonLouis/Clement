@@ -4,6 +4,8 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function Session(session: SessionInterface) {
+  if(!session.date_time_end) return;
+
   const elapsedTime: number = getDateDifference(session.date_time_start, session.date_time_end);
   const wearingTime: string = formatElapsedTime(elapsedTime);
   const startTime: string = `${session.date_time_start.getHours()}h ${session.date_time_start.getMinutes()}m ${session.date_time_start.getSeconds()}s`;
@@ -17,9 +19,9 @@ export default function Session(session: SessionInterface) {
 
   return (
     <View style={styles.session}>
-      <Modal>
+      {/* <Modal>
         
-      </Modal>
+      </Modal> */}
 
       <View style={styles.sessionInfoContainer}>
         <View style={styles.sessionInfo}>
