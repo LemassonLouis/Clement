@@ -8,7 +8,7 @@ import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
 export default function CurrentSession() {
   const [sessionStarted, setSessionStarted] = useState<boolean>(false);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [elapsedTime, setElapsedTime] = useState<number>(sessionStartTime ? getDateDifference(sessionStartTime, new Date()) : 0);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
   const sessionStore = getSessionStore();
@@ -40,7 +40,7 @@ export default function CurrentSession() {
       if(currentSession) {
         setSessionStarted(true);
         setSessionStartTime(currentSession.date_time_start);
-        setElapsedTime(Math.floor(getDateDifference(currentSession.date_time_start, new Date()) / 1000));
+        setElapsedTime(getDateDifference(currentSession.date_time_start, new Date()));
         setCurrentSessionId(currentSession.id);
       }
     };
