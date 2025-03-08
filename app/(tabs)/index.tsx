@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
   }
 })
