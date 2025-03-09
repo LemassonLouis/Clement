@@ -2,8 +2,9 @@ import { createSession, getAllSessionsBetweenDates, getFirstUnfinishedSession, u
 import { formatElapsedTime, getDateDifference, getStartAndEndDate } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
+import { Suspense, useEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import SexWithoutProtection from "./sexWithoutProtection";
 
 export default function CurrentSession() {
   const [sessionStarted, setSessionStarted] = useState<boolean>(false);
@@ -13,23 +14,6 @@ export default function CurrentSession() {
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
   const sessionStore = getSessionStore();
   const date = new Date();
-
-  const sessionsStored = useSyncExternalStore(
-    useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
-    useCallback(() => sessionStore.getSessions(), [sessionStore])
-  );
-
-
-  // Load sexWithoutProtectionState
-  useEffect(() => {
-    const fetchData = async () => {
-      const { dateStart, dateEnd } = getStartAndEndDate(date);
-      const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
-      setSexWithoutProtection(sessions.some(session => session.sexWithoutProtection));
-    }
-
-    fetchData();
-  });
 
 
   // Load current session
@@ -108,24 +92,6 @@ export default function CurrentSession() {
     setElapsedTime(0);
   };
 
-  const toggleSexWithoutProtection = async (value: boolean) => {
-    const { dateStart, dateEnd } = getStartAndEndDate(date);
-    const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
-
-    sessions.forEach(async session => {
-      const sessionStored = sessionsStored.find(sessionStored => sessionStored.id === session.id);
-
-      if(sessionStored) {
-        sessionStored.sexWithoutProtection = value;
-        sessionStore.updateSession(sessionStored);
-      }
-
-      await updateSessionSexWithoutProtection(session.id, value)
-    });
-
-    setSexWithoutProtection(value);
-  };
-
 
   return (
     <View style={styles.container}>
@@ -150,10 +116,11 @@ export default function CurrentSession() {
           </View>
         </View>
 
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>Rapport sexuel sans protection</Text>
-          <Switch style={styles.switch} value={sexWithoutProtection} onValueChange={toggleSexWithoutProtection} />
-        </View>
+        <SexWithoutProtection
+          date={date}
+          sexWithoutProtection={sexWithoutProtection}
+          setSexWithoutProtection={setSexWithoutProtection}
+        />
       </Suspense>
     </View>
   )
