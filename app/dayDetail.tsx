@@ -32,7 +32,7 @@ export default function dayDetail() {
 
   const getCurrentSessions = (sessions: SessionInterface[], date: Date) => {
     return sessions.filter(session => {
-      const { dateStart, dateEnd } = getStartAndEndDate(day.date);
+      const { dateStart, dateEnd } = getStartAndEndDate(date);
       return isDateBetween(session.date_time_end, dateStart, dateEnd);
     });
   }
