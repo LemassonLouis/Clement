@@ -2,10 +2,13 @@ import CalendarIcon from "@/components/CalendarIcon";
 import CurrentSession from "@/components/CurrentSession";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
+import SexWithoutProtection from "@/components/sexWithoutProtection";
 import { deserializeSession } from "@/database/session";
-import { isDateCurrentDay } from "@/services/date";
+import { getStartAndEndDate, isDateBetween, isDateCurrentDay } from "@/services/date";
 import { calculateTotalWearing, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
+import { getSessionStore } from "@/store/SessionStore";
 import { useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { View, Text, StyleSheet, Dimensions, FlatList, ScrollView } from "react-native";
 import * as Progress from 'react-native-progress';
 
@@ -21,11 +24,40 @@ export default function dayDetail() {
   const params = useLocalSearchParams();
   const day = deserializeDay(JSON.parse(String(params.day)));
 
-  const totalWearing = calculateTotalWearing(day.sessions);
-  const status = getStatusFromTotalWearing(totalWearing);
-  const sexWithoutProtection = day.sessions.some(session => session.sexWithoutProtection);
+  const sessionStore = getSessionStore();
+  const sessionsStored = useSyncExternalStore(
+    useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
+    useCallback(() => sessionStore.getSessions(), [sessionStore])
+  );
+
+  const getCurrentSessions = (sessions: SessionInterface[], date: Date) => {
+    return sessions.filter(session => {
+      const { dateStart, dateEnd } = getStartAndEndDate(day.date);
+      return isDateBetween(session.date_time_end, dateStart, dateEnd);
+    });
+  }
+
+  const currentSessions = getCurrentSessions(sessionsStored, day.date);
+
+  const [totalWearing, setTotalWearing] = useState(calculateTotalWearing(currentSessions));
+  const [status, setStatus] = useState(getStatusFromTotalWearing(totalWearing));
+  const [sexWithoutProtection, setSexWithoutProtection] = useState(currentSessions.some(session => session.sexWithoutProtection));
 
   const progressBarWidth: number = Dimensions.get('window').width * 0.8;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await sessionStore.refreshSessions(day.date.getFullYear(), day.date.getMonth());
+      const currentSessions = getCurrentSessions(sessionsStored, day.date);
+
+      setTotalWearing(calculateTotalWearing(currentSessions));
+      setStatus(getStatusFromTotalWearing(totalWearing));
+      setSexWithoutProtection(currentSessions.some(session => session.sexWithoutProtection));
+    }
+
+    fetchData();
+  }, [sessionsStored]);
+
 
   return (
     <ScrollView>
@@ -44,13 +76,23 @@ export default function dayDetail() {
           <ProgressIndicator hour={18} progressBarWidth={progressBarWidth} isTop={true} />
         </View>
 
-        {isDateCurrentDay(day.date) ? <View style={styles.currentSession}><CurrentSession/></View> : ''}
+        <View style={styles.currentSession}>
+          {isDateCurrentDay(day.date) ?
+            <CurrentSession/>
+          :
+            <SexWithoutProtection
+              date={day.date}
+              sexWithoutProtection={sexWithoutProtection}
+              setSexWithoutProtection={setSexWithoutProtection}
+            />
+          }
+        </View>
 
         <FlatList
           style={styles.sessions}
           numColumns={1}
           scrollEnabled={false}
-          data={day.sessions}
+          data={currentSessions}
           keyExtractor={session => session.id.toString()}
           renderItem={({item}) => <Session {...item}/>}
         />
@@ -87,6 +129,6 @@ const styles = StyleSheet.create({
   },
   sessions: {
     width: '80%',
-    marginTop: 40,
+    marginTop: 10,
   }
 });
