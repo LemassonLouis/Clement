@@ -5,13 +5,6 @@ import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
 
-interface SexWithoutProtectionInterace {
-  date: Date,
-  sexWithoutProtection: boolean,
-  setSexWithoutProtection: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-
 export default function SexWithoutProtection({ date, sexWithoutProtection, setSexWithoutProtection }: SexWithoutProtectionInterace) {
   const sessionStore = getSessionStore();
   const sessionsStored = useSyncExternalStore(
