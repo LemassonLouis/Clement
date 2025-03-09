@@ -52,6 +52,16 @@ class SessionStore {
     }
   }
 
+  public removeSession(session: SessionInterface) {
+    const index = this.sessions.findIndex(s => s.id === session.id);
+
+    if(index !== -1) {
+      this.sessions.splice(index, 1);
+      this.sessions = [...this.sessions];
+      this.notifyListeners();
+    }
+  }
+
   public subscribe(listener: Listener) {
     this.listeners.add(listener);
 

@@ -101,7 +101,23 @@ export async function updateSessionSexWithoutProtection(id: number, sexWithoutPr
     await db.runAsync("UPDATE Session SET sexWithoutProtection = ? WHERE id = ?", [sexWithoutProtection, id]);
   }
   catch (error) {
-    console.error('Errur lors de la mise à jour de rapport sexuel sans protection de la session :', error);
+    console.error('Error lors de la mise à jour de rapport sexuel sans protection de la session :', error);
+  }
+}
+
+
+/**
+ * Delete a session.
+ * @param id The session id.
+ */
+export async function deleteSession(id: number): Promise<void> {
+  const db = await getDB();
+
+  try {
+    await db.runAsync('DELETE FROM Session WHERE id = ?', [id]);
+  }
+  catch (error) {
+    console.error('Error when trying to delete session', error);
   }
 }
 
