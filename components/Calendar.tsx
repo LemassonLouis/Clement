@@ -37,17 +37,10 @@ export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const sessionStore = getSessionStore();
 
-  const subscribe = useCallback(
-    (callback: () => void) => sessionStore.subscribe(callback),
-    [sessionStore]
+  const sessionsStored = useSyncExternalStore(
+    useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
+    useCallback(() => sessionStore.getSessions(), [sessionStore])
   );
-
-  const getSnapshot = useCallback(
-    () => sessionStore.getSessions(),
-    [sessionStore]
-  );
-
-  const sessions = useSyncExternalStore(subscribe, getSnapshot);
 
   const year: number = currentDate.getFullYear();
   const month: number = currentDate.getMonth();
@@ -74,9 +67,9 @@ export default function Calendar() {
     }
 
     fetchData();
-  }, [year, month, sessions]);
+  }, [year, month, sessionsStored]);
 
-  const days = getCalendarDays(year, month, sessions);
+  const days = getCalendarDays(year, month, sessionsStored);
 
   return (
     <View style={styles.calendar}>
