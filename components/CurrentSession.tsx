@@ -1,4 +1,4 @@
-import { createSession, updateSessionDateTimeEnd } from "@/database/session";
+import { createSession, updateSession } from "@/database/session";
 import { formatElapsedTime, getDateDifference } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -74,7 +74,7 @@ export default function CurrentSession() {
     const sessionId = await createSession(startTime.toISOString(), null, sexWithoutProtection);
 
     if(sessionId) {
-      sessionStore.addSession({id: sessionId, date_time_start: startTime, date_time_end: null, sexWithoutProtection: sexWithoutProtection});
+      sessionStore.addSession({id: sessionId, dateTimeStart: startTime, dateTimeEnd: null, sexWithoutProtection: sexWithoutProtection});
       currentSessionStore.updateCurrentSession({ sessionId: sessionId, sessionStartTime: startTime });
     }
   };
@@ -87,13 +87,13 @@ export default function CurrentSession() {
 
       sessionStore.updateSession({
         id: currentSessionStored.sessionId,
-        date_time_start: currentSessionStored.sessionStartTime,
-        date_time_end: endTime,
+        dateTimeStart: currentSessionStored.sessionStartTime,
+        dateTimeEnd: endTime,
         sexWithoutProtection: sexWithoutProtection
       });
       currentSessionStore.updateCurrentSession({ sessionId: null, sessionStartTime: null });
 
-      await updateSessionDateTimeEnd(currentSessionStored.sessionId, endTime.toISOString());
+      await updateSession(currentSessionStored.sessionId, currentSessionStored.sessionStartTime.toISOString(), endTime.toISOString(), sexWithoutProtection);
     }
   };
 

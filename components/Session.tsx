@@ -6,15 +6,15 @@ import DeleteSessionModal from "./DeleteSessionModal";
 
 
 export default function Session(session: SessionInterface) {
-  if(!session.date_time_end) return;
+  if(!session.dateTimeEnd) return;
 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
 
-  const elapsedTime: number = getDateDifference(session.date_time_start, session.date_time_end);
+  const elapsedTime: number = getDateDifference(session.dateTimeStart, session.dateTimeEnd);
   const wearingTime: string = formatElapsedTime(elapsedTime);
-  const startTime: string = `${session.date_time_start.getHours()}h ${session.date_time_start.getMinutes()}m ${session.date_time_start.getSeconds()}s`;
-  const endTime: string = `${session.date_time_end.getHours()}h ${session.date_time_end.getMinutes()}m ${session.date_time_end.getSeconds()}s`;
+  const startTime: string = `${session.dateTimeStart.getHours()}h ${session.dateTimeStart.getMinutes()}m ${session.dateTimeStart.getSeconds()}s`;
+  const endTime: string = `${session.dateTimeEnd.getHours()}h ${session.dateTimeEnd.getMinutes()}m ${session.dateTimeEnd.getSeconds()}s`;
 
 
   return (

@@ -23,8 +23,8 @@ export async function createTables(): Promise<void> {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS Session (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date_time_start TEXT NOT NULL,
-        date_time_end TEXT,
+        dateTimeStart TEXT NOT NULL,
+        dateTimeEnd TEXT,
         sexWithoutProtection INTEGER NOT NULL
       );
 

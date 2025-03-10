@@ -18,7 +18,7 @@ const getCalendarDays = (year: number, month: number, sessions: SessionInterface
   let currentDate: Date = new Date(calendarFirstMonday);
   while (currentDate <= calendarLastSunday) {
     const { dateStart, dateEnd } = getStartAndEndDate(currentDate);
-    const daySessions = sessions.filter(session => isDateBetween(session.date_time_start, dateStart, dateEnd));
+    const daySessions = sessions.filter(session => isDateBetween(session.dateTimeStart, dateStart, dateEnd));
 
     days.push({
       date: new Date(currentDate),

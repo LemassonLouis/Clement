@@ -3,7 +3,7 @@
  */
 interface SessionInterface {
   id: number,
-  date_time_start: Date,
-  date_time_end: Date | null,
+  dateTimeStart: Date,
+  dateTimeEnd: Date | null,
   sexWithoutProtection: boolean,
 }

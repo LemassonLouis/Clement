@@ -1,4 +1,4 @@
-import { getAllSessionsBetweenDates, updateSessionSexWithoutProtection } from "@/database/session";
+import { getAllSessionsBetweenDates, updateSession } from "@/database/session";
 import { getStartAndEndDate } from "@/services/date";
 import { extractDateSessions } from "@/services/session";
 import { getSessionStore } from "@/store/SessionStore";
@@ -42,9 +42,10 @@ export default function SexWithoutProtection({ date, sexWithoutProtection, setSe
         if(sessionStored) {
           sessionStored.sexWithoutProtection = value;
           sessionStore.updateSession(sessionStored);
+
+          await updateSession(session.id, sessionStored.dateTimeStart.toISOString(), sessionStored.dateTimeEnd?.toISOString() ?? null, sessionStored.sexWithoutProtection);
         }
 
-        await updateSessionSexWithoutProtection(session.id, value)
       });
     }
 

@@ -8,11 +8,11 @@ import { getDB } from "./db";
  * @param sexWithoutProtection Default = `false`.
  * @returns 
  */
-export async function createSession(dateTimeStart: string, dateTimeEnd: string|null = null, sexWithoutProtection: boolean = false): Promise<number | null> {
+export async function createSession(dateTimeStart: string, dateTimeEnd: string | null = null, sexWithoutProtection: boolean = false): Promise<number | null> {
   const db = await getDB();
 
   const statement = await db.prepareAsync(
-    'INSERT INTO Session (date_time_start, date_time_end, sexWithoutProtection) VALUES (?, ?, ?)'
+    'INSERT INTO Session (dateTimeStart, dateTimeEnd, sexWithoutProtection) VALUES (?, ?, ?)'
   );
 
   try {
@@ -38,7 +38,7 @@ export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTime
   const db = await getDB();
 
   try {
-    const sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE date_time_start >= ? AND date_time_end <= ?", [dateTimeStart, dateTimeEnd]);
+    const sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeStart >= ? AND dateTimeEnd <= ?", [dateTimeStart, dateTimeEnd]);
 
     return sessions.map(session => deserializeSession(session));
   }
@@ -57,7 +57,7 @@ export async function getFirstUnfinishedSession(): Promise<SessionInterface | nu
   const db = await getDB();
 
   try {
-    const session = await db.getFirstAsync<SessionInterface>("SELECT * FROM Session WHERE date_time_end IS NULL");
+    const session = await db.getFirstAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeEnd IS NULL");
 
     if(!session) {
       return null;
@@ -73,32 +73,17 @@ export async function getFirstUnfinishedSession(): Promise<SessionInterface | nu
 
 
 /**
- * Update a date time end session.
+ * Update a session.
  * @param id The session id.
- * @param dateTimeEnd Date as an ISO string.
+ * @param dateTimeStart The new date time start.
+ * @param dateTimeEnd The new date time end.
+ * @param sexWithoutProtection The new sex without protection.
  */
-export async function updateSessionDateTimeEnd(id: number, dateTimeEnd: string): Promise<void> {
+export async function updateSession(id: number, dateTimeStart: string, dateTimeEnd: string | null, sexWithoutProtection: boolean): Promise<void> {
   const db = await getDB();
 
   try {
-    await db.runAsync("UPDATE Session SET date_time_end = ? WHERE id = ?", [dateTimeEnd, id]);
-  }
-  catch (error) {
-    console.error('Erreur lors de la mise à jour du date time de fin de la session :', error);
-  }
-}
-
-
-/**
- * Update the wex without protection session.
- * @param id The session id
- * @param sexWithoutProtection 
- */
-export async function updateSessionSexWithoutProtection(id: number, sexWithoutProtection: boolean): Promise<void> {
-  const db = await getDB();
-
-  try {
-    await db.runAsync("UPDATE Session SET sexWithoutProtection = ? WHERE id = ?", [sexWithoutProtection, id]);
+    await db.runAsync("UPDATE Session SET dateTimeStart = ?, dateTimeEnd = ?, sexWithoutProtection = ? WHERE id = ?", [dateTimeStart, dateTimeEnd, sexWithoutProtection, id]);
   }
   catch (error) {
     console.error('Error lors de la mise à jour de rapport sexuel sans protection de la session :', error);
@@ -123,13 +108,13 @@ export async function deleteSession(id: number): Promise<void> {
 
 
 /**
- * Deserialize a session, transform string into date and boolean 0/1 into false/true.
+ * Deserialize a session.
  * @param session 
  * @returns 
  */
-export function deserializeSession(session: SessionInterface) {
-  session.date_time_start = new Date(session.date_time_start);
-  session.date_time_end = session.date_time_end === null ? null : new Date(session.date_time_end);
+export function deserializeSession(session: SessionInterface): SessionInterface {
+  session.dateTimeStart = new Date(session.dateTimeStart);
+  session.dateTimeEnd = session.dateTimeEnd === null ? null : new Date(session.dateTimeEnd);
   session.sexWithoutProtection = session.sexWithoutProtection ? true : false;
 
   return session;

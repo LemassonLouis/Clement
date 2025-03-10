@@ -10,7 +10,7 @@ import { Status } from "@/enums/Status";
  */
 export function calculateTotalWearing(sessions: SessionInterface[]): number {
   return sessions.reduce((previous, current) => {
-    return previous + getDateDifference(current.date_time_start, current.date_time_end ?? new Date());
+    return previous + getDateDifference(current.dateTimeStart, current.dateTimeEnd ?? new Date());
   }, 0);
 }
 
@@ -73,6 +73,6 @@ export function getColorFromStatus(status: Status | string): string {
 export function extractDateSessions(sessions: SessionInterface[], date: Date): SessionInterface[] {
   return sessions.filter(session => {
     const { dateStart, dateEnd } = getStartAndEndDate(date);
-    return isDateBetween(session.date_time_start, dateStart, dateEnd);
+    return isDateBetween(session.dateTimeStart, dateStart, dateEnd);
   });
 }

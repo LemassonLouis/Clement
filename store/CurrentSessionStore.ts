@@ -14,9 +14,9 @@ class CurrentSessionStore {
   public async loadCurrentSession(): Promise<void> {
     const currentSession: SessionInterface | null = await getFirstUnfinishedSession();
 
-    if(this.currentSession.sessionId !== currentSession?.id && this.currentSession.sessionStartTime !== currentSession?.date_time_start) {
+    if(this.currentSession.sessionId !== currentSession?.id && this.currentSession.sessionStartTime !== currentSession?.dateTimeStart) {
       this.currentSession.sessionId = currentSession?.id ?? null;
-      this.currentSession.sessionStartTime = currentSession?.date_time_start ?? null;
+      this.currentSession.sessionStartTime = currentSession?.dateTimeStart ?? null;
 
       this.notifyListeners();
     }
