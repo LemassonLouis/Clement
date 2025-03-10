@@ -21,7 +21,7 @@ export default function SexWithoutProtection({ date, sexWithoutProtection, setSe
     }
 
     fetchData();
-  });
+  }, []);
 
 
   const toggleSexWithoutProtection = (value: boolean) => {
