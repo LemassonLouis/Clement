@@ -1,5 +1,5 @@
-import { createSession, getAllSessionsBetweenDates, getFirstUnfinishedSession, updateSessionDateTimeEnd, updateSessionSexWithoutProtection } from "@/database/session";
-import { formatElapsedTime, getDateDifference, getStartAndEndDate } from "@/services/date";
+import { createSession, updateSessionDateTimeEnd } from "@/database/session";
+import { formatElapsedTime, getDateDifference } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";

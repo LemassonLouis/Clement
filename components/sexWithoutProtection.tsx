@@ -2,7 +2,7 @@ import { getAllSessionsBetweenDates, updateSessionSexWithoutProtection } from "@
 import { getStartAndEndDate } from "@/services/date";
 import { extractDateSessions } from "@/services/session";
 import { getSessionStore } from "@/store/SessionStore";
-import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
 
@@ -13,29 +13,37 @@ export default function SexWithoutProtection({ date, sexWithoutProtection, setSe
     useCallback(() => sessionStore.getSessions(), [sessionStore])
   );
 
+  const [daySessions, setDaySessions] = useState<SessionInterface[]>([]);
+
+  console.log("date", date);
+
   // Load sexWithoutProtectionState
   useEffect(() => {
-    const currentSessions = extractDateSessions(sessionsStored, date);
-    const sexWithoutProtection = currentSessions.some(session => session.sexWithoutProtection === true);
-    setSexWithoutProtection(sexWithoutProtection);
-  }, [sessionsStored]);
+    const fetchData = async () => {
+      const { dateStart, dateEnd } = getStartAndEndDate(date);
+      const currentSessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
+      setDaySessions(currentSessions);
+      console.log("currentSessions", currentSessions);
+      const sexWithoutProtection = currentSessions.some(session => session.sexWithoutProtection === true);
+      setSexWithoutProtection(sexWithoutProtection);
+    }
+
+    fetchData();
+  }, []);
 
 
   const toggleSexWithoutProtection = (value: boolean) => {
     setSexWithoutProtection(value);
 
     const updateStoredInfos = async (value: boolean) => {
-      const { dateStart, dateEnd } = getStartAndEndDate(date);
-      const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
-  
-      sessions.forEach(async session => {
+      daySessions.forEach(async session => {
         const sessionStored = sessionsStored.find(sessionStored => sessionStored.id === session.id);
-  
+
         if(sessionStored) {
           sessionStored.sexWithoutProtection = value;
           sessionStore.updateSession(sessionStored);
         }
-  
+
         await updateSessionSexWithoutProtection(session.id, value)
       });
     }
@@ -43,7 +51,7 @@ export default function SexWithoutProtection({ date, sexWithoutProtection, setSe
     updateStoredInfos(value);
   };
 
-  if(extractDateSessions(sessionsStored, date).length < 1) return;
+  if(extractDateSessions(daySessions, date).length < 1) return;
 
   return (
     <View style={styles.switchContainer}>
