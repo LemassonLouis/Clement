@@ -5,7 +5,7 @@ import Session from "@/components/Session";
 import SexWithoutProtection from "@/components/sexWithoutProtection";
 import { deserializeSession } from "@/database/session";
 import { getStartAndEndDate, isDateBetween, isDateCurrentDay } from "@/services/date";
-import { calculateTotalWearing, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
+import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
@@ -30,14 +30,7 @@ export default function dayDetail() {
     useCallback(() => sessionStore.getSessions(), [sessionStore])
   );
 
-  const getCurrentSessions = (sessions: SessionInterface[], date: Date) => {
-    return sessions.filter(session => {
-      const { dateStart, dateEnd } = getStartAndEndDate(date);
-      return isDateBetween(session.date_time_end, dateStart, dateEnd);
-    });
-  }
-
-  const currentSessions = getCurrentSessions(sessionsStored, day.date);
+  const currentSessions = extractDateSessions(sessionsStored, day.date);
 
   const [totalWearing, setTotalWearing] = useState(calculateTotalWearing(currentSessions));
   const [status, setStatus] = useState(getStatusFromTotalWearing(totalWearing));
@@ -46,16 +39,15 @@ export default function dayDetail() {
   const progressBarWidth: number = Dimensions.get('window').width * 0.8;
 
   useEffect(() => {
-    const fetchData = async () => {
-      await sessionStore.refreshSessions(day.date.getFullYear(), day.date.getMonth());
-      const currentSessions = getCurrentSessions(sessionsStored, day.date);
+    const currentSessionss = extractDateSessions(sessionsStored, day.date);
 
-      setTotalWearing(calculateTotalWearing(currentSessions));
-      setStatus(getStatusFromTotalWearing(totalWearing));
-      setSexWithoutProtection(currentSessions.some(session => session.sexWithoutProtection));
-    }
+    const newTotalWearing = calculateTotalWearing(currentSessionss);
+    const newStatus = getStatusFromTotalWearing(newTotalWearing);
+    const newSexWithoutProtection = currentSessionss.some(session => session.sexWithoutProtection);
 
-    fetchData();
+    setTotalWearing(newTotalWearing);
+    setStatus(newStatus);
+    setSexWithoutProtection(newSexWithoutProtection);
   }, [sessionsStored]);
 
 

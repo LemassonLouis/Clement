@@ -1,5 +1,5 @@
 import { AndroSwitch } from "@/enums/AndroSwitch";
-import { getDateDifference } from "./date";
+import { getDateDifference, getStartAndEndDate, isDateBetween } from "./date";
 import { Status } from "@/enums/Status";
 
 
@@ -62,4 +62,17 @@ export function getColorFromStatus(status: Status | string): string {
     default:
       return '#B5B5B5';
   }
+}
+
+/**
+ * Extract sessions from a date.
+ * @param sessions The sessions to iterate.
+ * @param date The date from which extract the sessions.
+ * @returns 
+ */
+export function extractDateSessions(sessions: SessionInterface[], date: Date): SessionInterface[] {
+  return sessions.filter(session => {
+    const { dateStart, dateEnd } = getStartAndEndDate(date);
+    return isDateBetween(session.date_time_start, dateStart, dateEnd);
+  });
 }

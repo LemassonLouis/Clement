@@ -5,7 +5,7 @@ import { getSessionStore } from "@/store/SessionStore";
 
 export default function DeleteSessionModal({ session, visible, setVisible }: DeleteSessionModalInterface) {
   const sessionStore = getSessionStore();
-  
+
   const actionTrue = async () => {
     await deleteSession(session.id);
     sessionStore.removeSession(session);

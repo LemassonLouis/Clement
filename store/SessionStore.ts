@@ -38,7 +38,7 @@ class SessionStore {
   }
 
   public addSession(session: SessionInterface) {
-    this.sessions.push(session);
+    this.sessions = [...this.sessions, session];
     this.notifyListeners();
   }
 
