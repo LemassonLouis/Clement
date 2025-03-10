@@ -2,11 +2,9 @@ import { deserializeSession, getAllSessionsBetweenDates } from "@/database/sessi
 import { getCacheData, storeCacheData } from "@/services/cache";
 import { getCalendarLastSunday, getCalendarStartMonday, getStartAndEndDate } from "@/services/date";
 
-type Listener = () => void;
-
 class SessionStore {
   private sessions: SessionInterface[] = [];
-  private listeners: Set<Listener> = new Set();
+  private listeners: Set<() => void> = new Set();
   private startDate: string | null = null;
   private endDate: string | null = null;
 
@@ -62,7 +60,7 @@ class SessionStore {
     }
   }
 
-  public subscribe(listener: Listener) {
+  public subscribe(listener: () => void) {
     this.listeners.add(listener);
 
     return () => this.listeners.delete(listener);

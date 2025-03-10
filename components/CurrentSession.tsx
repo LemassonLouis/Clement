@@ -2,16 +2,20 @@ import { createSession, getAllSessionsBetweenDates, getFirstUnfinishedSession, u
 import { formatElapsedTime, getDateDifference, getStartAndEndDate } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import SexWithoutProtection from "./sexWithoutProtection";
+import { getCurrentSessionStore } from "@/store/CurrentSessionStore";
 
 export default function CurrentSession() {
-  const [sessionStarted, setSessionStarted] = useState<boolean>(false);
-  const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
-  const [elapsedTime, setElapsedTime] = useState<number>(sessionStartTime ? getDateDifference(sessionStartTime, new Date()) : 0);
+  const currentSessionStore = getCurrentSessionStore();
+  const currentSessionStored = useSyncExternalStore(
+    useCallback((callback) => currentSessionStore.subscribe(callback), [currentSessionStore]),
+    useCallback(() => currentSessionStore.getCurrentSession(), [currentSessionStore])
+  );
+
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
-  const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
   const sessionStore = getSessionStore();
   const date = new Date();
 
@@ -19,14 +23,9 @@ export default function CurrentSession() {
   // Load current session
   useEffect(() => {
     const fetchData = async () => {
-      const currentSession: SessionInterface | null = await getFirstUnfinishedSession();
+      await currentSessionStore.loadCurrentSession();
 
-      if(currentSession) {
-        setSessionStarted(true);
-        setSessionStartTime(currentSession.date_time_start);
-        setElapsedTime(getDateDifference(currentSession.date_time_start, new Date()));
-        setCurrentSessionId(currentSession.id);
-      }
+      setElapsedTime(currentSessionStored.sessionStartTime ? getDateDifference(currentSessionStored.sessionStartTime, new Date()) : 0);
     };
 
     fetchData();
@@ -37,9 +36,9 @@ export default function CurrentSession() {
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    if (sessionStarted && sessionStartTime) {
+    if (currentSessionStored.sessionStartTime) {
       interval = setInterval(() => {
-        setElapsedTime(getDateDifference(sessionStartTime, new Date()));
+        setElapsedTime(currentSessionStored.sessionStartTime ? getDateDifference(currentSessionStored.sessionStartTime, new Date()) : 0);
       }, 1000);
     }
 
@@ -48,49 +47,60 @@ export default function CurrentSession() {
         clearInterval(interval);
       }
     };
-  }, [sessionStarted, sessionStartTime]);
+  }, [currentSessionStored.sessionStartTime]);
 
 
   // Manage midnight effect
   useEffect(() => {
-    const checkMidnight = setInterval(async () => {
-      const now = new Date();
-      if (sessionStarted && sessionStartTime && now.getHours() === 23 && now.getMinutes() === 59 && now.getSeconds() === 59) {
+    const now = new Date();
+    if (currentSessionStored.sessionStartTime && now.getHours() === 23 && now.getMinutes() === 59 && now.getSeconds() === 59) {
+      const midnightReopenSession = async () => {
         await stopSession();
         setTimeout(() => {
           startSession();
         }, 1000);
       }
-    }, 1000);
 
-    return () => clearInterval(checkMidnight);
-  }, [sessionStarted, sessionStartTime]);
+      midnightReopenSession();
+    }
+  }, [elapsedTime]);
 
 
 
   const startSession = async () => {
+    setElapsedTime(0);
+
     const startTime: Date = new Date();
     const sessionId = await createSession(startTime.toISOString(), null, sexWithoutProtection);
 
-    if(sessionId) sessionStore.addSession({id: sessionId, date_time_start: startTime, date_time_end: null, sexWithoutProtection: sexWithoutProtection});
-
-    setSessionStarted(true);
-    setSessionStartTime(startTime);
-    setCurrentSessionId(sessionId);
+    if(sessionId) {
+      sessionStore.addSession({id: sessionId, date_time_start: startTime, date_time_end: null, sexWithoutProtection: sexWithoutProtection});
+      currentSessionStore.updateCurrentSession({ sessionId: sessionId, sessionStartTime: startTime });
+    }
   };
 
   const stopSession = async () => {
     const endTime = new Date();
 
-    if(currentSessionId && sessionStartTime) {
-      sessionStore.updateSession({id: currentSessionId, date_time_start: sessionStartTime, date_time_end: endTime, sexWithoutProtection: sexWithoutProtection});
-      await updateSessionDateTimeEnd(currentSessionId, endTime.toISOString());
-    }
+    if(currentSessionStored.sessionStartTime && currentSessionStored.sessionId) {
+      setElapsedTime(0);
 
-    setSessionStarted(false);
-    setSessionStartTime(null);
-    setElapsedTime(0);
+      sessionStore.updateSession({
+        id: currentSessionStored.sessionId,
+        date_time_start: currentSessionStored.sessionStartTime,
+        date_time_end: endTime,
+        sexWithoutProtection: sexWithoutProtection
+      });
+      currentSessionStore.updateCurrentSession({ sessionId: null, sessionStartTime: null });
+
+      await updateSessionDateTimeEnd(currentSessionStored.sessionId, endTime.toISOString());
+    }
   };
+
+
+  const formatTime = (time: Date) => {
+    return `${time.getHours()}h ${time.getMinutes()}m ${time.getSeconds()}s`
+  }
 
 
   return (
@@ -98,20 +108,20 @@ export default function CurrentSession() {
       <Suspense fallback={<Text>Chargement...</Text>}>
         <View style={styles.main}>
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.sessionButton} onPress={sessionStarted ? stopSession : startSession}>
-              <Ionicons name={sessionStarted ? 'stop-outline' : 'play-outline'} size={30} color='#000'/>
+            <TouchableOpacity style={styles.sessionButton} onPress={currentSessionStored.sessionId ? stopSession : startSession}>
+              <Ionicons name={currentSessionStored.sessionId ? 'stop-outline' : 'play-outline'} size={30} color='#000'/>
             </TouchableOpacity>
           </View>
 
           <View style={styles.durations}>
             <View style={styles.duration}>
               <MaterialCommunityIcons name='calendar-start' size={25} color='#000'/>
-              <Text style={styles.durationText}>{sessionStarted ? `${sessionStartTime?.getHours()}h ${sessionStartTime?.getMinutes()}m ${sessionStartTime?.getSeconds()}s` : '- - -'}</Text>
+              <Text style={styles.durationText}>{currentSessionStored.sessionStartTime ? formatTime(currentSessionStored.sessionStartTime) : '- - -'}</Text>
             </View>
 
             <View style={styles.duration}>
               <MaterialCommunityIcons name='clock-fast' size={25} color='#000'/>
-              <Text style={styles.durationText}>{sessionStarted ? formatElapsedTime(elapsedTime) : '- - -'}</Text>
+              <Text style={styles.durationText}>{currentSessionStored.sessionId ? formatElapsedTime(elapsedTime) : '- - -'}</Text>
             </View>
           </View>
         </View>

@@ -2,5 +2,6 @@
  * Represent a current session
  */
 interface CurrentSessionInterface {
-  date: Date
+  sessionId: number | null,
+  sessionStartTime: Date | null,
 }
