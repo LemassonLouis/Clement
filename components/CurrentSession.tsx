@@ -1,11 +1,13 @@
 import { createSession, updateSession } from "@/database/session";
-import { formatElapsedTime, getDateDifference } from "@/services/date";
+import { formatMilisecondsTime, formatTimefromDate, getDateDifference } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import SexWithoutProtection from "./sexWithoutProtection";
 import { getCurrentSessionStore } from "@/store/CurrentSessionStore";
+import TimeText from "./TimeText";
+import { TimeTextIcon } from "@/enums/TimeTextIcon";
 
 export default function CurrentSession() {
   const currentSessionStore = getCurrentSessionStore();
@@ -98,11 +100,6 @@ export default function CurrentSession() {
   };
 
 
-  const formatTime = (time: Date) => {
-    return `${time.getHours()}h ${time.getMinutes()}m ${time.getSeconds()}s`
-  }
-
-
   return (
     <View style={styles.container}>
       <Suspense fallback={<Text>Chargement...</Text>}>
@@ -114,15 +111,8 @@ export default function CurrentSession() {
           </View>
 
           <View style={styles.durations}>
-            <View style={styles.duration}>
-              <MaterialCommunityIcons name='calendar-start' size={25} color='#000'/>
-              <Text style={styles.durationText}>{currentSessionStored.sessionStartTime ? formatTime(currentSessionStored.sessionStartTime) : '- - -'}</Text>
-            </View>
-
-            <View style={styles.duration}>
-              <MaterialCommunityIcons name='clock-fast' size={25} color='#000'/>
-              <Text style={styles.durationText}>{currentSessionStored.sessionId ? formatElapsedTime(elapsedTime) : '- - -'}</Text>
-            </View>
+            <TimeText icon={TimeTextIcon.CALENDAR_START} value={currentSessionStored.sessionStartTime ? formatTimefromDate(currentSessionStored.sessionStartTime) : null} />
+            <TimeText icon={TimeTextIcon.CLOCK_FAST} value={currentSessionStored.sessionId ? formatMilisecondsTime(elapsedTime) : null} />
           </View>
         </View>
 

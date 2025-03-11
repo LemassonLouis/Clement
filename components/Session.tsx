@@ -1,8 +1,11 @@
-import { formatElapsedTime, getDateDifference } from "@/services/date";
+import { formatMilisecondsTime, formatTimefromDate, getDateDifference } from "@/services/date";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DeleteSessionModal from "./DeleteSessionModal";
+import EditSessionModal from "./EditSessionModal";
+import TimeText from "./TimeText";
+import { TimeTextIcon } from "@/enums/TimeTextIcon";
 
 
 export default function Session(session: SessionInterface) {
@@ -12,30 +15,20 @@ export default function Session(session: SessionInterface) {
   const [editModalVisible, setEditModalVisible] = useState(false);
 
   const elapsedTime: number = getDateDifference(session.dateTimeStart, session.dateTimeEnd);
-  const wearingTime: string = formatElapsedTime(elapsedTime);
-  const startTime: string = `${session.dateTimeStart.getHours()}h ${session.dateTimeStart.getMinutes()}m ${session.dateTimeStart.getSeconds()}s`;
-  const endTime: string = `${session.dateTimeEnd.getHours()}h ${session.dateTimeEnd.getMinutes()}m ${session.dateTimeEnd.getSeconds()}s`;
+  const wearingTime: string = formatMilisecondsTime(elapsedTime);
+  const startTime: string = formatTimefromDate(session.dateTimeStart);
+  const endTime: string = formatTimefromDate(session.dateTimeEnd);
 
 
   return (
     <View style={styles.session}>
       <DeleteSessionModal session={session} visible={deleteModalVisible} setVisible={setDeleteModalVisible}/>
+      <EditSessionModal session={session} visible={editModalVisible} setVisible={setEditModalVisible}/>
 
       <View style={styles.sessionInfoContainer}>
-        <View style={styles.sessionInfo}>
-          <MaterialCommunityIcons name='calendar-start' size={25} color='#000'/>
-          <Text style={styles.infoText}>{startTime}</Text>
-        </View>
-
-        <View style={[styles.sessionInfo, styles.sessionInfoTime]}>
-          <MaterialCommunityIcons name='clock-fast' size={25} color='#000'/>
-          <Text style={styles.infoText}>{wearingTime}</Text>
-        </View>
-
-        <View style={styles.sessionInfo}>
-          <MaterialCommunityIcons name='calendar-end' size={25} color='#000'/>
-          <Text style={styles.infoText}>{endTime}</Text>
-        </View>
+        <TimeText icon={TimeTextIcon.CALENDAR_START} value={startTime} />
+        <TimeText icon={TimeTextIcon.CLOCK_FAST} value={wearingTime} />
+        <TimeText icon={TimeTextIcon.CALENDAR_END} value={endTime} />
       </View>
 
       <View>

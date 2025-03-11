@@ -104,12 +104,14 @@ export function getCalendarLastSunday(date: Date): Date {
  * @param time Miliseconds
  * @returns 
  */
-export function formatElapsedTime(time: number, removeZero: boolean = true): string {
+export function formatMilisecondsTime(time: number, removeZero: boolean = true): string {
   const seconds = Math.floor(time / 1000);
 
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
+
+  if(!removeZero) return `${h}h ${m}m ${s}s`;
 
   let formatedElapsedTime = '';
   if(h > 0) formatedElapsedTime += `${h}h ${m}m ${s}s`;
@@ -118,6 +120,20 @@ export function formatElapsedTime(time: number, removeZero: boolean = true): str
 
   return formatedElapsedTime;
 };
+
+
+/**
+ * Format a time from a date.
+ * @param date The date to format time.
+ * @returns 
+ */
+export function formatTimefromDate(date: Date): string {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  return `${hours}h ${minutes}m ${seconds}s`;
+}
 
 
 
