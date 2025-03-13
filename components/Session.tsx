@@ -11,8 +11,8 @@ import { TimeTextIcon } from "@/enums/TimeTextIcon";
 export default function Session(session: SessionInterface) {
   if(!session.dateTimeEnd) return;
 
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteSessionModalVisible] = useState(false);
+  const [editModalVisible, setEditSessionModalVisible] = useState(false);
 
   const elapsedTime: number = getDateDifference(session.dateTimeStart, session.dateTimeEnd);
   const wearingTime: string = formatMilisecondsTime(elapsedTime);
@@ -22,8 +22,8 @@ export default function Session(session: SessionInterface) {
 
   return (
     <View style={styles.session}>
-      <DeleteSessionModal session={session} visible={deleteModalVisible} setVisible={setDeleteModalVisible}/>
-      <EditSessionModal session={session} visible={editModalVisible} setVisible={setEditModalVisible}/>
+      <DeleteSessionModal session={session} visible={deleteModalVisible} setVisible={setDeleteSessionModalVisible}/>
+      <EditSessionModal session={session} visible={editModalVisible} setVisible={setEditSessionModalVisible}/>
 
       <View style={styles.sessionInfoContainer}>
         <TimeText icon={TimeTextIcon.CALENDAR_START} value={startTime} />
@@ -32,11 +32,11 @@ export default function Session(session: SessionInterface) {
       </View>
 
       <View>
-        <TouchableOpacity style={styles.button} onPress={() => setEditModalVisible(true)}>
+        <TouchableOpacity style={styles.button} onPress={() => setEditSessionModalVisible(true)}>
           <Feather name='edit-3' size={20} color='#000'/>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => setDeleteModalVisible(true)}>
+        <TouchableOpacity style={styles.button} onPress={() => setDeleteSessionModalVisible(true)}>
           <Feather name='trash-2' size={20} color='#f00'/>
         </TouchableOpacity>
       </View>
