@@ -1,7 +1,7 @@
 import { formatMilisecondsTime, formatTimefromDate, getDateDifference } from "@/services/date";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import DeleteSessionModal from "./DeleteSessionModal";
 import EditSessionModal from "./EditSessionModal";
 import TimeText from "./TimeText";

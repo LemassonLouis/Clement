@@ -6,9 +6,9 @@ import { ReactNode } from "react";
 export default interface CustomModalInterface {
   visible: boolean,
   title: string,
-  actionTrueText?: string | null,
+  actionTrueText?: string,
   actionFalseText?: string | null,
-  actionTrue?: (() => void) | null,
+  actionTrue?: (() => void),
   actionFalse?: (() => void) | null,
   children?: ReactNode | null,
 }

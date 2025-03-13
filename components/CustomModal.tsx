@@ -5,9 +5,9 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 export default function CustomModal({
   visible,
   title,
-  actionTrueText = null,
+  actionTrueText = 'OK',
   actionFalseText = null,
-  actionTrue = null,
+  actionTrue = () => { visible = false },
   actionFalse = null,
   children = null
 }: CustomModalInterface) {
@@ -22,17 +22,18 @@ export default function CustomModal({
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>{title}</Text>
 
-          {children ? <View style={styles.modalContent}>{children}</View> : ''}
+          {children && <View style={styles.modalContent}>{children}</View>}
 
           <View style={styles.modalButtons}>
-            <Pressable
+            {actionFalseText && <Pressable
+            style={styles.modalButton}
               onPress={actionFalse}>
-              <Text style={styles.modalButtonActionFalseText}>{actionFalseText}</Text>
-            </Pressable>
+              <Text style={[styles.buttonText, styles.modalButtonActionFalseText]}>{actionFalseText}</Text>
+            </Pressable>}
             <Pressable
-              style={styles.modalButtonActionTrue}
+              style={[styles.modalButton, styles.modalButtonActionTrue]}
               onPress={actionTrue}>
-              <Text>{actionTrueText}</Text>
+              <Text style={styles.buttonText}>{actionTrueText}</Text>
             </Pressable>
           </View>
         </View>
@@ -68,9 +69,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
   },
   modalContent: {
+    alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
   },
@@ -80,12 +82,15 @@ const styles = StyleSheet.create({
     gap: 20,
     marginTop: 10,
   },
-  modalButtonActionTrue: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 10,
+  },
+  buttonText: {
+    fontSize: 16,
+  },
+  modalButtonActionTrue: {
     backgroundColor: '#ddd',
   },
   modalButtonActionFalseText: {

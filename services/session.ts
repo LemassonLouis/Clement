@@ -1,6 +1,7 @@
 import { AndroSwitch } from "@/enums/AndroSwitch";
 import { getDateDifference, getStartAndEndDate, isDateBetween } from "./date";
 import { Status } from "@/enums/Status";
+import { getSessionStore } from "@/store/SessionStore";
 
 
 /**
@@ -75,4 +76,34 @@ export function extractDateSessions(sessions: SessionInterface[], date: Date): S
     const { dateStart, dateEnd } = getStartAndEndDate(date);
     return isDateBetween(session.dateTimeStart, dateStart, dateEnd);
   });
+}
+
+
+/**
+ * Return if times are set correctly and if they don't override an other session, return the errors.
+ * @param session The session reference.
+ * @param startTime The strat time
+ * @param endTime the end time
+ * @returns 
+ */
+export function timeVerifications(session: SessionInterface, startTime: Date, endTime: Date): { ok: boolean, errors: string[] } {
+  const sessionStore = getSessionStore();
+  let ok = true;
+  const errors = [];
+
+  if(endTime <= startTime) {
+    errors.push("L'heure de fin ne peut pas êter supérieur à l'heure de début");
+    ok = false;
+  }
+
+  const otherDateSessions = extractDateSessions(sessionStore.getSessions(), session.dateTimeStart).filter(thisSession => thisSession.id !== session.id);
+  if(otherDateSessions.some(thisSession => isDateBetween(startTime, thisSession.dateTimeStart, thisSession.dateTimeEnd) || isDateBetween(thisSession.dateTimeStart, startTime, endTime))) {
+    errors.push("Les heures sélectionnées font se chevaucher une autre session");
+    ok = false;
+  }
+
+  return {
+    ok,
+    errors
+  };
 }
