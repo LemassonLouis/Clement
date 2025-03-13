@@ -91,6 +91,11 @@ export function timeVerifications(session: SessionInterface, startTime: Date, en
   let ok = true;
   const errors = [];
 
+  if(endTime > new Date()) {
+    errors.push("L'heure de fin ne peut pas être supérieur à l'heure actuel");
+    ok = false;
+  }
+
   if(endTime <= startTime) {
     errors.push("L'heure de fin ne peut pas êter inférieur ou égal à l'heure de début");
     ok = false;
