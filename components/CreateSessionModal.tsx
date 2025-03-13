@@ -2,20 +2,26 @@ import CustomModal from "./CustomModal";
 import { useState } from "react";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import TimeEditor from "./TimeEditor";
-import { updateSession } from "@/database/session";
+import { createSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";
 import ErrorsDisplayer from "./ErrorsDisplayer";
 
 
-export default function CreateSessionModal({ session, visible, setVisible }: DeleteSessionModalInterface) {
+export default function CreateSessionModal({ date, sexWithoutProtection, visible, setVisible }: {date: Date, sexWithoutProtection: boolean, visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>>}) {
   const sessionStore = getSessionStore();
 
-  const [startTime, setStartTime] = useState<Date>(session.dateTimeStart);
-  const [endTime, setEndTime] = useState<Date>(session.dateTimeEnd);
+  const [startTime, setStartTime] = useState<Date>(date);
+  const [endTime, setEndTime] = useState<Date>(date);
   const [errors, setErrors] = useState<string[]>([]);
 
   const actionTrue = async () => {
+    const session: SessionInterface = {
+      id: 0,
+      dateTimeStart: startTime,
+      dateTimeEnd: endTime,
+      sexWithoutProtection: sexWithoutProtection
+    }
     const { ok, errors } = timeVerifications(session, startTime, endTime);
     if(!ok){
       setErrors(errors);
@@ -24,14 +30,11 @@ export default function CreateSessionModal({ session, visible, setVisible }: Del
 
     setErrors([]);
 
-    await updateSession(session.id, startTime.toISOString(), endTime.toISOString(), session.sexWithoutProtection);
-
-    sessionStore.updateSession({
-      id: session.id,
-      dateTimeStart: startTime,
-      dateTimeEnd: endTime,
-      sexWithoutProtection: session.sexWithoutProtection
-    });
+    const sessionId = await createSession(startTime.toISOString(), endTime.toISOString(), sexWithoutProtection);
+    if(sessionId) {
+      session.id = sessionId;
+      sessionStore.addSession(session);
+    }
 
     setVisible(false);
   }
@@ -44,8 +47,8 @@ export default function CreateSessionModal({ session, visible, setVisible }: Del
       actionTrueText="Ajouter"
       actionFalse={() => {
         setErrors([]);
-        setStartTime(session.dateTimeStart);
-        setEndTime(session.dateTimeEnd);
+        setStartTime(date);
+        setEndTime(date);
         setVisible(false);
       }}
       actionTrue={actionTrue}

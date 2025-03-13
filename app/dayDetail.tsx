@@ -1,4 +1,5 @@
 import CalendarIcon from "@/components/CalendarIcon";
+import CreateSessionModal from "@/components/CreateSessionModal";
 import CurrentSession from "@/components/CurrentSession";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
@@ -7,9 +8,10 @@ import { deserializeSession } from "@/database/session";
 import { getStartAndEndDate, isDateBetween, isDateCurrentDay } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getSessionStore } from "@/store/SessionStore";
+import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
-import { View, Text, StyleSheet, Dimensions, FlatList, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import * as Progress from 'react-native-progress';
 
 const deserializeDay = (day: DayInterface): DayInterface => {
@@ -32,9 +34,10 @@ export default function dayDetail() {
 
   const currentSessions = extractDateSessions(sessionsStored, day.date);
 
-  const [totalWearing, setTotalWearing] = useState(calculateTotalWearing(currentSessions));
-  const [status, setStatus] = useState(getStatusFromTotalWearing(totalWearing));
-  const [sexWithoutProtection, setSexWithoutProtection] = useState(currentSessions.some(session => session.sexWithoutProtection));
+  const [totalWearing, setTotalWearing] = useState<number>(calculateTotalWearing(currentSessions));
+  const [status, setStatus] = useState<string>(getStatusFromTotalWearing(totalWearing));
+  const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(currentSessions.some(session => session.sexWithoutProtection));
+  const [createSessionModalVisible, setCreateSessionModalVisible] = useState<boolean>(false);
 
   const progressBarWidth: number = Dimensions.get('window').width * 0.8;
 
@@ -88,6 +91,20 @@ export default function dayDetail() {
           keyExtractor={session => session.id.toString()}
           renderItem={({item}) => <Session {...item}/>}
         />
+
+        {/* TODO : cannot create date before contraception start day */}
+        {day.date < new Date() && <>
+          <TouchableOpacity style={styles.plusButton} onPress={() => setCreateSessionModalVisible(true)}>
+            <Feather name='plus' size={35} color='#000'/>
+          </TouchableOpacity>
+
+          <CreateSessionModal
+            date={day.date}
+            sexWithoutProtection={sexWithoutProtection}
+            visible={createSessionModalVisible}
+            setVisible={setCreateSessionModalVisible}
+          />
+        </>}
       </View>
     </ScrollView>
   );
@@ -122,5 +139,11 @@ const styles = StyleSheet.create({
   sessions: {
     width: '80%',
     marginTop: 10,
+  },
+  plusButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#ddd',
+    borderRadius: 50,
   }
 });
