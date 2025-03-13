@@ -92,14 +92,19 @@ export function timeVerifications(session: SessionInterface, startTime: Date, en
   const errors = [];
 
   if(endTime <= startTime) {
-    errors.push("L'heure de fin ne peut pas êter supérieur à l'heure de début");
+    errors.push("L'heure de fin ne peut pas êter inférieur ou égal à l'heure de début");
     ok = false;
   }
-
-  const otherDateSessions = extractDateSessions(sessionStore.getSessions(), session.dateTimeStart).filter(thisSession => thisSession.id !== session.id);
-  if(otherDateSessions.some(thisSession => isDateBetween(startTime, thisSession.dateTimeStart, thisSession.dateTimeEnd) || isDateBetween(thisSession.dateTimeStart, startTime, endTime))) {
-    errors.push("Les heures sélectionnées font se chevaucher une autre session");
-    ok = false;
+  else {
+    const otherDateSessions = extractDateSessions(sessionStore.getSessions(), session.dateTimeStart).filter(thisSession => thisSession.id !== session.id);
+    if(otherDateSessions.some(thisSession => {
+      const maxEndTime = getStartAndEndDate(thisSession.dateTimeStart).dateEnd;
+      return isDateBetween(startTime, thisSession.dateTimeStart, thisSession.dateTimeEnd ?? maxEndTime)
+          || isDateBetween(thisSession.dateTimeStart, startTime, endTime)
+    })) {
+      errors.push("Les heures sélectionnées font se chevaucher une autre session");
+      ok = false;
+    }
   }
 
   return {
