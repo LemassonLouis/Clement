@@ -15,15 +15,12 @@ export default function SexWithoutProtection({ date, sexWithoutProtection, setSe
 
   const [daySessions, setDaySessions] = useState<SessionInterface[]>([]);
 
-  console.log("date", date);
-
   // Load sexWithoutProtectionState
   useEffect(() => {
     const fetchData = async () => {
       const { dateStart, dateEnd } = getStartAndEndDate(date);
       const currentSessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
       setDaySessions(currentSessions);
-      console.log("currentSessions", currentSessions);
       const sexWithoutProtection = currentSessions.some(session => session.sexWithoutProtection === true);
       setSexWithoutProtection(sexWithoutProtection);
     }

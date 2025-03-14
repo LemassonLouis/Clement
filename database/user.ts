@@ -37,7 +37,7 @@ export async function createUser(method: string): Promise<number | null | undefi
       return result.lastInsertRowId;
     }
     catch (error) {
-      console.log('Error when trying to create user :', error);
+      console.error('Error when trying to create user :', error);
       return null;
     }
   }
