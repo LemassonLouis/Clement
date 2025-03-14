@@ -36,7 +36,7 @@ export function getStatusFromTotalWearing(totalWearing: number): string {
   else if(totalWearing < AndroSwitch.OBJECTIVE_MAX_EXTRA) {
     return Status.REACHED;
   }
-  else if(totalWearing > AndroSwitch.OBJECTIVE_MAX_EXTRA) {
+  else if(totalWearing >= AndroSwitch.OBJECTIVE_MAX_EXTRA) {
     return Status.EXCEEDED;
   }
   else {
