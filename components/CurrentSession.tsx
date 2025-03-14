@@ -1,13 +1,15 @@
 import { createSession, updateSession } from "@/database/session";
 import { formatMilisecondsTime, formatTimefromDate, getDateDifference } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import SexWithoutProtection from "./sexWithoutProtection";
 import { getCurrentSessionStore } from "@/store/CurrentSessionStore";
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
+import CustomModal from "./CustomModal";
+import { objectivMinRemainingTime } from "@/services/session";
 
 export default function CurrentSession() {
   const currentSessionStore = getCurrentSessionStore();
@@ -16,8 +18,10 @@ export default function CurrentSession() {
     useCallback(() => currentSessionStore.getCurrentSession(), [currentSessionStore])
   );
 
+  const [warningModalVisible, setWarningModalVisible] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
+  const [remainingTime, setRemainingTime] = useState<number>(0);
   const sessionStore = getSessionStore();
   const date = new Date();
 
@@ -81,8 +85,15 @@ export default function CurrentSession() {
     }
   };
 
-  const stopSession = async () => {
+  const stopSession = async (force: boolean = false) => {
     const endTime = new Date();
+    const currentRemainingTime: number = objectivMinRemainingTime(endTime);
+
+    if(!force && currentRemainingTime > 0 && currentRemainingTime < 7_700_000) { // 2h5m
+      setRemainingTime(currentRemainingTime);
+      setWarningModalVisible(true);
+      return;
+    }
 
     if(currentSessionStored.sessionStartTime && currentSessionStored.sessionId) {
       setElapsedTime(0);
@@ -105,7 +116,7 @@ export default function CurrentSession() {
       <Suspense fallback={<Text>Chargement...</Text>}>
         <View style={styles.main}>
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.sessionButton} onPress={currentSessionStored.sessionId ? stopSession : startSession}>
+            <TouchableOpacity style={styles.sessionButton} onPress={() => currentSessionStored.sessionId ? stopSession() : startSession()}>
               <Ionicons name={currentSessionStored.sessionId ? 'stop-outline' : 'play-outline'} size={30} color='#000'/>
             </TouchableOpacity>
           </View>
@@ -122,6 +133,20 @@ export default function CurrentSession() {
           setSexWithoutProtection={setSexWithoutProtection}
         />
       </Suspense>
+
+      <CustomModal
+        title="Êtes-vous sûr de vouloir arrêter la session ?"
+        visible={warningModalVisible}
+        actionFalseText="Non"
+        actionFalse={() => setWarningModalVisible(false)}
+        actionTrueText="Oui"
+        actionTrue={() => {
+          stopSession(true);
+          setWarningModalVisible(false);
+        }}
+      >
+        <Text>Il ne vous reste plus que {formatMilisecondsTime(remainingTime)} avant de ne plus pouvoir réaliser l'objectif minimal</Text>
+      </CustomModal>
     </View>
   )
 }

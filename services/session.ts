@@ -117,3 +117,19 @@ export function timeVerifications(session: SessionInterface, startTime: Date, en
     errors
   };
 }
+
+
+/**
+ * Caluclate the remaining time for the objectiv min.
+ * @param date The date to calculate remaning time.
+ * @returns 
+ */
+export function objectivMinRemainingTime(date: Date): number {
+  const dateMin = getStartAndEndDate(date).dateStart;
+  const sessions = extractDateSessions(getSessionStore().getSessions(), date);
+  const totalWearing = calculateTotalWearing(sessions);
+
+  const remainingTime = 86_400_000 - AndroSwitch.OBJECTIVE_MIN - (getDateDifference(dateMin, date) - totalWearing);
+
+  return remainingTime;
+}
