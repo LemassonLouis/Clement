@@ -6,7 +6,7 @@ import Session from "@/components/Session";
 import SexWithoutProtection from "@/components/sexWithoutProtection";
 import { deserializeSession } from "@/database/session";
 import { AndroSwitch } from "@/enums/AndroSwitch";
-import { getStartAndEndDate, isDateBetween, isDateCurrentDay } from "@/services/date";
+import { isDateCurrentDay } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { Feather } from "@expo/vector-icons";

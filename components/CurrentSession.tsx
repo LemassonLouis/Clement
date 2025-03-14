@@ -10,6 +10,7 @@ import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import CustomModal from "./CustomModal";
 import { objectivMinRemainingTime } from "@/services/session";
+import { makeNotificationPush } from "@/services/notifications";
 
 export default function CurrentSession() {
   const currentSessionStore = getCurrentSessionStore();
@@ -44,7 +45,10 @@ export default function CurrentSession() {
 
     if (currentSessionStored.sessionStartTime) {
       interval = setInterval(() => {
-        setElapsedTime(currentSessionStored.sessionStartTime ? getDateDifference(currentSessionStored.sessionStartTime, new Date()) : 0);
+        const elapsedTime = currentSessionStored.sessionStartTime ? getDateDifference(currentSessionStored.sessionStartTime, new Date()) : 0;
+        setElapsedTime(elapsedTime);
+        // console.log(elapsedTime, elapsedTime % 5000 < 1000);
+        // if(elapsedTime % 5000 < 1000) makeNotificationPush('Timer', "Cela fait 5 seconds !");
       }, 1000);
     }
 
