@@ -5,6 +5,7 @@ import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
 import SexWithoutProtection from "@/components/sexWithoutProtection";
 import { deserializeSession } from "@/database/session";
+import { AndroSwitch } from "@/enums/AndroSwitch";
 import { getStartAndEndDate, isDateBetween, isDateCurrentDay } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getSessionStore } from "@/store/SessionStore";
@@ -65,10 +66,10 @@ export default function dayDetail() {
 
         <View style={styles.progressContainer}>
           <Progress.Bar style={styles.progressBar} progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
-          <ProgressIndicator hour={12} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={14} progressBarWidth={progressBarWidth} isTop={true} />
-          <ProgressIndicator hour={16} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={18} progressBarWidth={progressBarWidth} isTop={true} />
+          <ProgressIndicator hour={AndroSwitch.OBJECTIVE_MIN_EXTRA / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
+          <ProgressIndicator hour={AndroSwitch.OBJECTIVE_MIN / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
+          <ProgressIndicator hour={AndroSwitch.OBJECTIVE_MAX / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
+          <ProgressIndicator hour={AndroSwitch.OBJECTIVE_MAX_EXTRA / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
         </View>
 
         <View style={styles.currentSession}>
