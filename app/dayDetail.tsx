@@ -5,7 +5,8 @@ import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
 import SexWithoutProtection from "@/components/sexWithoutProtection";
 import { deserializeSession } from "@/database/session";
-import { AndroSwitch } from "@/enums/AndroSwitch";
+import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+import { getContraceptionMethod } from "@/services/contraception";
 import { isDateCurrentDay } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getSessionStore } from "@/store/SessionStore";
@@ -66,10 +67,10 @@ export default function dayDetail() {
 
         <View style={styles.progressContainer}>
           <Progress.Bar style={styles.progressBar} progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
-          <ProgressIndicator hour={AndroSwitch.OBJECTIVE_MIN_EXTRA / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={AndroSwitch.OBJECTIVE_MIN / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
-          <ProgressIndicator hour={AndroSwitch.OBJECTIVE_MAX / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={AndroSwitch.OBJECTIVE_MAX_EXTRA / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
+          <ProgressIndicator hour={getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
+          <ProgressIndicator hour={getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
+          <ProgressIndicator hour={getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
+          <ProgressIndicator hour={getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
         </View>
 
         <View style={styles.currentSession}>

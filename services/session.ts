@@ -1,7 +1,8 @@
-import { AndroSwitch } from "@/enums/AndroSwitch";
 import { getDateDifference, getStartAndEndDate, isDateBetween } from "./date";
 import { Status } from "@/enums/Status";
 import { getSessionStore } from "@/store/SessionStore";
+import { getContraceptionMethod } from "./contraception";
+import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 
 
 /**
@@ -24,19 +25,19 @@ export function getStatusFromTotalWearing(totalWearing: number): string {
   if(totalWearing === 0) {
     return Status.NONE;
   }
-  else if(totalWearing < AndroSwitch.OBJECTIVE_MIN_EXTRA) {
+  else if(totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min_extra) {
     return Status.FAILED;
   }
-  else if(totalWearing < AndroSwitch.OBJECTIVE_MIN) {
+  else if(totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min) {
     return Status.WARNED;
   }
-  else if(totalWearing < AndroSwitch.OBJECTIVE_MAX) {
+  else if(totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max) {
     return Status.SUCCESSED;
   }
-  else if(totalWearing < AndroSwitch.OBJECTIVE_MAX_EXTRA) {
+  else if(totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra) {
     return Status.REACHED;
   }
-  else if(totalWearing >= AndroSwitch.OBJECTIVE_MAX_EXTRA) {
+  else if(totalWearing >= getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra) {
     return Status.EXCEEDED;
   }
   else {
@@ -129,7 +130,7 @@ export function objectivMinRemainingTime(date: Date): number {
   const sessions = extractDateSessions(getSessionStore().getSessions(), date);
   const totalWearing = calculateTotalWearing(sessions);
 
-  const remainingTime = 86_400_000 - AndroSwitch.OBJECTIVE_MIN - (getDateDifference(dateMin, date) - totalWearing);
+  const remainingTime = 86_400_000 - getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min - (getDateDifference(dateMin, date) - totalWearing);
 
   return remainingTime;
 }

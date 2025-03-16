@@ -3,7 +3,8 @@ import { registerTaskAsync } from "expo-background-fetch";
 import { requestPermissionsAsync, scheduleNotificationAsync, setNotificationHandler } from "expo-notifications";
 import { defineTask, isTaskRegisteredAsync } from "expo-task-manager";
 import { calculateTotalWearing, extractDateSessions, objectivMinRemainingTime } from "./session";
-import { AndroSwitch } from "@/enums/AndroSwitch";
+import { getContraceptionMethod } from "./contraception";
+import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 
 
 const BACKGROUND_NOTIFICATIONS_TASK  = 'BACKGROUND_NOTIFICATIONS_TASK';
@@ -33,29 +34,49 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
 
   // between 2h and 2h10min
   if(remainingTime > 7_200_000 && remainingTime < 7_800_000) {
-    makeNotificationPush("Vous n'avez plus beaucoup de temps !", `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${AndroSwitch.OBJECTIVE_MIN / 3_600_000}`);
+    makeNotificationPush(
+      "Vous n'avez plus beaucoup de temps !",
+      `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min / 3_600_000}h`
+    );
   }
 
   // between 0 and 10min
   if(remainingTime > 0 && remainingTime < 600_000) {
-    makeNotificationPush("Vous n'avez plus beaucoup de temps !", `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${AndroSwitch.OBJECTIVE_MIN / 3_600_000}`);
+    makeNotificationPush(
+      "Vous n'avez plus beaucoup de temps !",
+      `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min / 3_600_000}h`
+    );
   }
 
   const currentSessions = extractDateSessions(getSessionStore().getSessions(), new Date());
   const totalWearing =  calculateTotalWearing(currentSessions);
 
   // between objectif min and objectif min + 10 min
-  if(totalWearing > AndroSwitch.OBJECTIVE_MIN && totalWearing < AndroSwitch.OBJECTIVE_MIN + 600_000) {
-    makeNotificationPush("Objectif atteint !", `Vous avez atteint l'objectif de ${AndroSwitch.OBJECTIVE_MIN / 3_600_000}`);
+  if(totalWearing > getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min
+  && totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min + 600_000) {
+    makeNotificationPush(
+      "Objectif atteint !",
+      `Vous avez atteint l'objectif de ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min / 3_600_000}h`
+    );
   }
 
   // if objectif min and max are different, between objectif max and objectif max + 10 min
-  if(AndroSwitch.OBJECTIVE_MAX !== AndroSwitch.OBJECTIVE_MIN && totalWearing > AndroSwitch.OBJECTIVE_MAX && totalWearing < AndroSwitch.OBJECTIVE_MAX + 600_000) {
-    makeNotificationPush("Objectif atteint !", `Vous avez atteint l'objectif de ${AndroSwitch.OBJECTIVE_MAX / 3_600_000}, pensez à retirer votre dipositif`);
+  if(getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max !== getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min
+  && totalWearing > getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max
+  && totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max + 600_000) {
+    makeNotificationPush(
+      "Objectif atteint !",
+      `Vous avez atteint l'objectif de ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max / 3_600_000}h, pensez à retirer votre dipositif`
+    );
   }
 
-  if(totalWearing > AndroSwitch.OBJECTIVE_MAX_EXTRA && totalWearing < AndroSwitch.OBJECTIVE_MAX_EXTRA + 600_000) {
-    makeNotificationPush("Objectif dépassé", "Cela fait maintenant 18h que vous portez votre dispositif, pensez à le retirer");
+  // between objectif max extra and objectif max extra + 10 min
+  if(totalWearing > getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra
+  && totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra + 600_000) {
+    makeNotificationPush(
+      "Objectif dépassé",
+      `Cela fait maintenant ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`
+    );
   }
 });
 
