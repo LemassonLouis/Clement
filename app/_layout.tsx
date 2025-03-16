@@ -8,13 +8,16 @@ import { initializeNotifications } from "@/services/notifications";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  initializeNotifications();
-
   useEffect(() => {
+    const asyncTasks = async () => {
+      // await deleteTables();
+      await createTables();
+
+      await initializeNotifications();
+    }
+
     SplashScreen.hideAsync();
-    // deleteTables();
-    createTables();
-    // console.log(new Date().toISOString());
+    asyncTasks();
   }, []);
 
   return (
