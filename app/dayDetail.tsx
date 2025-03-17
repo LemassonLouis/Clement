@@ -5,11 +5,12 @@ import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
 import SexWithoutProtection from "@/components/sexWithoutProtection";
 import { deserializeSession } from "@/database/session";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+import { Status } from "@/enums/Status";
 import { getContraceptionMethod } from "@/services/contraception";
-import { isDateCurrentDay } from "@/services/date";
+import { isDateCurrentDay, isDateInUserContraceptionRange } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getSessionStore } from "@/store/SessionStore";
+import { getUserStore } from "@/store/UserStore";
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
@@ -37,7 +38,7 @@ export default function dayDetail() {
   const currentSessions = extractDateSessions(sessionsStored, day.date);
 
   const [totalWearing, setTotalWearing] = useState<number>(calculateTotalWearing(currentSessions));
-  const [status, setStatus] = useState<string>(getStatusFromTotalWearing(totalWearing));
+  const [status, setStatus] = useState<string>(isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(currentSessions.some(session => session.sexWithoutProtection));
   const [createSessionModalVisible, setCreateSessionModalVisible] = useState<boolean>(false);
 
@@ -47,7 +48,7 @@ export default function dayDetail() {
     const currentSessionss = extractDateSessions(sessionsStored, day.date);
 
     const newTotalWearing = calculateTotalWearing(currentSessionss);
-    const newStatus = getStatusFromTotalWearing(newTotalWearing);
+    const newStatus = isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(newTotalWearing) : Status.NONE;
     const newSexWithoutProtection = currentSessionss.some(session => session.sexWithoutProtection);
 
     setTotalWearing(newTotalWearing);
@@ -67,10 +68,10 @@ export default function dayDetail() {
 
         <View style={styles.progressContainer}>
           <Progress.Bar style={styles.progressBar} progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
-          <ProgressIndicator hour={getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
-          <ProgressIndicator hour={getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
+          <ProgressIndicator hour={getContraceptionMethod(getUserStore().getUser().method).objective_min_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
+          <ProgressIndicator hour={getContraceptionMethod(getUserStore().getUser().method).objective_min / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
+          <ProgressIndicator hour={getContraceptionMethod(getUserStore().getUser().method).objective_max / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
+          <ProgressIndicator hour={getContraceptionMethod(getUserStore().getUser().method).objective_max_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
         </View>
 
         <View style={styles.currentSession}>
@@ -94,8 +95,7 @@ export default function dayDetail() {
           renderItem={({item}) => <Session {...item}/>}
         />
 
-        {/* TODO : cannot create date before contraception start day */}
-        {day.date < new Date() && <>
+        {isDateInUserContraceptionRange(day.date) && <>
           <TouchableOpacity style={styles.plusButton} onPress={() => setCreateSessionModalVisible(true)}>
             <Feather name='plus' size={35} color='#000'/>
           </TouchableOpacity>

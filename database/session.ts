@@ -11,11 +11,11 @@ import { getDB } from "./db";
 export async function createSession(dateTimeStart: string, dateTimeEnd: string | null = null, sexWithoutProtection: boolean = false): Promise<number | null> {
   const db = await getDB();
 
-  const statement = await db.prepareAsync(
-    'INSERT INTO Session (dateTimeStart, dateTimeEnd, sexWithoutProtection) VALUES (?, ?, ?)'
-  );
-
   try {
+    const  statement = await db.prepareAsync(
+      'INSERT INTO Session (dateTimeStart, dateTimeEnd, sexWithoutProtection) VALUES (?, ?, ?)'
+    );
+
     const result = await statement.executeAsync([dateTimeStart, dateTimeEnd, sexWithoutProtection ? 1 : 0]);
 
     return result.lastInsertRowId;

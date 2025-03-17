@@ -2,7 +2,7 @@ import { getDateDifference, getStartAndEndDate, isDateBetween } from "./date";
 import { Status } from "@/enums/Status";
 import { getSessionStore } from "@/store/SessionStore";
 import { getContraceptionMethod } from "./contraception";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+import { getUserStore } from "@/store/UserStore";
 
 
 /**
@@ -18,26 +18,26 @@ export function calculateTotalWearing(sessions: SessionInterface[]): number {
 
 /**
  * Get the status from a total wearing.
- * @param totalWearing miliseconds
+ * @param totalWearing miliseconds (-1 = force to none status)
  * @returns
  */
 export function getStatusFromTotalWearing(totalWearing: number): string {
-  if(totalWearing === 0) {
+  if(totalWearing === -1) {
     return Status.NONE;
   }
-  else if(totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min_extra) {
+  else if(totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_min_extra) {
     return Status.FAILED;
   }
-  else if(totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min) {
+  else if(totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_min) {
     return Status.WARNED;
   }
-  else if(totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max) {
+  else if(totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_max) {
     return Status.SUCCESSED;
   }
-  else if(totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra) {
+  else if(totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_max_extra) {
     return Status.REACHED;
   }
-  else if(totalWearing >= getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra) {
+  else if(totalWearing >= getContraceptionMethod(getUserStore().getUser().method).objective_max_extra) {
     return Status.EXCEEDED;
   }
   else {
@@ -130,7 +130,7 @@ export function objectivMinRemainingTime(date: Date): number {
   const sessions = extractDateSessions(getSessionStore().getSessions(), date);
   const totalWearing = calculateTotalWearing(sessions);
 
-  const remainingTime = 86_400_000 - getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min - (getDateDifference(dateMin, date) - totalWearing);
+  const remainingTime = 86_400_000 - getContraceptionMethod(getUserStore().getUser().method).objective_min - (getDateDifference(dateMin, date) - totalWearing);
 
   return remainingTime;
 }

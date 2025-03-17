@@ -1,3 +1,5 @@
+import { getUserStore } from "@/store/UserStore";
+
 /**
  * Return the start date and end date from a date.
  * @param date Reference date.
@@ -135,6 +137,15 @@ export function formatTimefromDate(date: Date): string {
   return `${hours}h ${minutes}m ${seconds}s`;
 }
 
+
+/**
+ * Is the date before the user start date or over current date.
+ * @param date Date to check
+ * @returns 
+ */
+export function isDateInUserContraceptionRange(date: Date): boolean {
+  return date >= getUserStore().getUser().startDate && date <= getStartAndEndDate(new Date()).dateStart;
+}
 
 
 

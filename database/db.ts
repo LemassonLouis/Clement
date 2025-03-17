@@ -30,11 +30,12 @@ export async function createTables(): Promise<void> {
 
       CREATE TABLE IF NOT EXISTS User (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        method TEXT NOT NULL
+        method TEXT,
+        startDate TEXT
       );
     `);
   } catch (error) {
-    console.error('Erreur lors de la création des tables:', error); // TEMP ?
+    console.error('Erreur lors de la création des tables:', error);
   }
 };
 
@@ -45,6 +46,7 @@ export const deleteTables = async () => {
 
   try {
     await db.execAsync(`DROP TABLE IF EXISTS Session;`);
+    await db.execAsync(`DROP TABLE IF EXISTS User;`);
 
     console.log('Tables supprimées avec succès'); // TEMP
   } catch (error) {

@@ -1,18 +1,25 @@
+import UserInterface from "@/interfaces/User";
 import { getDB } from "./db";
+import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 
 
 /**
  * Get the only user
  * @returns 
  */
-export async function getUser(): Promise<UserInterface | null | undefined> {
+export async function getUser(): Promise<UserInterface | null> {
   const db = await getDB();
 
   try {
-    return await db.getFirstAsync('SELECT * FROM User');
+    const user = await db.getFirstAsync<UserInterface>('SELECT * FROM User');
+
+    if(!user) return null;
+
+    return deserializeUser(user);
   }
   catch (error) {
     console.error('Error when trying to get user :', error);
+    return null;
   }
 }
 
@@ -22,18 +29,19 @@ export async function getUser(): Promise<UserInterface | null | undefined> {
  * @param method The contraception method.
  * @returns 
  */
-export async function createUser(method: string): Promise<number | null | undefined> {
-  if(!getUser()) {
+export async function createUser(method: ContraceptionMethods|null = null, startDate: string|null = null): Promise<number | null> {
+  const theUser = await getUser();
+
+  if(theUser == null) {
     const db = await getDB();
 
-    const statement = await db.prepareAsync(
-      'INSERT INTO User (method) VALUES (?)'
-    );
-  
     try {
-      const result = await statement.executeAsync([method]);
-      console.log('user created'); // TEMP
-  
+      const statement = await db.prepareAsync(
+        'INSERT INTO User (method, startDate) VALUES (?, ?)'
+      );
+
+      const result = await statement.executeAsync([method, startDate]);
+
       return result.lastInsertRowId;
     }
     catch (error) {
@@ -41,6 +49,7 @@ export async function createUser(method: string): Promise<number | null | undefi
       return null;
     }
   }
+  else return theUser.id;
 }
 
 
@@ -48,13 +57,27 @@ export async function createUser(method: string): Promise<number | null | undefi
  * Update a user.
  * @param updatedUser The updated user.
  */
-export async function updateUser(updatedUser: UserInterface): Promise<void> {
+export async function updateUser(id: number, method: ContraceptionMethods|null, startDate: string|null): Promise<void> {
   const db = await getDB();
 
   try {
-    await db.runAsync("UPDATE User SET method = ? WHERE id = ?", [updatedUser.method, updatedUser.id]);
+    await db.runAsync("UPDATE User SET method = ?, startDate = ? WHERE id = ?", [method, startDate, id]);
   }
   catch (error) {
     console.error('Error when trying to update user :', error);
+  }
+}
+
+
+/**
+ * Deserialize a user.
+ * @param user The user to deserialize
+ * @returns 
+ */
+export function deserializeUser(user: UserInterface): UserInterface {
+  return {
+    id: user.id,
+    method: user.method,
+    startDate: user.startDate === null ? null : new Date(user.startDate),
   }
 }

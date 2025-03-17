@@ -1,10 +1,12 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarIcon from "./CalendarIcon";
 import { useNavigation } from "expo-router";
-import { isDateCurrentDay } from "@/services/date";
+import { isDateCurrentDay, isDateInUserContraceptionRange } from "@/services/date";
 import { getStatusFromTotalWearing, calculateTotalWearing } from "@/services/session";
-import React from "react";
+import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { NavigationProp } from "@react-navigation/native";
+import { getUserStore } from "@/store/UserStore";
+import { Status } from "@/enums/Status";
 
 type NavigationType = NavigationProp<RootStackParamList, 'dayDetail'>;
 
@@ -15,8 +17,8 @@ function CalendarDay(day: DayInterface) {
     navigation.navigate("dayDetail", { day: JSON.stringify(day) });
   };
 
-  const totalWearing: number = calculateTotalWearing(day.sessions);
-  const status: string = getStatusFromTotalWearing(totalWearing);
+  const totalWearing = calculateTotalWearing(day.sessions);
+  const status = isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE;
   const sexWithoutProtection: boolean = day.sessions.some(session => session?.sexWithoutProtection);
 
   return (

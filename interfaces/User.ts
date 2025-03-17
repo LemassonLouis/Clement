@@ -1,7 +1,10 @@
+import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+
 /**
  * Represent a user
  */
-interface UserInterface {
+export default interface UserInterface {
   id: number,
-  method: ContraceptionMethod
+  method: ContraceptionMethods,
+  startDate: Date
 }

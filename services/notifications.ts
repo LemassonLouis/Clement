@@ -4,7 +4,7 @@ import { requestPermissionsAsync, scheduleNotificationAsync, setNotificationHand
 import { defineTask, isTaskRegisteredAsync } from "expo-task-manager";
 import { calculateTotalWearing, extractDateSessions, objectivMinRemainingTime } from "./session";
 import { getContraceptionMethod } from "./contraception";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+import { getUserStore } from "@/store/UserStore";
 
 
 const BACKGROUND_NOTIFICATIONS_TASK  = 'BACKGROUND_NOTIFICATIONS_TASK';
@@ -36,7 +36,7 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
   if(remainingTime > 7_200_000 && remainingTime < 7_800_000) {
     makeNotificationPush(
       "Vous n'avez plus beaucoup de temps !",
-      `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min / 3_600_000}h`
+      `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${getContraceptionMethod(getUserStore().getUser().method).objective_min / 3_600_000}h`
     );
   }
 
@@ -44,7 +44,7 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
   if(remainingTime > 0 && remainingTime < 600_000) {
     makeNotificationPush(
       "Vous n'avez plus beaucoup de temps !",
-      `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min / 3_600_000}h`
+      `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${getContraceptionMethod(getUserStore().getUser().method).objective_min / 3_600_000}h`
     );
   }
 
@@ -52,30 +52,30 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
   const totalWearing =  calculateTotalWearing(currentSessions);
 
   // between objectif min and objectif min + 10 min
-  if(totalWearing > getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min
-  && totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min + 600_000) {
+  if(totalWearing > getContraceptionMethod(getUserStore().getUser().method).objective_min
+  && totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_min + 600_000) {
     makeNotificationPush(
       "Objectif atteint !",
-      `Vous avez atteint l'objectif de ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min / 3_600_000}h`
+      `Vous avez atteint l'objectif de ${getContraceptionMethod(getUserStore().getUser().method).objective_min / 3_600_000}h`
     );
   }
 
   // if objectif min and max are different, between objectif max and objectif max + 10 min
-  if(getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max !== getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_min
-  && totalWearing > getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max
-  && totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max + 600_000) {
+  if(getContraceptionMethod(getUserStore().getUser().method).objective_max !== getContraceptionMethod(getUserStore().getUser().method).objective_min
+  && totalWearing > getContraceptionMethod(getUserStore().getUser().method).objective_max
+  && totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_max + 600_000) {
     makeNotificationPush(
       "Objectif atteint !",
-      `Vous avez atteint l'objectif de ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max / 3_600_000}h, pensez à retirer votre dipositif`
+      `Vous avez atteint l'objectif de ${getContraceptionMethod(getUserStore().getUser().method).objective_max / 3_600_000}h, pensez à retirer votre dipositif`
     );
   }
 
   // between objectif max extra and objectif max extra + 10 min
-  if(totalWearing > getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra
-  && totalWearing < getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra + 600_000) {
+  if(totalWearing > getContraceptionMethod(getUserStore().getUser().method).objective_max_extra
+  && totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_max_extra + 600_000) {
     makeNotificationPush(
       "Objectif dépassé",
-      `Cela fait maintenant ${getContraceptionMethod(ContraceptionMethods.ANDRO_SWITCH).objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`
+      `Cela fait maintenant ${getContraceptionMethod(getUserStore().getUser().method).objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`
     );
   }
 });
@@ -98,7 +98,7 @@ async function registerBackgroundTask(name: string, interval: number): Promise<v
     });
     console.log('Background task registred');
   } catch (error) {
-    console.error('Error when trying to register background task:', error);
+    console.error('Error when trying to register background task :', error);
   }
 }
 

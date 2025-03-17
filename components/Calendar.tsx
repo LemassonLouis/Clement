@@ -6,6 +6,7 @@ import { MonthNames } from "@/enums/MonthNames";
 import { Feather } from "@expo/vector-icons";
 import { getCalendarStartMonday, getCalendarLastSunday, getStartAndEndDate, isDateBetween } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
+import { getUserStore } from "@/store/UserStore";
 
 
 const getCalendarDays = (year: number, month: number, sessions: SessionInterface[]): DayInterface[] => {
@@ -34,9 +35,9 @@ const getCalendarDays = (year: number, month: number, sessions: SessionInterface
 
 
 export default function Calendar() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const sessionStore = getSessionStore();
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
+  const sessionStore = getSessionStore();
   const sessionsStored = useSyncExternalStore(
     useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
     useCallback(() => sessionStore.getSessions(), [sessionStore])
