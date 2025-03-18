@@ -56,6 +56,8 @@ export default function dayDetail() {
     setSexWithoutProtection(newSexWithoutProtection);
   }, [sessionsStored]);
 
+  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser().method);
+  const notSameObjectiveMinMax = contraceptionMethod.objective_min !== contraceptionMethod.objective_max;
 
   return (
     <ScrollView>
@@ -68,10 +70,10 @@ export default function dayDetail() {
 
         <View style={styles.progressContainer}>
           <Progress.Bar style={styles.progressBar} progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
-          <ProgressIndicator hour={getContraceptionMethod(getUserStore().getUser().method).objective_min_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={getContraceptionMethod(getUserStore().getUser().method).objective_min / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
-          <ProgressIndicator hour={getContraceptionMethod(getUserStore().getUser().method).objective_max / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={getContraceptionMethod(getUserStore().getUser().method).objective_max_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
+          <ProgressIndicator hour={contraceptionMethod.objective_min_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
+          <ProgressIndicator hour={contraceptionMethod.objective_min / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
+          {notSameObjectiveMinMax && <ProgressIndicator hour={contraceptionMethod.objective_max / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />}
+          <ProgressIndicator hour={contraceptionMethod.objective_max_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={notSameObjectiveMinMax} />
         </View>
 
         <View style={styles.currentSession}>
