@@ -7,14 +7,14 @@ import { updateUser } from "@/database/user";
 import { getUserStore } from "@/store/UserStore";
 import { getStartAndEndDate } from "@/services/date";
 
-export default function EditStartDateModal({ visible, additionalActionTrue }: {visible: boolean, additionalActionTrue: () => {}}) {
+export default function EditStartDateModal({ visible, additionalActionTrue }: {visible: boolean, additionalActionTrue: () => void}) {
   const userStore = getUserStore();
   const userStored = useSyncExternalStore(
     useCallback((callback) => userStore.subscribe(callback), [userStore]),
     useCallback(() => userStore.getUser(), [userStore])
   );
 
-  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [startDate, setStartDate] = useState<Date>(userStored.startDate);
 
   return (
     <CustomModal

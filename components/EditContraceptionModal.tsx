@@ -8,7 +8,7 @@ import { Feather } from "@expo/vector-icons";
 import { updateUser } from "@/database/user";
 import { getUserStore } from "@/store/UserStore";
 
-export default function EditContraceptionModal({ visible, additionalActionTrue }: {visible: boolean, additionalActionTrue: () => {}}) {
+export default function EditContraceptionModal({ visible, additionalActionTrue }: {visible: boolean, additionalActionTrue: () => void}) {
   const userStore = getUserStore();
   const userStored = useSyncExternalStore(
     useCallback((callback) => userStore.subscribe(callback), [userStore]),
@@ -43,7 +43,7 @@ export default function EditContraceptionModal({ visible, additionalActionTrue }
         userStore.updateUser({
           id: userStored.id,
           method: selectedContraception,
-          startDate: new Date()
+          startDate: userStored.startDate
         });
 
         additionalActionTrue();
