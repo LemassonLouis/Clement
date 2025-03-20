@@ -14,7 +14,7 @@ export default function EditStartDateModal({ visible, additionalActionTrue }: {v
     useCallback(() => userStore.getUser(), [userStore])
   );
 
-  const [startDate, setStartDate] = useState<Date>(userStored.startDate);
+  const [startDate, setStartDate] = useState<Date>(userStored?.startDate ?? new Date());
 
   return (
     <CustomModal

@@ -5,6 +5,7 @@ import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
 import SexWithoutProtection from "@/components/sexWithoutProtection";
 import { deserializeSession } from "@/database/session";
+import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { Status } from "@/enums/Status";
 import { getContraceptionMethod } from "@/services/contraception";
 import { isDateCurrentDay, isDateInUserContraceptionRange } from "@/services/date";
@@ -56,7 +57,7 @@ export default function dayDetail() {
     setSexWithoutProtection(newSexWithoutProtection);
   }, [sessionsStored]);
 
-  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser().method);
+  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
   const notSameObjectiveMinMax = contraceptionMethod.objective_min !== contraceptionMethod.objective_max;
 
   return (

@@ -1,16 +1,11 @@
 import { getUser } from "@/database/user";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import UserInterface from "@/interfaces/User";
 
 class UserStore {
-  private user: UserInterface = {
-    id: 0,
-    method: ContraceptionMethods.ANDRO_SWITCH,
-    startDate: new Date(),
-  }
+  private user: UserInterface | null = null;
   private listeners: Set<() => void> = new Set();
 
-  public getUser() {
+  public getUser(): UserInterface | null {
     return this.user;
   }
 
@@ -18,7 +13,7 @@ class UserStore {
     const user: UserInterface | null = await getUser();
 
     if(user) {
-      if(this.user.id !== user.id || this.user.method !== user.method || this.user.startDate !== user.startDate) {
+      if(this.user?.id !== user.id || this.user?.method !== user.method || this.user?.startDate !== user.startDate) {
         // this.user.id = user.id;
         // this.user.method = user.method;
         // this.user.startDate = user.startDate;
@@ -29,7 +24,7 @@ class UserStore {
     }
   }
 
-  public updateUser(user: UserInterface) {
+  public updateUser(user: UserInterface): void {
     this.user = user;
 
     this.notifyListeners();
@@ -49,6 +44,6 @@ class UserStore {
 
 const userStore = new UserStore();
 
-export function getUserStore() {
+export function getUserStore(): UserStore {
   return userStore;
 }

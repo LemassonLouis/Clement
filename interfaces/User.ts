@@ -5,6 +5,6 @@ import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
  */
 export default interface UserInterface {
   id: number,
-  method: ContraceptionMethods,
-  startDate: Date
+  method: ContraceptionMethods | null,
+  startDate: Date | null
 }

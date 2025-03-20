@@ -144,7 +144,7 @@ export function formatTimefromDate(date: Date): string {
  * @returns 
  */
 export function isDateInUserContraceptionRange(date: Date): boolean {
-  return date >= getUserStore().getUser().startDate && date <= getStartAndEndDate(new Date()).dateStart;
+  return date >= (getUserStore().getUser()?.startDate ?? new Date()) && date <= getStartAndEndDate(new Date()).dateStart;
 }
 
 

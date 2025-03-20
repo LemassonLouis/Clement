@@ -3,9 +3,8 @@ import CalendarIcon from "./CalendarIcon";
 import { useNavigation } from "expo-router";
 import { isDateCurrentDay, isDateInUserContraceptionRange } from "@/services/date";
 import { getStatusFromTotalWearing, calculateTotalWearing } from "@/services/session";
-import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import React from "react";
 import { NavigationProp } from "@react-navigation/native";
-import { getUserStore } from "@/store/UserStore";
 import { Status } from "@/enums/Status";
 
 type NavigationType = NavigationProp<RootStackParamList, 'dayDetail'>;

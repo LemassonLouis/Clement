@@ -42,6 +42,11 @@ export default function Calendar() {
     useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
     useCallback(() => sessionStore.getSessions(), [sessionStore])
   );
+  const userStore = getUserStore();
+  const userStored = useSyncExternalStore(
+    useCallback((callback) => userStore.subscribe(callback), [userStore]),
+    useCallback(() => userStore.getUser(), [userStore])
+  );
 
   const year: number = currentDate.getFullYear();
   const month: number = currentDate.getMonth();
@@ -68,7 +73,7 @@ export default function Calendar() {
     }
 
     fetchData();
-  }, [year, month, sessionsStored]);
+  }, [year, month, sessionsStored, userStored]);
 
   const days = getCalendarDays(year, month, sessionsStored);
 

@@ -15,7 +15,7 @@ export default function EditContraceptionModal({ visible, additionalActionTrue }
     useCallback(() => userStore.getUser(), [userStore])
   );
 
-  const [selectedContraception, setSelectedContraception] = useState<ContraceptionMethods>(userStore.getUser().method);
+  const [selectedContraception, setSelectedContraception] = useState<ContraceptionMethods>(userStore.getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
 
   const chooseContraceptionMethod = (item: any) => {
     setSelectedContraception(item.slug);
