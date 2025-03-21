@@ -1,5 +1,6 @@
 import EditContraceptionModal from "@/components/EditContraceptionModal";
 import EditStartDateModal from "@/components/EditStartDateModal";
+import { makeNotificationPush } from "@/services/notifications";
 import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
@@ -15,6 +16,10 @@ export default function SettingsScreen() {
 
       <TouchableOpacity onPress={() => setEditStartDateModalVisible(true)}>
         <Text>Modifier la date de début de contraception</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => makeNotificationPush('Notif', "Maintenant")}>
+        <Text>Notification now</Text>
       </TouchableOpacity>
 
       <EditContraceptionModal
