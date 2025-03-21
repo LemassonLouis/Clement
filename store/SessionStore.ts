@@ -1,5 +1,6 @@
 import { getAllSessionsBetweenDates } from "@/database/session";
 import { getCalendarLastSunday, getCalendarStartMonday, getStartAndEndDate } from "@/services/date";
+import { useCallback, useSyncExternalStore } from "react";
 
 class SessionStore {
   private sessions: SessionInterface[] = [];
@@ -39,14 +40,17 @@ class SessionStore {
     this.notifyListeners();
   }
 
-  public updateSession(updatedSession: SessionInterface) {
-    const index = this.sessions.findIndex(s => s.id === updatedSession.id);
+  public updateSessions(updatedSessions: SessionInterface[]) {
+    updatedSessions.forEach(session => {
+      const index = this.sessions.findIndex(s => s.id === session.id);
+  
+      if(index !== -1) {
+        this.sessions[index] = session;
+        this.sessions = [...this.sessions];
+      }
+    });
 
-    if(index !== -1) {
-      this.sessions[index] = updatedSession;
-      this.sessions = [...this.sessions];
-      this.notifyListeners();
-    }
+    this.notifyListeners();
   }
 
   public removeSession(session: SessionInterface) {
@@ -72,6 +76,13 @@ class SessionStore {
 
 const sessionStore = new SessionStore();
 
-export function getSessionStore() {
+export function getSessionStore(): SessionStore {
   return sessionStore;
+}
+
+export function getSessionsStored(): SessionInterface[] {
+  return useSyncExternalStore(
+    useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
+    useCallback(() => sessionStore.getSessions(), [sessionStore])
+  );
 }

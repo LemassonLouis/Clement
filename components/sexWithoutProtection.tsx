@@ -1,55 +1,46 @@
-import { getAllSessionsBetweenDates, updateSession } from "@/database/session";
-import { getStartAndEndDate } from "@/services/date";
-import { extractDateSessions } from "@/services/session";
-import { getSessionStore } from "@/store/SessionStore";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { updateSessionsSexWithoutProtection } from "@/database/session";
+import { extractDateSessions, hasSessionsSexWithoutProtection } from "@/services/session";
+import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
+import { memo, useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
 
-export default function SexWithoutProtection({ date, sexWithoutProtection, setSexWithoutProtection }: SexWithoutProtectionInterace) {
+function SexWithoutProtection({ date }: {date: Date}) {
   const sessionStore = getSessionStore();
-  const sessionsStored = useSyncExternalStore(
-    useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
-    useCallback(() => sessionStore.getSessions(), [sessionStore])
-  );
+  const sessionsStored = getSessionsStored();
+  const currentSessions = extractDateSessions(sessionsStored, date);
 
-  const [daySessions, setDaySessions] = useState<SessionInterface[]>([]);
+  const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(hasSessionsSexWithoutProtection(currentSessions));
+
 
   // Load sexWithoutProtectionState
   useEffect(() => {
-    const fetchData = async () => {
-      const { dateStart, dateEnd } = getStartAndEndDate(date);
-      const currentSessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
-      setDaySessions(currentSessions);
-      const sexWithoutProtection = currentSessions.some(session => session.sexWithoutProtection === true);
-      setSexWithoutProtection(sexWithoutProtection);
-    }
-
-    fetchData();
+    setSexWithoutProtection(hasSessionsSexWithoutProtection(currentSessions));
   }, [sessionsStored]);
 
 
-  const toggleSexWithoutProtection = (value: boolean) => {
-    setSexWithoutProtection(value);
+  const toggleSexWithoutProtection = (toggleValue: boolean) => {
+    setSexWithoutProtection(toggleValue);
 
-    const updateStoredInfos = async (value: boolean) => {
-      daySessions.forEach(async session => {
-        const sessionStored = sessionsStored.find(sessionStored => sessionStored.id === session.id);
+    const updateStoredInfos = async () => {
+      const ids = currentSessions.reduce<number[]>((prev, curr) => [curr.id, ...prev], []);
+      await updateSessionsSexWithoutProtection(ids, toggleValue);
 
-        if(sessionStored) {
-          sessionStored.sexWithoutProtection = value;
-          sessionStore.updateSession(sessionStored);
-
-          await updateSession(session.id, sessionStored.dateTimeStart.toISOString(), sessionStored.dateTimeEnd?.toISOString() ?? null, sessionStored.sexWithoutProtection);
+      const updatedSessions = currentSessions.map(session => {
+        return {
+          id: session.id,
+          dateTimeStart: session.dateTimeStart,
+          dateTimeEnd: session.dateTimeEnd,
+          sexWithoutProtection: toggleValue
         }
-
       });
+      sessionStore.updateSessions(updatedSessions);
     }
 
-    updateStoredInfos(value);
+    updateStoredInfos();
   };
 
-  if(extractDateSessions(daySessions, date).length < 1) return;
+  if(currentSessions.length < 1) return;
 
   return (
     <View style={styles.switchContainer}>
@@ -58,6 +49,8 @@ export default function SexWithoutProtection({ date, sexWithoutProtection, setSe
     </View>
   )
 }
+
+export default memo(SexWithoutProtection);
 
 
 const styles = StyleSheet.create({

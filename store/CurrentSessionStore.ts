@@ -1,4 +1,5 @@
 import { getFirstUnfinishedSession } from "@/database/session";
+import { useCallback, useSyncExternalStore } from "react";
 
 class CurrentSessionStore {
   private currentSession: CurrentSessionInterface = {
@@ -42,6 +43,13 @@ class CurrentSessionStore {
 
 const currentSessionStore = new CurrentSessionStore();
 
-export function getCurrentSessionStore() {
+export function getCurrentSessionStore(): CurrentSessionStore {
   return currentSessionStore;
+}
+
+export function getCurrentSessionStored(): CurrentSessionInterface {
+  return useSyncExternalStore(
+    useCallback((callback) => currentSessionStore.subscribe(callback), [currentSessionStore]),
+    useCallback(() => currentSessionStore.getCurrentSession(), [currentSessionStore])
+  );
 }

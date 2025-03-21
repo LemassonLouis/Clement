@@ -48,7 +48,7 @@ export function getDateDifference(dateStart: Date, dateEnd: Date): number {
  * @param date Date reference.
  * @returns 
  */
-export function isDateCurrentDay(date: Date): boolean {
+export function isDateToday(date: Date): boolean {
   const { dateStart, dateEnd } = getStartAndEndDate(new Date());
 
   return isDateBetween(date, dateStart, dateEnd);

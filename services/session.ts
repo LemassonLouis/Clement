@@ -3,6 +3,7 @@ import { Status } from "@/enums/Status";
 import { getSessionStore } from "@/store/SessionStore";
 import { getContraceptionMethod } from "./contraception";
 import { getUserStore } from "@/store/UserStore";
+import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 
 
 /**
@@ -22,22 +23,24 @@ export function calculateTotalWearing(sessions: SessionInterface[]): number {
  * @returns
  */
 export function getStatusFromTotalWearing(totalWearing: number): string {
+  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+
   if(totalWearing === -1) {
     return Status.NONE;
   }
-  else if(totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_min_extra) {
+  else if(totalWearing < contraceptionMethod.objective_min_extra) {
     return Status.FAILED;
   }
-  else if(totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_min) {
+  else if(totalWearing < contraceptionMethod.objective_min) {
     return Status.WARNED;
   }
-  else if(totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_max) {
+  else if(totalWearing < contraceptionMethod.objective_max) {
     return Status.SUCCESSED;
   }
-  else if(totalWearing < getContraceptionMethod(getUserStore().getUser().method).objective_max_extra) {
+  else if(totalWearing < contraceptionMethod.objective_max_extra) {
     return Status.REACHED;
   }
-  else if(totalWearing >= getContraceptionMethod(getUserStore().getUser().method).objective_max_extra) {
+  else if(totalWearing >= contraceptionMethod.objective_max_extra) {
     return Status.EXCEEDED;
   }
   else {
@@ -73,10 +76,21 @@ export function getColorFromStatus(status: Status | string): string {
  * @returns 
  */
 export function extractDateSessions(sessions: SessionInterface[], date: Date): SessionInterface[] {
+  const { dateStart, dateEnd } = getStartAndEndDate(date);
+
   return sessions.filter(session => {
-    const { dateStart, dateEnd } = getStartAndEndDate(date);
-    return isDateBetween(session.dateTimeStart, dateStart, dateEnd);
+    return isDateBetween(session.dateTimeStart, dateStart, dateEnd)
   });
+}
+
+
+/**
+ * Does the sessions has sexWithoutProtection to true.
+ * @param sessions The sessions to test.
+ * @returns 
+ */
+export function hasSessionsSexWithoutProtection(sessions: SessionInterface[]): boolean {
+  return sessions.some(session => session.sexWithoutProtection === true);
 }
 
 
@@ -129,8 +143,9 @@ export function objectivMinRemainingTime(date: Date): number {
   const dateMin = getStartAndEndDate(date).dateStart;
   const sessions = extractDateSessions(getSessionStore().getSessions(), date);
   const totalWearing = calculateTotalWearing(sessions);
+  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
 
-  const remainingTime = 86_400_000 - getContraceptionMethod(getUserStore().getUser().method).objective_min - (getDateDifference(dateMin, date) - totalWearing);
+  const remainingTime = 86_400_000 - contraceptionMethod.objective_min - (getDateDifference(dateMin, date) - totalWearing);
 
   return remainingTime;
 }

@@ -8,13 +8,13 @@ import { deserializeSession } from "@/database/session";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { Status } from "@/enums/Status";
 import { getContraceptionMethod } from "@/services/contraception";
-import { isDateCurrentDay, isDateInUserContraceptionRange } from "@/services/date";
+import { isDateToday, isDateInUserContraceptionRange } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
-import { getSessionStore } from "@/store/SessionStore";
+import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { getUserStore } from "@/store/UserStore";
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import * as Progress from 'react-native-progress';
 
@@ -29,36 +29,31 @@ const deserializeDay = (day: DayInterface): DayInterface => {
 export default function dayDetail() {
   const params = useLocalSearchParams();
   const day = deserializeDay(JSON.parse(String(params.day)));
+  const sessionsStored = getSessionsStored();
 
-  const sessionStore = getSessionStore();
-  const sessionsStored = useSyncExternalStore(
-    useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
-    useCallback(() => sessionStore.getSessions(), [sessionStore])
-  );
-
-  const currentSessions = extractDateSessions(sessionsStored, day.date);
-
+  const [currentSessions, setCurrentSessions] = useState<SessionInterface[]>(extractDateSessions(sessionsStored, day.date));
   const [totalWearing, setTotalWearing] = useState<number>(calculateTotalWearing(currentSessions));
   const [status, setStatus] = useState<string>(isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(currentSessions.some(session => session.sexWithoutProtection));
   const [createSessionModalVisible, setCreateSessionModalVisible] = useState<boolean>(false);
 
+  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+  const notSameObjectiveMinMax = contraceptionMethod.objective_min !== contraceptionMethod.objective_max;
+
   const progressBarWidth: number = Dimensions.get('window').width * 0.8;
 
   useEffect(() => {
-    const currentSessionss = extractDateSessions(sessionsStored, day.date);
-
-    const newTotalWearing = calculateTotalWearing(currentSessionss);
+    const currentSessions = extractDateSessions(sessionsStored, day.date);
+    const newTotalWearing = calculateTotalWearing(currentSessions);
     const newStatus = isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(newTotalWearing) : Status.NONE;
-    const newSexWithoutProtection = currentSessionss.some(session => session.sexWithoutProtection);
+    const newSexWithoutProtection = currentSessions.some(session => session.sexWithoutProtection);
 
+    setCurrentSessions(currentSessions);
     setTotalWearing(newTotalWearing);
     setStatus(newStatus);
     setSexWithoutProtection(newSexWithoutProtection);
   }, [sessionsStored]);
 
-  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
-  const notSameObjectiveMinMax = contraceptionMethod.objective_min !== contraceptionMethod.objective_max;
 
   return (
     <ScrollView>
@@ -78,15 +73,7 @@ export default function dayDetail() {
         </View>
 
         <View style={styles.currentSession}>
-          {isDateCurrentDay(day.date) ?
-            <CurrentSession/>
-          :
-            <SexWithoutProtection
-              date={day.date}
-              sexWithoutProtection={sexWithoutProtection}
-              setSexWithoutProtection={setSexWithoutProtection}
-            />
-          }
+          {isDateToday(day.date) ? <CurrentSession/> : <SexWithoutProtection date={day.date}/>}
         </View>
 
         <FlatList

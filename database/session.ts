@@ -37,7 +37,7 @@ export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTime
   const db = await getDB();
 
   try {
-    const sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeStart >= ? AND dateTimeEnd <= ?", [dateTimeStart, dateTimeEnd]);
+    const sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeStart >= ? AND (dateTimeEnd <= ? OR dateTimeEnd IS NULL)", [dateTimeStart, dateTimeEnd]);
 
     return sessions.map(session => deserializeSession(session));
   }
@@ -85,7 +85,25 @@ export async function updateSession(id: number, dateTimeStart: string, dateTimeE
     await db.runAsync("UPDATE Session SET dateTimeStart = ?, dateTimeEnd = ?, sexWithoutProtection = ? WHERE id = ?", [dateTimeStart, dateTimeEnd, sexWithoutProtection, id]);
   }
   catch (error) {
-    console.error('Error lors de la mise à jour de rapport sexuel sans protection de la session :', error);
+    console.error('Error lors de la mise à jour de la session :', error);
+  }
+}
+
+
+/**
+ * Update multiple sessions sexWithoutProtection at the same time.
+ * @param ids Session ids to update.
+ * @param sexWithoutProtection New value of sexWithoutProtection.
+ */
+export async function updateSessionsSexWithoutProtection(ids: number[], sexWithoutProtection: boolean): Promise<void> {
+  const db = await getDB();
+
+  try {
+    const placeholders = ids.map(() => '?').join(',');
+    await db.runAsync(`UPDATE Session SET sexWithoutProtection = ? WHERE id IN (${placeholders})`, [sexWithoutProtection, ...ids]);
+  }
+  catch (error) {
+    console.error('Error lors de la mise à jour des sessions :', error);
   }
 }
 

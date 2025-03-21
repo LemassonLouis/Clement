@@ -26,12 +26,12 @@ export default function EditSessionModal({ session, visible, setVisible }: Delet
 
     await updateSession(session.id, startTime.toISOString(), endTime.toISOString(), session.sexWithoutProtection);
 
-    sessionStore.updateSession({
+    sessionStore.updateSessions([{
       id: session.id,
       dateTimeStart: startTime,
       dateTimeEnd: endTime,
       sexWithoutProtection: session.sexWithoutProtection
-    });
+    }]);
 
     setVisible(false);
   }

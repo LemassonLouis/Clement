@@ -23,8 +23,6 @@ export default function Index() {
       await getUserStore().loadUser();
       const user = getUserStore().getUser();
 
-      console.log("user", user);
-
       if(!user) setWelcomeModalVisible(true);
       else if(!user.method) setContraceptionModalVisible(true);
       else if(!user.startDate) setStartDateModalVisible(true);

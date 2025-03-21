@@ -1,29 +1,28 @@
 import { createSession, updateSession } from "@/database/session";
 import { formatMilisecondsTime, formatTimefromDate, getDateDifference } from "@/services/date";
-import { getSessionStore } from "@/store/SessionStore";
+import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { Ionicons } from "@expo/vector-icons";
-import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import SexWithoutProtection from "./sexWithoutProtection";
-import { getCurrentSessionStore } from "@/store/CurrentSessionStore";
+import { getCurrentSessionStore, getCurrentSessionStored } from "@/store/CurrentSessionStore";
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import CustomModal from "./CustomModal";
-import { objectivMinRemainingTime } from "@/services/session";
+import { extractDateSessions, hasSessionsSexWithoutProtection, objectivMinRemainingTime } from "@/services/session";
+
+const today: Date = new Date();
 
 export default function CurrentSession() {
   const currentSessionStore = getCurrentSessionStore();
-  const currentSessionStored = useSyncExternalStore(
-    useCallback((callback) => currentSessionStore.subscribe(callback), [currentSessionStore]),
-    useCallback(() => currentSessionStore.getCurrentSession(), [currentSessionStore])
-  );
+  const currentSessionStored = getCurrentSessionStored();
+  const sessionStore = getSessionStore();
+  const sessionsStored = getSessionsStored();
+  const currentSessions = extractDateSessions(sessionsStored, today);
 
   const [warningModalVisible, setWarningModalVisible] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
-  const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
   const [remainingTime, setRemainingTime] = useState<number>(0);
-  const sessionStore = getSessionStore();
-  const date = new Date();
 
 
   // Load current session
@@ -78,6 +77,7 @@ export default function CurrentSession() {
     setElapsedTime(0);
 
     const startTime: Date = new Date();
+    const sexWithoutProtection = hasSessionsSexWithoutProtection(currentSessions);
     const sessionId = await createSession(startTime.toISOString(), null, sexWithoutProtection);
 
     if(sessionId) {
@@ -99,15 +99,17 @@ export default function CurrentSession() {
     if(currentSessionStored.sessionStartTime && currentSessionStored.sessionId) {
       setElapsedTime(0);
 
-      sessionStore.updateSession({
+      const sexWithoutProtection = hasSessionsSexWithoutProtection(currentSessions);
+
+      await updateSession(currentSessionStored.sessionId, currentSessionStored.sessionStartTime.toISOString(), endTime.toISOString(), sexWithoutProtection);
+
+      sessionStore.updateSessions([{
         id: currentSessionStored.sessionId,
         dateTimeStart: currentSessionStored.sessionStartTime,
         dateTimeEnd: endTime,
         sexWithoutProtection: sexWithoutProtection
-      });
+      }]);
       currentSessionStore.updateCurrentSession({ sessionId: null, sessionStartTime: null });
-
-      await updateSession(currentSessionStored.sessionId, currentSessionStored.sessionStartTime.toISOString(), endTime.toISOString(), sexWithoutProtection);
     }
   };
 
@@ -128,11 +130,7 @@ export default function CurrentSession() {
           </View>
         </View>
 
-        <SexWithoutProtection
-          date={date}
-          sexWithoutProtection={sexWithoutProtection}
-          setSexWithoutProtection={setSexWithoutProtection}
-        />
+        <SexWithoutProtection date={today}/>
       </Suspense>
 
       <CustomModal
