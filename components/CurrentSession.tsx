@@ -9,7 +9,10 @@ import { getCurrentSessionStore, getCurrentSessionStored } from "@/store/Current
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import CustomModal from "./CustomModal";
-import { extractDateSessions, hasSessionsSexWithoutProtection, objectivMinRemainingTime } from "@/services/session";
+import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, objectivMinRemainingTime } from "@/services/session";
+import { getContraceptionMethod } from "@/services/contraception";
+import { getUserStore } from "@/store/UserStore";
+import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 
 const today: Date = new Date();
 
@@ -56,9 +59,10 @@ export default function CurrentSession() {
   }, [currentSessionStored.sessionStartTime]);
 
 
-  // Manage midnight effect
   useEffect(() => {
     const now = new Date();
+
+    // Manage midnight effect
     if (currentSessionStored.sessionStartTime && now.getHours() === 23 && now.getMinutes() === 59 && now.getSeconds() === 59) {
       const midnightReopenSession = async () => {
         await stopSession();
@@ -68,6 +72,18 @@ export default function CurrentSession() {
       }
 
       midnightReopenSession();
+    }
+
+    // Refresh display when objectiv reached
+    const totalWearing = calculateTotalWearing(currentSessions);
+    const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+
+    if(totalWearing > contraceptionMethod.objective_min_extra && totalWearing < contraceptionMethod.objective_min_extra + 1_000
+    || totalWearing > contraceptionMethod.objective_min && totalWearing < contraceptionMethod.objective_min + 1_000
+    || totalWearing > contraceptionMethod.objective_max && totalWearing < contraceptionMethod.objective_max + 1_000
+    || totalWearing > contraceptionMethod.objective_max_extra && totalWearing < contraceptionMethod.objective_max_extra + 1_000
+    ) {
+      sessionStore.forceNotifyListeners();
     }
   }, [elapsedTime]);
 

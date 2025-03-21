@@ -72,6 +72,11 @@ class SessionStore {
   private notifyListeners() {
     this.listeners.forEach(listener => listener());
   }
+
+  public forceNotifyListeners() {
+    this.sessions = [...this.sessions];
+    this.notifyListeners();
+  }
 }
 
 const sessionStore = new SessionStore();

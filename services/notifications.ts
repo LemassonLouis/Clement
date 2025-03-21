@@ -1,6 +1,6 @@
 import { getSessionStore } from "@/store/SessionStore";
 import { registerTaskAsync } from "expo-background-fetch";
-import { requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationHandler } from "expo-notifications";
+import { requestPermissionsAsync, scheduleNotificationAsync, setNotificationHandler } from "expo-notifications";
 import { defineTask, isTaskRegisteredAsync } from "expo-task-manager";
 import { calculateTotalWearing, extractDateSessions, objectivMinRemainingTime } from "./session";
 import { getContraceptionMethod } from "./contraception";
@@ -33,6 +33,11 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
 
   const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
   const remainingTime = objectivMinRemainingTime(new Date());
+
+  makeNotificationPush(
+    "Cela fait 5 min",
+    `remaining time : ${remainingTime}, ${remainingTime > 7_200_000 && remainingTime < 7_800_000}, ${remainingTime > 0 && remainingTime < 600_000}`
+  );
 
   // between 2h and 2h10min
   if(remainingTime > 7_200_000 && remainingTime < 7_800_000) {
