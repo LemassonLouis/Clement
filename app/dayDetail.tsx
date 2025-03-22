@@ -85,7 +85,7 @@ export default function dayDetail() {
           renderItem={({item}) => <Session {...item}/>}
         />
 
-        {totalWearing> 0 || isDateInUserContraceptionRange(day.date) && <>
+        {(totalWearing > 0 || isDateInUserContraceptionRange(day.date)) && <>
           <TouchableOpacity style={styles.plusButton} onPress={() => setCreateSessionModalVisible(true)}>
             <Feather name='plus' size={35} color='#000'/>
           </TouchableOpacity>
