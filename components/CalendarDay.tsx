@@ -17,7 +17,7 @@ function CalendarDay(day: DayInterface) {
   };
 
   const totalWearing = calculateTotalWearing(day.sessions);
-  const status = isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE;
+  const status = totalWearing > 0 || isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE;
   const sexWithoutProtection: boolean = day.sessions.some(session => session?.sexWithoutProtection);
 
   return (

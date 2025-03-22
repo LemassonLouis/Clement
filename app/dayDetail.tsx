@@ -10,7 +10,7 @@ import { Status } from "@/enums/Status";
 import { getContraceptionMethod } from "@/services/contraception";
 import { isDateToday, isDateInUserContraceptionRange } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
-import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
+import { getSessionsStored } from "@/store/SessionStore";
 import { getUserStore } from "@/store/UserStore";
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
@@ -33,7 +33,7 @@ export default function dayDetail() {
 
   const [currentSessions, setCurrentSessions] = useState<SessionInterface[]>(extractDateSessions(sessionsStored, day.date));
   const [totalWearing, setTotalWearing] = useState<number>(calculateTotalWearing(currentSessions));
-  const [status, setStatus] = useState<string>(isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE);
+  const [status, setStatus] = useState<string>(totalWearing > 0 || isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(currentSessions.some(session => session.sexWithoutProtection));
   const [createSessionModalVisible, setCreateSessionModalVisible] = useState<boolean>(false);
 
@@ -85,7 +85,7 @@ export default function dayDetail() {
           renderItem={({item}) => <Session {...item}/>}
         />
 
-        {isDateInUserContraceptionRange(day.date) && <>
+        {totalWearing> 0 || isDateInUserContraceptionRange(day.date) && <>
           <TouchableOpacity style={styles.plusButton} onPress={() => setCreateSessionModalVisible(true)}>
             <Feather name='plus' size={35} color='#000'/>
           </TouchableOpacity>

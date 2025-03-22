@@ -13,9 +13,9 @@ export default function RootLayout() {
       // await deleteTables();
       await createTables();
 
-      await initializeNotifications();
-
       SplashScreen.hideAsync();
+
+      await initializeNotifications();
     }
 
     asyncTasks();

@@ -1,6 +1,6 @@
 import { getSessionStore } from "@/store/SessionStore";
 import { registerTaskAsync } from "expo-background-fetch";
-import { requestPermissionsAsync, scheduleNotificationAsync, setNotificationHandler } from "expo-notifications";
+import { requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationHandler } from "expo-notifications";
 import { defineTask, isTaskRegisteredAsync } from "expo-task-manager";
 import { calculateTotalWearing, extractDateSessions, objectivMinRemainingTime } from "./session";
 import { getContraceptionMethod } from "./contraception";
@@ -123,4 +123,18 @@ export async function makeNotificationPush(title: string, content: string): Prom
     },
     trigger: null
   });
+}
+
+
+export async function scheduleNotificationPush(title: string, content: string = "", date: Date): Promise<void> {
+  await scheduleNotificationAsync({
+    content: {
+      title: title,
+      body: content
+    },
+    trigger: {
+      type: SchedulableTriggerInputTypes.DATE,
+      date: date
+    }
+  })
 }
