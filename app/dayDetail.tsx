@@ -45,7 +45,7 @@ export default function dayDetail() {
   useEffect(() => {
     const currentSessions = extractDateSessions(sessionsStored, day.date);
     const newTotalWearing = calculateTotalWearing(currentSessions);
-    const newStatus = isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(newTotalWearing) : Status.NONE;
+    const newStatus = newTotalWearing > 0 || isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(newTotalWearing) : Status.NONE;
     const newSexWithoutProtection = currentSessions.some(session => session.sexWithoutProtection);
 
     setCurrentSessions(currentSessions);
