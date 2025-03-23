@@ -117,6 +117,8 @@ export default function CurrentSession() {
 
       const sexWithoutProtection = hasSessionsSexWithoutProtection(currentSessions);
 
+      // TODO : verify and split session if overlap 2 days or more
+
       await updateSession(currentSessionStored.sessionId, currentSessionStored.sessionStartTime.toISOString(), endTime.toISOString(), sexWithoutProtection);
 
       sessionStore.updateSessions([{
