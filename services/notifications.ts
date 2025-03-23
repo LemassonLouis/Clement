@@ -1,5 +1,5 @@
 import { getSessionStore } from "@/store/SessionStore";
-import { registerTaskAsync } from "expo-background-fetch";
+import { BackgroundFetchResult, registerTaskAsync } from "expo-background-fetch";
 import { requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationHandler } from "expo-notifications";
 import { defineTask, isTaskRegisteredAsync } from "expo-task-manager";
 import { calculateTotalWearing, extractDateSessions, objectivMinRemainingTime } from "./session";
@@ -31,59 +31,72 @@ export async function initializeNotifications(): Promise<void> {
 defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
   console.log("task triggered"); // TEMP
 
-  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
-  const remainingTime = objectivMinRemainingTime(new Date());
+  try {
+    const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+    const remainingTime = objectivMinRemainingTime(new Date());
 
-  makeNotificationPush(
-    "Cela fait 5 min",
-    `remaining time : ${remainingTime}, ${remainingTime > 7_200_000 && remainingTime < 7_800_000}, ${remainingTime > 0 && remainingTime < 600_000}`
-  );
-
-  // between 2h and 2h10min
-  if(remainingTime > 7_200_000 && remainingTime < 7_800_000) {
     makeNotificationPush(
-      "Vous n'avez plus beaucoup de temps !",
-      `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`
+      "Cela fait 5 min",
+      `remaining time : ${remainingTime}, ${remainingTime > 7_200_000 && remainingTime < 7_800_000}, ${remainingTime > 0 && remainingTime < 600_000}`
     );
+
+    // between 2h and 2h10min
+    if(remainingTime > 7_200_000 && remainingTime < 7_800_000) {
+      makeNotificationPush(
+        "Vous n'avez plus beaucoup de temps !",
+        `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`
+      );
+      return BackgroundFetchResult.NewData;
+    }
+
+    // between 0 and 10min
+    if(remainingTime > 0 && remainingTime < 600_000) {
+      makeNotificationPush(
+        "Vous n'avez plus beaucoup de temps !",
+        `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`
+      );
+      return BackgroundFetchResult.NewData;
+    }
+
+    const currentSessions = extractDateSessions(getSessionStore().getSessions(), new Date());
+    const totalWearing =  calculateTotalWearing(currentSessions);
+
+    // between objectif min and objectif min + 10 min
+    if(totalWearing > contraceptionMethod.objective_min
+    && totalWearing < contraceptionMethod.objective_min + 600_000) {
+      makeNotificationPush(
+        "Objectif atteint !",
+        `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min / 3_600_000}h`
+      );
+      return BackgroundFetchResult.NewData;
+    }
+
+    // if objectif min and max are different, between objectif max and objectif max + 10 min
+    if(contraceptionMethod.objective_max !== contraceptionMethod.objective_min
+    && totalWearing > contraceptionMethod.objective_max
+    && totalWearing < contraceptionMethod.objective_max + 600_000) {
+      makeNotificationPush(
+        "Objectif atteint !",
+        `Vous avez atteint l'objectif de ${contraceptionMethod.objective_max / 3_600_000}h, pensez à retirer votre dipositif`
+      );
+      return BackgroundFetchResult.NewData;
+    }
+
+    // between objectif max extra and objectif max extra + 10 min
+    if(totalWearing > contraceptionMethod.objective_max_extra
+    && totalWearing < contraceptionMethod.objective_max_extra + 600_000) {
+      makeNotificationPush(
+        "Objectif dépassé",
+        `Cela fait maintenant ${contraceptionMethod.objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`
+      );
+      return BackgroundFetchResult.NewData;
+    }
+
+    return BackgroundFetchResult.NoData;
   }
-
-  // between 0 and 10min
-  if(remainingTime > 0 && remainingTime < 600_000) {
-    makeNotificationPush(
-      "Vous n'avez plus beaucoup de temps !",
-      `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`
-    );
-  }
-
-  const currentSessions = extractDateSessions(getSessionStore().getSessions(), new Date());
-  const totalWearing =  calculateTotalWearing(currentSessions);
-
-  // between objectif min and objectif min + 10 min
-  if(totalWearing > contraceptionMethod.objective_min
-  && totalWearing < contraceptionMethod.objective_min + 600_000) {
-    makeNotificationPush(
-      "Objectif atteint !",
-      `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min / 3_600_000}h`
-    );
-  }
-
-  // if objectif min and max are different, between objectif max and objectif max + 10 min
-  if(contraceptionMethod.objective_max !== contraceptionMethod.objective_min
-  && totalWearing > contraceptionMethod.objective_max
-  && totalWearing < contraceptionMethod.objective_max + 600_000) {
-    makeNotificationPush(
-      "Objectif atteint !",
-      `Vous avez atteint l'objectif de ${contraceptionMethod.objective_max / 3_600_000}h, pensez à retirer votre dipositif`
-    );
-  }
-
-  // between objectif max extra and objectif max extra + 10 min
-  if(totalWearing > contraceptionMethod.objective_max_extra
-  && totalWearing < contraceptionMethod.objective_max_extra + 600_000) {
-    makeNotificationPush(
-      "Objectif dépassé",
-      `Cela fait maintenant ${contraceptionMethod.objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`
-    );
+  catch(error) {
+    console.log("Error while running the task :", error);
+    return BackgroundFetchResult.Failed;
   }
 });
 
