@@ -1,14 +1,15 @@
 import { getSessionStore } from "@/store/SessionStore";
-import { BackgroundFetchResult, registerTaskAsync } from "expo-background-fetch";
-import { requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationHandler } from "expo-notifications";
+import { BackgroundFetchResult, BackgroundFetchStatus, getStatusAsync, registerTaskAsync } from "expo-background-fetch";
+import { AndroidImportance, requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationChannelAsync, setNotificationHandler } from "expo-notifications";
 import { defineTask, isTaskRegisteredAsync } from "expo-task-manager";
 import { calculateTotalWearing, extractDateSessions, objectivMinRemainingTime } from "./session";
 import { getContraceptionMethod } from "./contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+import { Platform } from "react-native";
 
 
-const BACKGROUND_NOTIFICATIONS_TASK  = 'BACKGROUND_NOTIFICATIONS_TASK';
+export const BACKGROUND_NOTIFICATIONS_TASK  = 'BACKGROUND_NOTIFICATIONS_TASK';
 
 
 /**
@@ -24,6 +25,7 @@ export async function initializeNotifications(): Promise<void> {
     })
   });
 
+  await configureNotificationChannel();
   await registerBackgroundTask(BACKGROUND_NOTIFICATIONS_TASK, 5 * 60);
 }
 
@@ -119,6 +121,29 @@ async function registerBackgroundTask(name: string, interval: number): Promise<v
     console.log('Background task registred');
   } catch (error) {
     console.error('Error when trying to register background task :', error);
+  }
+}
+
+
+async function configureNotificationChannel(): Promise<void> {
+  if (Platform.OS === 'android') {
+    await setNotificationChannelAsync('default', {
+      name: 'Notifications par défaut',
+      importance: AndroidImportance.HIGH,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+}
+
+
+export async function getBackgroundFetchStatus(name: string): Promise<{status: BackgroundFetchStatus|null, isRegistered: boolean}> {
+  const status = await getStatusAsync();
+  const isRegistered = await isTaskRegisteredAsync(name);
+
+  return {
+    status: status,
+    isRegistered: isRegistered
   }
 }
 
