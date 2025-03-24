@@ -8,7 +8,7 @@ import { deserializeSession } from "@/database/session";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { Status } from "@/enums/Status";
 import { getContraceptionMethod } from "@/services/contraception";
-import { isDateToday, isDateInUserContraceptionRange } from "@/services/date";
+import { isDateToday, isDateInUserContraceptionRange, formatMilisecondsTime } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getSessionsStored } from "@/store/SessionStore";
 import { getUserStore } from "@/store/UserStore";
@@ -65,11 +65,15 @@ export default function dayDetail() {
         </View>
 
         <View style={styles.progressContainer}>
-          <Progress.Bar style={styles.progressBar} progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
+          <Progress.Bar progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
           <ProgressIndicator hour={contraceptionMethod.objective_min_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
           <ProgressIndicator hour={contraceptionMethod.objective_min / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
           {notSameObjectiveMinMax && <ProgressIndicator hour={contraceptionMethod.objective_max / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />}
           <ProgressIndicator hour={contraceptionMethod.objective_max_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={notSameObjectiveMinMax} />
+        </View>
+        
+        <View style={styles.total}>
+          <Text>Temps de port total : {formatMilisecondsTime(totalWearing)}</Text>
         </View>
 
         <View style={styles.currentSession}>
@@ -120,13 +124,14 @@ const styles = StyleSheet.create({
   progressContainer: {
     position: 'relative',
     marginTop: 15,
+    marginBottom: 30
   },
-  progressBar: {
-    // flex: 1
+  total: {
+    marginBottom: 10,
   },
   currentSession: {
     width: '100%',
-    marginTop: 50,
+    marginTop: 20,
   },
   sessions: {
     width: '80%',
