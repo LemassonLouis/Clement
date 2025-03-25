@@ -149,3 +149,32 @@ export function objectivMinRemainingTime(date: Date): number {
 
   return remainingTime;
 }
+
+
+/**
+ * Split session if needed.
+ * @param session Session to split.
+ * @returns 
+ */
+export function splitSessionsByDay(session: SessionInterface): SessionInterface[] {
+  const sessions: SessionInterface[] = [];
+  let currentStart = new Date(session.dateTimeStart);
+  const now = new Date();
+
+  do {
+    const { dateStart, dateEnd } = getStartAndEndDate(currentStart);
+    const currentEnd = dateEnd < (session.dateTimeEnd ?? now) ? dateEnd : session.dateTimeEnd;
+
+    sessions.push({
+      id: session.dateTimeStart.toISOString() === currentStart.toISOString() ? session.id : 0,
+      dateTimeStart: new Date(currentStart),
+      dateTimeEnd: currentEnd,
+      sexWithoutProtection: session.sexWithoutProtection
+    });
+
+    currentStart = new Date(dateStart);
+    currentStart.setDate(currentStart.getDate() + 1);
+  } while (currentStart < (session.dateTimeEnd ?? now));
+
+  return sessions;
+}

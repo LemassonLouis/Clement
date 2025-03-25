@@ -1,5 +1,5 @@
 import { createSession, updateSession } from "@/database/session";
-import { formatMilisecondsTime, formatTimefromDate, getDateDifference } from "@/services/date";
+import { formatMilisecondsTime, formatTimefromDate, getDateDifference, getStartAndEndDate } from "@/services/date";
 import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Suspense, useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import { getCurrentSessionStore, getCurrentSessionStored } from "@/store/Current
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import CustomModal from "./CustomModal";
-import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, objectivMinRemainingTime } from "@/services/session";
+import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, objectivMinRemainingTime, splitSessionsByDay } from "@/services/session";
 import { getContraceptionMethod } from "@/services/contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
@@ -85,6 +85,39 @@ export default function CurrentSession() {
     ) {
       sessionStore.forceNotifyListeners();
     }
+
+    // Check if need to split sessions
+    if(currentSessionStored.sessionId && currentSessionStored.sessionStartTime) {
+      const splitedSession = splitSessionsByDay({
+        id: currentSessionStored.sessionId,
+        dateTimeStart: currentSessionStored.sessionStartTime,
+        dateTimeEnd: null,
+        sexWithoutProtection: hasSessionsSexWithoutProtection(currentSessions)
+      });
+
+      if(splitedSession.length > 1) {
+        splitedSession.forEach(async session => {
+          if(session.id !== 0) {
+            await updateSession(session.id, session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString(), session.sexWithoutProtection);
+
+            sessionStore.updateSessions([{
+              id: session.id,
+              dateTimeStart: session.dateTimeStart,
+              dateTimeEnd: session.dateTimeEnd,
+              sexWithoutProtection: session.sexWithoutProtection
+            }]);
+          }
+          else {
+            const sessionId = await createSession(session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString(), session.sexWithoutProtection);
+
+            if(sessionId) {
+              sessionStore.addSession({id: sessionId, dateTimeStart: session.dateTimeStart, dateTimeEnd: session.dateTimeEnd, sexWithoutProtection: session.sexWithoutProtection});
+              if(session.dateTimeEnd === null) currentSessionStore.updateCurrentSession({ sessionId: sessionId, sessionStartTime: session.dateTimeStart });
+            }
+          }
+        });
+      }
+    }
   }, [elapsedTime]);
 
 
@@ -115,18 +148,33 @@ export default function CurrentSession() {
     if(currentSessionStored.sessionStartTime && currentSessionStored.sessionId) {
       setElapsedTime(0);
 
-      const sexWithoutProtection = hasSessionsSexWithoutProtection(currentSessions);
-
-      // TODO : verify and split session if overlap 2 days or more
-
-      await updateSession(currentSessionStored.sessionId, currentSessionStored.sessionStartTime.toISOString(), endTime.toISOString(), sexWithoutProtection);
-
-      sessionStore.updateSessions([{
+      const splitedSession = splitSessionsByDay({
         id: currentSessionStored.sessionId,
         dateTimeStart: currentSessionStored.sessionStartTime,
         dateTimeEnd: endTime,
-        sexWithoutProtection: sexWithoutProtection
-      }]);
+        sexWithoutProtection: hasSessionsSexWithoutProtection(currentSessions)
+      });
+
+      splitedSession.forEach(async session => {
+        if(session.id !== 0) {
+          await updateSession(session.id, session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString(), session.sexWithoutProtection);
+
+          sessionStore.updateSessions([{
+            id: session.id,
+            dateTimeStart: session.dateTimeStart,
+            dateTimeEnd: session.dateTimeEnd,
+            sexWithoutProtection: session.sexWithoutProtection
+          }]);
+        }
+        else {
+          const sessionId = await createSession(session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString(), session.sexWithoutProtection);
+
+          if(sessionId) {
+            sessionStore.addSession({id: sessionId, dateTimeStart: session.dateTimeStart, dateTimeEnd: session.dateTimeEnd, sexWithoutProtection: session.sexWithoutProtection});
+          }
+        }
+      });
+
       currentSessionStore.updateCurrentSession({ sessionId: null, sessionStartTime: null });
     }
   };
@@ -143,6 +191,7 @@ export default function CurrentSession() {
           </View>
 
           <View style={styles.durations}>
+            {/* TODO : can modify start time */}
             <TimeText icon={TimeTextIcon.CALENDAR_START} value={currentSessionStored.sessionStartTime ? formatTimefromDate(currentSessionStored.sessionStartTime) : null} />
             <TimeText icon={TimeTextIcon.CLOCK_FAST} value={currentSessionStored.sessionId ? formatMilisecondsTime(elapsedTime) : null} />
           </View>
