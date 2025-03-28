@@ -8,8 +8,9 @@ import { deserializeSession } from "@/database/session";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { Status } from "@/enums/Status";
 import { getContraceptionMethod } from "@/services/contraception";
-import { isDateToday, isDateInUserContraceptionRange, formatMilisecondsTime } from "@/services/date";
+import { isDateToday, isDateInUserContraceptionRange, formatMilisecondsTime, getDateDifference } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
+import { getCurrentSessionStored } from "@/store/CurrentSessionStore";
 import { getSessionsStored } from "@/store/SessionStore";
 import { getUserStore } from "@/store/UserStore";
 import { Feather } from "@expo/vector-icons";
@@ -30,6 +31,7 @@ export default function dayDetail() {
   const params = useLocalSearchParams();
   const day = deserializeDay(JSON.parse(String(params.day)));
   const sessionsStored = getSessionsStored();
+  const currentSessionStored = getCurrentSessionStored();
 
   const [currentSessions, setCurrentSessions] = useState<SessionInterface[]>(extractDateSessions(sessionsStored, day.date));
   const [totalWearing, setTotalWearing] = useState<number>(calculateTotalWearing(currentSessions));
@@ -43,17 +45,36 @@ export default function dayDetail() {
   const progressBarWidth: number = Dimensions.get('window').width * 0.8;
 
   useEffect(() => {
-    const currentSessions = extractDateSessions(sessionsStored, day.date);
-    const newTotalWearing = calculateTotalWearing(currentSessions);
+    const newCurrentSessions = extractDateSessions(sessionsStored, day.date);
+    const newTotalWearing = calculateTotalWearing(newCurrentSessions);
     const newStatus = newTotalWearing > 0 || isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(newTotalWearing) : Status.NONE;
-    const newSexWithoutProtection = currentSessions.some(session => session.sexWithoutProtection);
+    const newSexWithoutProtection = newCurrentSessions.some(session => session.sexWithoutProtection);
 
-    setCurrentSessions(currentSessions);
+    setCurrentSessions(newCurrentSessions);
     setTotalWearing(newTotalWearing);
     setStatus(newStatus);
     setSexWithoutProtection(newSexWithoutProtection);
   }, [sessionsStored]);
 
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (currentSessionStored.sessionStartTime) {
+      interval = setInterval(() => {
+        const newCurrentSessions = extractDateSessions(sessionsStored, day.date);
+        const newTotalWearing = calculateTotalWearing(newCurrentSessions);
+
+        setTotalWearing(newTotalWearing);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [currentSessionStored.sessionStartTime, sessionsStored]);
 
   return (
     <ScrollView>
@@ -84,7 +105,11 @@ export default function dayDetail() {
           style={styles.sessions}
           numColumns={1}
           scrollEnabled={false}
-          data={currentSessions}
+          data={currentSessions.sort((a,b) => {
+            return a.dateTimeStart < b.dateTimeStart ? -1
+              : a.dateTimeStart > b.dateTimeStart ? 1
+              : 0;
+          })}
           keyExtractor={session => session.id.toString()}
           renderItem={({item}) => <Session {...item}/>}
         />
