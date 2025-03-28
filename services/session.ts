@@ -1,6 +1,6 @@
 import { getDateDifference, getStartAndEndDate, isDateBetween } from "./date";
 import { Status } from "@/enums/Status";
-import { getSessionStore } from "@/store/SessionStore";
+import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { getContraceptionMethod } from "./contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
@@ -135,19 +135,34 @@ export function timeVerifications(session: SessionInterface, startTime: Date, en
 
 
 /**
- * Caluclate the remaining time for the objectiv min.
- * @param date The date to calculate remaning time.
+ * Caluclate the remaining time for the objective.
+ * @param objective The objective to test
+ * @param date The date to calculate remaning time
  * @returns 
  */
-export function objectivMinRemainingTime(date: Date): number {
-  const dateMin = getStartAndEndDate(date).dateStart;
+export function calculateObjectiveRemainingTime(objective: number, date: Date): number {
+  const sessions = extractDateSessions(getSessionsStored(), date);
+  const totalWearing = calculateTotalWearing(sessions);
+
+  return objective - totalWearing;
+}
+
+
+/**
+ * Calculate the time while the objective becomes unreachable.
+ * @param objective The objective to test
+ * @param date The reference date
+ * @returns 
+ */
+export function calculateTimeUntilUnreachableObjective(objective: number, date: Date): number {
+  const now = new Date();
+  const { dateStart, dateEnd} = getStartAndEndDate(date);
+
+  if(!isDateBetween(now, dateStart, dateEnd)) return 0;
+
   const sessions = extractDateSessions(getSessionStore().getSessions(), date);
   const totalWearing = calculateTotalWearing(sessions);
-  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
-
-  const remainingTime = 86_400_000 - contraceptionMethod.objective_min - (getDateDifference(dateMin, date) - totalWearing);
-
-  return remainingTime;
+  return getDateDifference(now, dateEnd) - (objective - totalWearing);
 }
 
 

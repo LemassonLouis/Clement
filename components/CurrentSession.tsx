@@ -9,7 +9,7 @@ import { getCurrentSessionStore, getCurrentSessionStored } from "@/store/Current
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import CustomModal from "./CustomModal";
-import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, objectivMinRemainingTime, splitSessionsByDay } from "@/services/session";
+import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, splitSessionsByDay, calculateTimeUntilUnreachableObjective } from "@/services/session";
 import { getContraceptionMethod } from "@/services/contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
@@ -26,6 +26,8 @@ export default function CurrentSession() {
   const [warningModalVisible, setWarningModalVisible] = useState<boolean>(false);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [remainingTime, setRemainingTime] = useState<number>(0);
+
+  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
 
 
   // Load current session
@@ -76,7 +78,6 @@ export default function CurrentSession() {
 
     // Refresh display when objectiv reached
     const totalWearing = calculateTotalWearing(currentSessions);
-    const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
 
     if(totalWearing > contraceptionMethod.objective_min_extra && totalWearing < contraceptionMethod.objective_min_extra + 1_000
     || totalWearing > contraceptionMethod.objective_min && totalWearing < contraceptionMethod.objective_min + 1_000
@@ -137,7 +138,7 @@ export default function CurrentSession() {
 
   const stopSession = async (force: boolean = false) => {
     const endTime = new Date();
-    const currentRemainingTime: number = objectivMinRemainingTime(endTime);
+    const currentRemainingTime: number = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, endTime);
 
     if(!force && currentRemainingTime > 0 && currentRemainingTime < 7_700_000) { // 2h5m
       setRemainingTime(currentRemainingTime);
