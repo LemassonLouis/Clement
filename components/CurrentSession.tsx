@@ -9,10 +9,11 @@ import { getCurrentSessionStore, getCurrentSessionStored } from "@/store/Current
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import CustomModal from "./CustomModal";
-import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, splitSessionsByDay, calculateTimeUntilUnreachableObjective } from "@/services/session";
+import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, splitSessionsByDay, calculateTimeUntilUnreachableObjective, timeVerifications } from "@/services/session";
 import { getContraceptionMethod } from "@/services/contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+import TimeEditor from "./TimeEditor";
 
 const today: Date = new Date();
 
@@ -192,8 +193,17 @@ export default function CurrentSession() {
           </View>
 
           <View style={styles.durations}>
-            {/* TODO : can modify start time */}
-            <TimeText icon={TimeTextIcon.CALENDAR_START} value={currentSessionStored.sessionStartTime ? formatTimefromDate(currentSessionStored.sessionStartTime) : null} />
+            <View style={{marginLeft: -10}}>
+              <TimeEditor
+                icon={TimeTextIcon.CALENDAR_START}
+                date={currentSessionStored.sessionStartTime}
+                setDate={(date) => {
+                  const result = timeVerifications({id: 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date())
+                  if(result.ok) currentSessionStored.sessionStartTime = date;
+                  else console.log("impossible") // TODO : display errors
+                }}
+              />
+            </View>
             <TimeText icon={TimeTextIcon.CLOCK_FAST} value={currentSessionStored.sessionId ? formatMilisecondsTime(elapsedTime) : null} />
           </View>
         </View>

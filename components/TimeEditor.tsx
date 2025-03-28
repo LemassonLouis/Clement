@@ -10,19 +10,19 @@ import { LinearGradient } from "expo-linear-gradient";
 
 interface TimeEditorInterface {
   icon: TimeTextIcon,
-  date: Date,
-  setDate: React.Dispatch<React.SetStateAction<Date>>,
+  date: Date | null,
+  setDate: (date: Date) => void,
 }
 
 
 export default function TimeEditor({ icon, date, setDate }: TimeEditorInterface) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [time, setTime] = useState<Date>(date);
+  const [time, setTime] = useState<Date>(() => date ?? new Date());
 
   return (
     <>
-      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-        <TimeText icon={icon} value={formatTimefromDate(date)} />
+      <TouchableOpacity style={styles.button} onPress={() => { if(date) setModalVisible(true) }}>
+        <TimeText icon={icon} value={date ? formatTimefromDate(date) : null} />
       </TouchableOpacity>
 
       <CustomModal
@@ -31,7 +31,7 @@ export default function TimeEditor({ icon, date, setDate }: TimeEditorInterface)
         actionFalseText="Annuler"
         actionTrueText="Confirmer"
         actionFalse={() => {
-          setTime(date);
+          setTime(date ?? new Date());
           setModalVisible(false);
         }}
         actionTrue={() => {
@@ -41,9 +41,9 @@ export default function TimeEditor({ icon, date, setDate }: TimeEditorInterface)
       >
         <TimerPicker
           initialValue={{
-            hours: time.getHours(),
-            minutes: time.getMinutes(),
-            seconds: time.getSeconds()
+            hours: time?.getHours(),
+            minutes: time?.getMinutes(),
+            seconds: time?.getSeconds()
           }}
           onDurationChange={(pickedTime) => {
             setTime(new Date(
