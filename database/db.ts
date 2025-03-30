@@ -9,7 +9,7 @@ export const DB_NAME = 'clement';
  * @returns 
  */
 export async function getDB(): Promise<SQLite.SQLiteDatabase> {
-  return await SQLite.openDatabaseAsync(DB_NAME);
+  return await SQLite.openDatabaseAsync(DB_NAME, { useNewConnection: true });
 }
 
 
