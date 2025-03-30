@@ -14,7 +14,7 @@ import { getCurrentSessionStored } from "@/store/CurrentSessionStore";
 import { getSessionsStored } from "@/store/SessionStore";
 import { getUserStore } from "@/store/UserStore";
 import { Feather } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import * as Progress from 'react-native-progress';
@@ -29,6 +29,7 @@ const deserializeDay = (day: DayInterface): DayInterface => {
 
 export default function dayDetail() {
   const params = useLocalSearchParams();
+  const navigation = useNavigation();
   const day = deserializeDay(JSON.parse(String(params.day)));
   const sessionsStored = getSessionsStored();
   const currentSessionStored = getCurrentSessionStored();
@@ -43,6 +44,10 @@ export default function dayDetail() {
   const notSameObjectiveMinMax = contraceptionMethod.objective_min !== contraceptionMethod.objective_max;
 
   const progressBarWidth: number = Dimensions.get('window').width * 0.8;
+
+  useEffect(() => {
+    navigation.setOptions({ title: "Détails du jour"});
+  }, [navigation]);
 
   useEffect(() => {
     const newCurrentSessions = extractDateSessions(sessionsStored, day.date);
