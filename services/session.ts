@@ -23,7 +23,7 @@ export function calculateTotalWearing(sessions: SessionInterface[]): number {
  * @param totalWearing miliseconds (-1 = force to none status)
  * @returns
  */
-export function getStatusFromTotalWearing(totalWearing: number): string {
+export function getStatusFromTotalWearing(totalWearing: number): Status {
   const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
 
   if(totalWearing === -1) {
@@ -156,20 +156,24 @@ export function calculateObjectiveRemainingTime(objective: number, date: Date): 
  * Calculate the time while the objective becomes unreachable.
  * @param objective The objective to test
  * @param date The reference date
- * @returns `-1 = `reached`, `0 = unreachable`
+ * @returns `-1 = reached`, `0 = unreachable`
  */
 export function calculateTimeUntilUnreachableObjective(objective: number, date: Date): number {
   const sessions = extractDateSessions(getSessionStore().getSessions(), date);
   const totalWearing = calculateTotalWearing(sessions);
 
-  if(totalWearing < 0) return -1;
+  if(totalWearing > objective) return -1;
 
   const now = new Date();
   const { dateStart, dateEnd} = getStartAndEndDate(date);
 
   if(!isDateBetween(now, dateStart, dateEnd)) return 0;
 
-  return getDateDifference(now, dateEnd) - (objective - totalWearing);
+  const remainingTime = getDateDifference(now, dateEnd) - (objective - totalWearing);
+
+  if(remainingTime <= 0) return 0;
+
+  return remainingTime;
 }
 
 
