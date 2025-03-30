@@ -4,6 +4,7 @@ import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { getContraceptionMethod } from "./contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 
 
 /**
@@ -101,7 +102,7 @@ export function hasSessionsSexWithoutProtection(sessions: SessionInterface[]): b
  * @param endTime the end time
  * @returns 
  */
-export function timeVerifications(session: SessionInterface, startTime: Date, endTime: Date): { ok: boolean, errors: string[] } {
+export function timeVerifications(session: SessionInterface, startTime: Date, endTime: Date): boolean {
   const sessionStore = getSessionStore();
   let ok = true;
   const errors = [];
@@ -112,7 +113,7 @@ export function timeVerifications(session: SessionInterface, startTime: Date, en
   }
 
   if(endTime <= startTime) {
-    errors.push("L'heure de fin ne peut pas êter inférieur ou égal à l'heure de début");
+    errors.push("L'heure de fin ne peut pas être inférieur ou égal à l'heure de début");
     ok = false;
   }
   else {
@@ -127,10 +128,13 @@ export function timeVerifications(session: SessionInterface, startTime: Date, en
     }
   }
 
-  return {
-    ok,
-    errors
-  };
+  errors.forEach(error => {
+    toast.error(error, {
+      position: ToastPosition.BOTTOM
+    })
+  })
+
+  return ok;
 }
 
 

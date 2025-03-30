@@ -1,6 +1,7 @@
 import UserInterface from "@/interfaces/User";
 import { getDB } from "./db";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
+import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 
 
 /**
@@ -18,7 +19,7 @@ export async function getUser(): Promise<UserInterface | null> {
     return deserializeUser(user);
   }
   catch (error) {
-    console.error('Error when trying to get user :', error);
+    toast.error("Error when trying to fetch user : " + error, { position: ToastPosition.BOTTOM });
     return null;
   }
 }
@@ -45,7 +46,7 @@ export async function createUser(method: ContraceptionMethods|null = null, start
       return result.lastInsertRowId;
     }
     catch (error) {
-      console.error('Error when trying to create user :', error);
+      toast.error("Error while trying to create user : " + error, { position: ToastPosition.BOTTOM });
       return null;
     }
   }
@@ -64,7 +65,7 @@ export async function updateUser(id: number, method: ContraceptionMethods|null, 
     await db.runAsync("UPDATE User SET method = ?, startDate = ? WHERE id = ?", [method, startDate, id]);
   }
   catch (error) {
-    console.error('Error when trying to update user :', error);
+    toast.error("Error while trying to update user : " + error, { position: ToastPosition.BOTTOM });
   }
 }
 

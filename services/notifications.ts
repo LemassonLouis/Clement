@@ -7,6 +7,7 @@ import { getContraceptionMethod } from "./contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { Platform } from "react-native";
+import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 
 
 export const BACKGROUND_NOTIFICATIONS_TASK  = 'BACKGROUND_NOTIFICATIONS_TASK';
@@ -26,24 +27,25 @@ export async function initializeNotifications(): Promise<void> {
   });
 
   await configureNotificationChannel();
-  await registerBackgroundTask(BACKGROUND_NOTIFICATIONS_TASK, 5 * 60);
+  await registerBackgroundTask(BACKGROUND_NOTIFICATIONS_TASK, 15 * 60);
 }
 
 
 defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
   console.log("task triggered"); // TEMP
+  toast.success("task tirggered", { position: ToastPosition.BOTTOM }); // TEMP
 
   try {
     const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
     const remainingTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, new Date());
 
     makeNotificationPush(
-      "Cela fait 5 min",
-      `remaining time : ${remainingTime}, ${remainingTime > 7_200_000 && remainingTime < 7_800_000}, ${remainingTime > 0 && remainingTime < 600_000}`
+      "Cela fait 15 min",
+      `remaining time : ${remainingTime}, ${remainingTime > 7_200_000 && remainingTime < 7_200_000 + 900_000}, ${remainingTime > 0 && remainingTime < 900_000}`
     );
 
-    // between 2h and 2h10min
-    if(remainingTime > 7_200_000 && remainingTime < 7_800_000) {
+    // between 2h and 2h15min
+    if(remainingTime > 7_200_000 && remainingTime < 7_200_000 + 900_000) {
       makeNotificationPush(
         "Vous n'avez plus beaucoup de temps !",
         `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`
@@ -51,8 +53,8 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
       return BackgroundFetchResult.NewData;
     }
 
-    // between 0 and 10min
-    if(remainingTime > 0 && remainingTime < 600_000) {
+    // between 0 and 15min
+    if(remainingTime > 0 && remainingTime < 900_000) {
       makeNotificationPush(
         "Vous n'avez plus beaucoup de temps !",
         `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`
@@ -63,9 +65,9 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
     const currentSessions = extractDateSessions(getSessionStore().getSessions(), new Date());
     const totalWearing =  calculateTotalWearing(currentSessions);
 
-    // between objectif min and objectif min + 10 min
+    // between objectif min and objectif min + 15 min
     if(totalWearing > contraceptionMethod.objective_min
-    && totalWearing < contraceptionMethod.objective_min + 600_000) {
+    && totalWearing < contraceptionMethod.objective_min + 900_000) {
       makeNotificationPush(
         "Objectif atteint !",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min / 3_600_000}h`
@@ -73,10 +75,10 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
       return BackgroundFetchResult.NewData;
     }
 
-    // if objectif min and max are different, between objectif max and objectif max + 10 min
+    // if objectif min and max are different, between objectif max and objectif max + 15 min
     if(contraceptionMethod.objective_max !== contraceptionMethod.objective_min
     && totalWearing > contraceptionMethod.objective_max
-    && totalWearing < contraceptionMethod.objective_max + 600_000) {
+    && totalWearing < contraceptionMethod.objective_max + 900_000) {
       makeNotificationPush(
         "Objectif atteint !",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_max / 3_600_000}h, pensez à retirer votre dipositif`
@@ -84,9 +86,9 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
       return BackgroundFetchResult.NewData;
     }
 
-    // between objectif max extra and objectif max extra + 10 min
+    // between objectif max extra and objectif max extra + 15 min
     if(totalWearing > contraceptionMethod.objective_max_extra
-    && totalWearing < contraceptionMethod.objective_max_extra + 600_000) {
+    && totalWearing < contraceptionMethod.objective_max_extra + 900_000) {
       makeNotificationPush(
         "Objectif dépassé",
         `Cela fait maintenant ${contraceptionMethod.objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`
@@ -97,7 +99,7 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
     return BackgroundFetchResult.NoData;
   }
   catch(error) {
-    console.log("Error while running the task :", error);
+    toast.error("Error while running the task : " + error, { position: ToastPosition.BOTTOM });
     return BackgroundFetchResult.Failed;
   }
 });
@@ -110,7 +112,10 @@ defineTask(BACKGROUND_NOTIFICATIONS_TASK, async () => {
  */
 async function registerBackgroundTask(name: string, interval: number): Promise<void> {
   const isRegistered = await isTaskRegisteredAsync(name);
-  if(isRegistered) return console.log("Background task already registered");
+  if(isRegistered) {
+    toast.success("Background task already registered", { position: ToastPosition.BOTTOM }); // TEMP
+    return;
+  }
 
   try {
     await registerTaskAsync(name, {
@@ -118,9 +123,9 @@ async function registerBackgroundTask(name: string, interval: number): Promise<v
       stopOnTerminate: false,
       startOnBoot: true,
     });
-    console.log('Background task registred');
+    toast.success("Background task registred", { position: ToastPosition.BOTTOM }); // TEMP
   } catch (error) {
-    console.error('Error when trying to register background task :', error);
+    toast.error("Error while trying to register background task : " + error, { position: ToastPosition.BOTTOM });
   }
 }
 

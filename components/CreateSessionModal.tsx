@@ -5,7 +5,6 @@ import TimeEditor from "./TimeEditor";
 import { createSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";
-import ErrorsDisplayer from "./ErrorsDisplayer";
 
 
 export default function CreateSessionModal({ date, sexWithoutProtection, visible, setVisible }: {date: Date, sexWithoutProtection: boolean, visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>>}) {
@@ -13,7 +12,6 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
 
   const [startTime, setStartTime] = useState<Date>(date);
   const [endTime, setEndTime] = useState<Date>(date);
-  const [errors, setErrors] = useState<string[]>([]);
 
   const actionTrue = async () => {
     const session: SessionInterface = {
@@ -22,13 +20,8 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
       dateTimeEnd: endTime,
       sexWithoutProtection: sexWithoutProtection
     }
-    const { ok, errors } = timeVerifications(session, startTime, endTime);
-    if(!ok){
-      setErrors(errors);
-      return;
-    }
-
-    setErrors([]);
+    const ok = timeVerifications(session, startTime, endTime);
+    if(!ok) return;
 
     const sessionId = await createSession(startTime.toISOString(), endTime.toISOString(), sexWithoutProtection);
     if(sessionId) {
@@ -46,7 +39,6 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
       actionFalseText="Annuler"
       actionTrueText="Ajouter"
       actionFalse={() => {
-        setErrors([]);
         setStartTime(date);
         setEndTime(date);
         setVisible(false);
@@ -55,8 +47,6 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
     >
       <TimeEditor icon={TimeTextIcon.CALENDAR_START} date={startTime} setDate={setStartTime} />
       <TimeEditor icon={TimeTextIcon.CALENDAR_END} date={endTime} setDate={setEndTime} />
-
-      <ErrorsDisplayer errors={errors} />
     </CustomModal>
   )
 }

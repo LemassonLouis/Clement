@@ -198,9 +198,8 @@ export default function CurrentSession() {
                 icon={TimeTextIcon.CALENDAR_START}
                 date={currentSessionStored.sessionStartTime}
                 setDate={(date) => {
-                  const result = timeVerifications({id: 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date())
-                  if(result.ok) currentSessionStored.sessionStartTime = date;
-                  else console.log("impossible") // TODO : display errors
+                  const ok = timeVerifications({id: 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date())
+                  if(ok) currentSessionStored.sessionStartTime = date;
                 }}
               />
             </View>

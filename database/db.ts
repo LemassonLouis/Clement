@@ -1,3 +1,4 @@
+import { toast, ToastPosition } from '@backpackapp-io/react-native-toast';
 import * as SQLite from 'expo-sqlite';
 
 
@@ -35,7 +36,7 @@ export async function createTables(): Promise<void> {
       );
     `);
   } catch (error) {
-    console.error('Erreur lors de la création des tables:', error);
+    toast.error("Error while trying to create tables : " + error, { position: ToastPosition.BOTTOM });
   }
 };
 
