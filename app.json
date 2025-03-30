@@ -2,7 +2,7 @@
   "expo": {
     "name": "Clément",
     "slug": "clement",
-    "version": "beta-1.2.0",
+    "version": "beta-1.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#fff"
       },
       "package": "com.anonymous.CMTanneautracker",
       "permissions": [

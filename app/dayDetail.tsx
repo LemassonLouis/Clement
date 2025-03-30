@@ -1,6 +1,7 @@
 import CalendarIcon from "@/components/CalendarIcon";
 import CreateSessionModal from "@/components/CreateSessionModal";
 import CurrentSession from "@/components/CurrentSession";
+import ProgressBarDetails from "@/components/ProgressBarDetails";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
 import SexWithoutProtection from "@/components/sexWithoutProtection";
@@ -8,7 +9,7 @@ import { deserializeSession } from "@/database/session";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { Status } from "@/enums/Status";
 import { getContraceptionMethod } from "@/services/contraception";
-import { isDateToday, isDateInUserContraceptionRange, formatMilisecondsTime, getDateDifference } from "@/services/date";
+import { isDateToday, isDateInUserContraceptionRange, formatMilisecondsTime } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getCurrentSessionStored } from "@/store/CurrentSessionStore";
 import { getSessionsStored } from "@/store/SessionStore";
@@ -39,6 +40,7 @@ export default function dayDetail() {
   const [status, setStatus] = useState<string>(totalWearing > 0 || isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(currentSessions.some(session => session.sexWithoutProtection));
   const [createSessionModalVisible, setCreateSessionModalVisible] = useState<boolean>(false);
+  const [showProgressBars, setShowProgessBars] = useState<boolean>(false);
 
   const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
   const notSameObjectiveMinMax = contraceptionMethod.objective_min !== contraceptionMethod.objective_max;
@@ -90,13 +92,46 @@ export default function dayDetail() {
           <CalendarIcon status={status} sexWithoutProtection={sexWithoutProtection} size={100} />
         </View>
 
-        <View style={styles.progressContainer}>
-          <Progress.Bar progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
-          <ProgressIndicator hour={contraceptionMethod.objective_min_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
-          <ProgressIndicator hour={contraceptionMethod.objective_min / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
-          {notSameObjectiveMinMax && <ProgressIndicator hour={contraceptionMethod.objective_max / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />}
-          <ProgressIndicator hour={contraceptionMethod.objective_max_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={notSameObjectiveMinMax} />
-        </View>
+        <TouchableOpacity onPress={() => setShowProgessBars(!showProgressBars)}>
+          <View style={styles.progressBarContainer}>
+            {!showProgressBars ?
+              <>
+                <Progress.Bar progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
+                <ProgressIndicator hour={contraceptionMethod.objective_min_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />
+                <ProgressIndicator hour={contraceptionMethod.objective_min / 3_600_000} progressBarWidth={progressBarWidth} isTop={true} />
+                {notSameObjectiveMinMax && <ProgressIndicator hour={contraceptionMethod.objective_max / 3_600_000} progressBarWidth={progressBarWidth} isTop={false} />}
+                <ProgressIndicator hour={contraceptionMethod.objective_max_extra / 3_600_000} progressBarWidth={progressBarWidth} isTop={notSameObjectiveMinMax} />
+              </>
+            :
+              <>
+                <ProgressBarDetails
+                  progressBarWidth={progressBarWidth}
+                  date={day.date}
+                  objective={contraceptionMethod.objective_min_extra}
+                  totalWearing={totalWearing}
+                />
+                <ProgressBarDetails
+                  progressBarWidth={progressBarWidth}
+                  date={day.date}
+                  objective={contraceptionMethod.objective_min}
+                  totalWearing={totalWearing}
+                />
+                {notSameObjectiveMinMax && <ProgressBarDetails
+                  progressBarWidth={progressBarWidth}
+                  date={day.date}
+                  objective={contraceptionMethod.objective_max}
+                  totalWearing={totalWearing}
+                />}
+                <ProgressBarDetails
+                  progressBarWidth={progressBarWidth}
+                  date={day.date}
+                  objective={contraceptionMethod.objective_max_extra}
+                  totalWearing={totalWearing}
+                />
+              </>
+            }
+          </View>
+        </TouchableOpacity>
         
         <View style={styles.total}>
           <Text>Temps de port total : {formatMilisecondsTime(totalWearing)}</Text>
@@ -151,13 +186,14 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginBottom: 20,
   },
-  progressContainer: {
+  progressBarContainer: {
     position: 'relative',
     marginTop: 15,
     marginBottom: 30
   },
   total: {
-    marginBottom: 10,
+    marginTop: 30,
+    textAlign: 'center',
   },
   currentSession: {
     width: '100%',

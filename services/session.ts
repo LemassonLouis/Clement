@@ -49,6 +49,22 @@ export function getStatusFromTotalWearing(totalWearing: number): Status {
   }
 }
 
+
+/**
+ * Get the status from the objective.
+ * @param objective The objective
+ * @param date The date
+ * @returns 
+ */
+export function getStatusFromObjective(objective: number, date: Date): Status {
+  const reachableValue = calculateTimeUntilUnreachableObjective(objective, date);
+
+  if(reachableValue === -1) return Status.SUCCESSED;
+  else if(reachableValue === 0) return Status.FAILED;
+  else return Status.NONE; 
+}
+
+
 /**
  * Get the color of the status.
  * @param status The status

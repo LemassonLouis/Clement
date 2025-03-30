@@ -107,7 +107,7 @@ export function getCalendarLastSunday(date: Date): Date {
  * @returns 
  */
 export function formatMilisecondsTime(time: number, removeZero: boolean = true): string {
-  const seconds = Math.floor(time / 1000);
+  const seconds = Math.max(0, Math.floor(time / 1000));
 
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
