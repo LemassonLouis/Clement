@@ -1,29 +1,40 @@
-import { updateSessionsSexWithoutProtection } from "@/database/session";
+import { getAllSessionsBetweenDates, updateSessionsSexWithoutProtection } from "@/database/session";
+import { getStartAndEndDate } from "@/services/date";
 import { extractDateSessions, hasSessionsSexWithoutProtection } from "@/services/session";
 import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { memo, useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
 
-function SexWithoutProtection({ date }: {date: Date}) {
-  const sessionStore = getSessionStore();
-  const sessionsStored = getSessionsStored();
-  const currentSessions = extractDateSessions(sessionsStored, date);
+type SexWithoutProtectionProps = {
+  date: Date
+}
 
-  const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(hasSessionsSexWithoutProtection(currentSessions));
+
+function SexWithoutProtection({ date }: SexWithoutProtectionProps) {
+  const sessionStore = getSessionStore();
+  const [currentSessions, setCurrentSessions] = useState<any[]>([]);
+  const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
 
 
   // Load sexWithoutProtectionState
   useEffect(() => {
-    setSexWithoutProtection(hasSessionsSexWithoutProtection(currentSessions));
-  }, [sessionsStored]);
+    const fetchSessions = async () => {
+      const { dateStart, dateEnd } = getStartAndEndDate(date);
+      const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
+      setCurrentSessions(sessions);
+      setSexWithoutProtection(hasSessionsSexWithoutProtection(sessions));
+    };
+
+    fetchSessions();
+  }, [date]);
 
 
   const toggleSexWithoutProtection = (toggleValue: boolean) => {
     setSexWithoutProtection(toggleValue);
 
     const updateStoredInfos = async () => {
-      const ids = currentSessions.reduce<number[]>((prev, curr) => [curr.id, ...prev], []);
+      const ids = currentSessions.map(session => session.id);
       await updateSessionsSexWithoutProtection(ids, toggleValue);
 
       const updatedSessions = currentSessions.map(session => {
