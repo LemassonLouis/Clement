@@ -100,7 +100,7 @@ export default function CurrentSession() {
       if(splitedSession.length > 1) {
         splitedSession.forEach(async session => {
           if(session.id !== 0) {
-            await updateSession(session.id, session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString(), session.sexWithoutProtection);
+            await updateSession(session.id, session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString() ?? null, session.sexWithoutProtection);
 
             sessionStore.updateSessions([{
               id: session.id,
@@ -159,7 +159,7 @@ export default function CurrentSession() {
 
       splitedSession.forEach(async session => {
         if(session.id !== 0) {
-          await updateSession(session.id, session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString(), session.sexWithoutProtection);
+          await updateSession(session.id, session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString() ?? null, session.sexWithoutProtection);
 
           sessionStore.updateSessions([{
             id: session.id,
@@ -198,7 +198,7 @@ export default function CurrentSession() {
                 icon={TimeTextIcon.CALENDAR_START}
                 date={currentSessionStored.sessionStartTime}
                 setDate={(date) => {
-                  const ok = timeVerifications({id: 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date());
+                  const ok = timeVerifications({id: currentSessionStored.sessionId ?? 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date());
                   if(ok) currentSessionStored.sessionStartTime = date;
                 }}
               />
