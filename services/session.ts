@@ -118,7 +118,7 @@ export function hasSessionsSexWithoutProtection(sessions: SessionInterface[]): b
  * @param endTime the end time
  * @returns 
  */
-export function timeVerifications(session: SessionInterface, startTime: Date, endTime: Date): boolean {
+export function timeVerifications(session: SessionInterface, startTime: Date, endTime: Date, toastProviderKey: string = 'DEFAULT'): boolean {
   const sessionStore = getSessionStore();
   let ok = true;
   const errors = [];
@@ -146,7 +146,8 @@ export function timeVerifications(session: SessionInterface, startTime: Date, en
 
   errors.forEach(error => {
     toast.error(error, {
-      position: ToastPosition.BOTTOM
+      position: ToastPosition.BOTTOM,
+      providerKey: toastProviderKey
     })
   })
 

@@ -14,7 +14,7 @@ export default function EditSessionModal({ session, visible, setVisible }: Delet
   const [endTime, setEndTime] = useState<Date>(session.dateTimeEnd);
 
   const actionTrue = async () => {
-    const ok = timeVerifications(session, startTime, endTime);
+    const ok = timeVerifications(session, startTime, endTime, 'MODAL::1');
     if(!ok) return;
 
     await updateSession(session.id, startTime.toISOString(), endTime.toISOString(), session.sexWithoutProtection);

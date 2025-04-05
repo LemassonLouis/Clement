@@ -20,7 +20,7 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
       dateTimeEnd: endTime,
       sexWithoutProtection: sexWithoutProtection
     }
-    const ok = timeVerifications(session, startTime, endTime);
+    const ok = timeVerifications(session, startTime, endTime, 'MODAL::1');
     if(!ok) return;
 
     const sessionId = await createSession(startTime.toISOString(), endTime.toISOString(), sexWithoutProtection);

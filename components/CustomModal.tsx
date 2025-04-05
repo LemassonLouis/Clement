@@ -1,4 +1,5 @@
 import CustomModalInterface from "@/interfaces/CustomModal";
+import { Toasts } from "@backpackapp-io/react-native-toast";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
 
@@ -38,6 +39,7 @@ export default function CustomModal({
           </View>
         </View>
       </View>
+      <Toasts providerKey="MODAL::1" />
     </Modal>
   )
 }
