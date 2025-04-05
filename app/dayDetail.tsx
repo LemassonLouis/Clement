@@ -93,7 +93,7 @@ export default function dayDetail() {
         </View>
 
         <TouchableOpacity onPress={() => setShowProgessBars(!showProgressBars)}>
-          <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBarContainer, showProgressBars && styles.progressBarDetailsContainer]}>
             {!showProgressBars ?
               <>
                 <Progress.Bar progress={totalWearing / 86_400_000} width={progressBarWidth} height={10} color={getColorFromStatus(status)}/>
@@ -189,10 +189,12 @@ const styles = StyleSheet.create({
   progressBarContainer: {
     position: 'relative',
     marginTop: 15,
-    marginBottom: 30
+  },
+  progressBarDetailsContainer: {
+    marginBottom: -15,
   },
   total: {
-    marginTop: 30,
+    marginVertical: 30,
     textAlign: 'center',
   },
   currentSession: {
