@@ -8,11 +8,9 @@
       "developmentClient": true,
       "distribution": "internal",
       "android": {
-        "image": "latest",
         "buildType": "apk"
       },
       "ios": {
-        "image": "latest",
         "simulator": true
       }
     },
