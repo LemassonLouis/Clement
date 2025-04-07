@@ -5,7 +5,7 @@
   },
   "build": {
     "development": {
-      "developmentClient": true,
+      "developmentClient": false,
       "distribution": "internal",
       "android": {
         "buildType": "apk"
@@ -26,5 +26,8 @@
   },
   "submit": {
     "production": {}
+  },
+  "notes": {
+    "//TODO : change android package name": "com.lemassonlouis.clement"
   }
 }
