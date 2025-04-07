@@ -26,8 +26,5 @@
   },
   "submit": {
     "production": {}
-  },
-  "notes": {
-    "//TODO : change android package name": "com.lemassonlouis.clement"
   }
 }
