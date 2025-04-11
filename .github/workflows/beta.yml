@@ -59,12 +59,14 @@ jobs:
 
           check_status() {
             local platform=$1
-            local status=$(jq -r ".builds.${platform}.status" build-info.json)
+
+            local status=$(jq -r --arg PLATFORM "$platform" '.builds[] | select(.platform == $PLATFORM) | .status' build-info.json)
             if [[ "$status" != "finished" ]]; then
               echo "❌ Build $platform failed!"
               exit 1
             fi
-            local url=$(jq -r ".builds.${platform}.artifacts.buildUrl" build-info.json)
+
+            local url=$(jq -r --arg PLATFORM "$platform" '.builds[] | select(.platform == $PLATFORM) | .artifacts.buildUrl' build-info.json)
             echo "${platform^^}_URL=$url" >> $GITHUB_ENV
           }
 
