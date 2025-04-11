@@ -148,6 +148,14 @@ export function isDateInUserContraceptionRange(date: Date): boolean {
 }
 
 
+/**
+ * Get the next day of the passed date
+ * @param date The reference date
+ */
+export function getNextDay(date: Date): Date {
+  return new Date(date.getTime() + (24 * 60 * 60 * 1000));
+}
+
 
 /**
  * Validate or thow if start date is greater or equal than end date.

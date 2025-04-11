@@ -1,23 +1,12 @@
 import EditContraceptionModal from "@/components/EditContraceptionModal";
 import EditStartDateModal from "@/components/EditStartDateModal";
-import { BACKGROUND_NOTIFICATIONS_TASK, getBackgroundFetchStatus, makeNotificationPush, scheduleNotificationPush } from "@/services/notifications";
-import { BackgroundFetchStatus } from "expo-background-fetch";
-import { useEffect, useState } from "react";
+import { makeNotificationPush, scheduleNotificationPush } from "@/services/notifications";
+import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function SettingsScreen() {
   const [editContraceptionModalVisible, setEditContraceptionModalVisible] = useState<boolean>(false);
   const [editStartDateModalVisible, setEditStartDateModalVisible] = useState<boolean>(false);
-  const [backgroundFetchStatus, setBackgroundFetchStatus] = useState<{ status: BackgroundFetchStatus | null; isRegistered: boolean; } | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getBackgroundFetchStatus(BACKGROUND_NOTIFICATIONS_TASK);
-      setBackgroundFetchStatus(data);
-    }
-
-    fetchData();
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -40,8 +29,6 @@ export default function SettingsScreen() {
       }}>
         <Text>Notification in 10 sec</Text>
       </TouchableOpacity>
-
-      <Text>Is task isRegistered : {backgroundFetchStatus?.isRegistered ? 'true' : 'false'} | Status : {backgroundFetchStatus?.status}</Text>
 
       <EditContraceptionModal
         visible={editContraceptionModalVisible}

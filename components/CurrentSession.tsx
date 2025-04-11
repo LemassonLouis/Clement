@@ -14,6 +14,7 @@ import { getContraceptionMethod } from "@/services/contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import TimeEditor from "./TimeEditor";
+import { reSheduleNotifications } from "@/services/notifications";
 
 const today: Date = new Date();
 
@@ -46,6 +47,8 @@ export default function CurrentSession() {
   // Calculate elapsed time
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
+
+    reSheduleNotifications();
 
     if (currentSessionStored.sessionStartTime) {
       interval = setInterval(() => {
