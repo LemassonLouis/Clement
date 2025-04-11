@@ -18,8 +18,6 @@ class CurrentSessionStore {
     if(this.currentSession.sessionId !== currentSession?.id && this.currentSession.sessionStartTime !== currentSession?.dateTimeStart) {
       this.currentSession.sessionId = currentSession?.id ?? null;
       this.currentSession.sessionStartTime = currentSession?.dateTimeStart ?? null;
-
-      this.notifyListeners();
     }
   }
 
