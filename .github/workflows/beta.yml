@@ -27,7 +27,7 @@ on:
 
 jobs:
   build:
-    name: Build and optionally release
+    name: Build and release
     runs-on: ubuntu-latest
 
     steps:
@@ -50,7 +50,7 @@ jobs:
       - name: Start EAS Build
         run: |
           PLATFORM=${{ github.event.inputs.platform || 'all' }}
-          eas build --platform "$PLATFORM" --profile development --non-interactive --wait --output build-info.json
+          eas build --platform "$PLATFORM" --profile development --non-interactive --wait --json > build-info.json
 
       - name: Check build results
         id: check
