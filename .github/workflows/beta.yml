@@ -1,0 +1,96 @@
+name: EAS Build
+
+on:
+  push:
+    tags:
+      - 'beta-*'
+
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Plateforme à builder"
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - android
+          - ios
+      # create_release:
+      #   description: "Créer une release GitHub ?"
+      #   required: true
+      #   default: "false"
+      #   type: choice
+      #   options:
+      #     - "true"
+      #     - "false"
+
+jobs:
+  build:
+    name: Build and optionally release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start EAS Build
+        run: |
+          PLATFORM=${{ github.event.inputs.platform || 'all' }}
+          eas build --platform "$PLATFORM" --profile development --non-interactive --wait --output build-info.json
+
+      - name: Check build results
+        id: check
+        run: |
+          PLATFORM=${{ github.event.inputs.platform || 'all' }}
+
+          check_status() {
+            local platform=$1
+            local status=$(jq -r ".builds.${platform}.status" build-info.json)
+            if [[ "$status" != "finished" ]]; then
+              echo "❌ Build $platform failed!"
+              exit 1
+            fi
+            local url=$(jq -r ".builds.${platform}.artifacts.buildUrl" build-info.json)
+            echo "${platform^^}_URL=$url" >> $GITHUB_ENV
+          }
+
+          if [[ "$PLATFORM" == "all" || "$PLATFORM" == "android" ]]; then
+            check_status android
+          fi
+          if [[ "$PLATFORM" == "all" || "$PLATFORM" == "ios" ]]; then
+            check_status ios
+          fi
+
+      - name: Download artifacts
+        run: |
+          if [[ -n "$ANDROID_URL" ]]; then
+            curl -L "$ANDROID_URL" -o app-android.aab
+            zip app-android.zip app-android.aab
+          fi
+          if [[ -n "$IOS_URL" ]]; then
+            curl -L "$IOS_URL" -o app-ios.ipa
+            zip app-ios.zip app-ios.ipa
+          fi
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app-android.zip
+            app-ios.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
