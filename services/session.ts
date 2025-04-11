@@ -181,12 +181,8 @@ export function calculateTimeUntilUnreachableObjective(objective: number, date: 
 
   if(totalWearing > objective) return -1;
 
-  const now = new Date();
-  const { dateStart, dateEnd} = getStartAndEndDate(date);
-
-  if(!isDateBetween(now, dateStart, dateEnd)) return 0;
-
-  const remainingTime = getDateDifference(now, dateEnd) - (objective - totalWearing);
+  const dateEnd = getStartAndEndDate(date).dateEnd;
+  const remainingTime = getDateDifference(date, dateEnd) - (objective - totalWearing);
 
   if(remainingTime <= 0) return 0;
 
