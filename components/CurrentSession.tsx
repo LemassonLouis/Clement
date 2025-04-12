@@ -202,9 +202,12 @@ export default function CurrentSession() {
               <TimeEditor
                 icon={TimeTextIcon.CALENDAR_START}
                 date={currentSessionStored.sessionStartTime}
-                setDate={(date) => {
+                setDate={async (date) => {
                   const ok = timeVerifications({id: currentSessionStored.sessionId ?? 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date());
-                  if(ok) currentSessionStored.sessionStartTime = date;
+                  if(ok) {
+                    currentSessionStored.sessionStartTime = date;
+                    await reScheduleNotifications();
+                  }
                 }}
               />
             </View>

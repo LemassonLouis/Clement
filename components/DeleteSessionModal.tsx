@@ -1,6 +1,7 @@
 import { deleteSession } from "@/database/session";
 import CustomModal from "./CustomModal";
 import { getSessionStore } from "@/store/SessionStore";
+import { reScheduleNotifications } from "@/services/notifications";
 
 
 export default function DeleteSessionModal({ session, visible, setVisible }: DeleteSessionModalInterface) {
@@ -9,6 +10,9 @@ export default function DeleteSessionModal({ session, visible, setVisible }: Del
   const actionTrue = async () => {
     await deleteSession(session.id);
     sessionStore.removeSession(session);
+
+    await reScheduleNotifications();
+
     setVisible(false);
   }
 

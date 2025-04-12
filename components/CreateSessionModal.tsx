@@ -5,6 +5,7 @@ import TimeEditor from "./TimeEditor";
 import { createSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";
+import { reScheduleNotifications } from "@/services/notifications";
 
 
 export default function CreateSessionModal({ date, sexWithoutProtection, visible, setVisible }: {date: Date, sexWithoutProtection: boolean, visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>>}) {
@@ -28,6 +29,8 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
       session.id = sessionId;
       sessionStore.addSession(session);
     }
+
+    await reScheduleNotifications();
 
     setVisible(false);
   }

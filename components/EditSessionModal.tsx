@@ -5,6 +5,7 @@ import TimeEditor from "./TimeEditor";
 import { updateSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";
+import { reScheduleNotifications } from "@/services/notifications";
 
 
 export default function EditSessionModal({ session, visible, setVisible }: DeleteSessionModalInterface) {
@@ -25,6 +26,8 @@ export default function EditSessionModal({ session, visible, setVisible }: Delet
       dateTimeEnd: endTime,
       sexWithoutProtection: session.sexWithoutProtection
     }]);
+
+    await reScheduleNotifications();
 
     setVisible(false);
   }
