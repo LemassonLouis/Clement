@@ -48,8 +48,6 @@ export default function CurrentSession() {
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    reSheduleNotifications();
-
     if (currentSessionStored.sessionStartTime) {
       interval = setInterval(() => {
         const elapsedTime = currentSessionStored.sessionStartTime ? getDateDifference(currentSessionStored.sessionStartTime, new Date()) : 0;
@@ -138,6 +136,8 @@ export default function CurrentSession() {
       sessionStore.addSession({id: sessionId, dateTimeStart: startTime, dateTimeEnd: null, sexWithoutProtection: sexWithoutProtection});
       currentSessionStore.updateCurrentSession({ sessionId: sessionId, sessionStartTime: startTime });
     }
+
+    await reSheduleNotifications();
   };
 
   const stopSession = async (force: boolean = false) => {
@@ -181,6 +181,8 @@ export default function CurrentSession() {
       });
 
       currentSessionStore.updateCurrentSession({ sessionId: null, sessionStartTime: null });
+
+      await reSheduleNotifications();
     }
   };
 

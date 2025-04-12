@@ -21,6 +21,8 @@ export async function initializeNotifications(): Promise<void> {
       shouldSetBadge: true,
     })
   });
+  
+  await reSheduleNotifications();
 }
 
 
