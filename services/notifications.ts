@@ -66,8 +66,13 @@ async function scheduleNotifications(date: Date): Promise<void> {
   const currentSessionStored = getCurrentSessionStore().getCurrentSession();
 
   const availableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, date);
+  const availableTimeForMinExtraObjective = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min_extra, date);
 
-  if(currentSessionStored.sessionStartTime) {
+  if (availableTimeForMinExtraObjective === 0) {
+    console.log("its over for ", date.toLocaleString()) // TEMP
+    await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
+  }
+  else if(currentSessionStored.sessionStartTime) {
     const objectiveMinExtraRemaining = contraceptionMethod.objective_min_extra - totalWearing;
     const objectiveMinRemaining = contraceptionMethod.objective_min - totalWearing;
     const objectiveMaxRemaining = contraceptionMethod.objective_max - totalWearing;
