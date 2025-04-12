@@ -68,6 +68,9 @@ async function scheduleNotifications(date: Date): Promise<void> {
   const availableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, date);
   const availableTimeForMinExtraObjective = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min_extra, date);
 
+  console.log("now", new Date()) // TEMP
+  console.log("availableTime", availableTime, contraceptionMethod.objective_min - totalWearing) // TEMP
+
   if (availableTimeForMinExtraObjective === 0) {
     console.log("its over for ", date.toLocaleString()) // TEMP
     await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
@@ -77,6 +80,13 @@ async function scheduleNotifications(date: Date): Promise<void> {
     const objectiveMinRemaining = contraceptionMethod.objective_min - totalWearing;
     const objectiveMaxRemaining = contraceptionMethod.objective_max - totalWearing;
     const objectiveMaxExtraRemaining = contraceptionMethod.objective_max_extra - totalWearing;
+
+    console.log(
+      new Date(date.getTime() + objectiveMinExtraRemaining),
+      new Date(date.getTime() + objectiveMinRemaining),
+      new Date(date.getTime() + objectiveMaxRemaining),
+      new Date(date.getTime() + objectiveMaxExtraRemaining)
+    ) // TEMP
 
     if(objectiveMinExtraRemaining > 0) {
       scheduleNotificationPush(
@@ -111,6 +121,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
     }
   }
   else if(contraceptionMethod.objective_min - totalWearing > 0 && availableTime > 0) {
+    console.log(new Date(date.getTime() + (availableTime - 300_000)), new Date(date.getTime() + (availableTime + 7_200_000 - 300_000))) // TEMP
 
     scheduleNotificationPush(
       "Vous n'avez plus beaucoup de temps !",
@@ -125,6 +136,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
     )
   }
   else {
+    console.log("its over for ", date.toLocaleString()) // TEMP
     await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
   }
 }
