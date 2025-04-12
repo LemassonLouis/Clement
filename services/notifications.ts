@@ -22,7 +22,7 @@ export async function initializeNotifications(): Promise<void> {
     })
   });
   
-  await reSheduleNotifications();
+  await reScheduleNotifications();
 }
 
 
@@ -126,7 +126,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
 /**
  * Re schedule all notifications.
  */
-export async function reSheduleNotifications(): Promise<void> {
+export async function reScheduleNotifications(): Promise<void> {
   toast.success("reschedule notifications", { position: ToastPosition.BOTTOM }); // TEMP
   console.log("reschedule notifications"); // TEMP
 

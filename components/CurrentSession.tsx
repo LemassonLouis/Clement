@@ -14,7 +14,7 @@ import { getContraceptionMethod } from "@/services/contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import TimeEditor from "./TimeEditor";
-import { reSheduleNotifications } from "@/services/notifications";
+import { reScheduleNotifications } from "@/services/notifications";
 
 const today: Date = new Date();
 
@@ -137,7 +137,7 @@ export default function CurrentSession() {
       currentSessionStore.updateCurrentSession({ sessionId: sessionId, sessionStartTime: startTime });
     }
 
-    await reSheduleNotifications();
+    await reScheduleNotifications();
   };
 
   const stopSession = async (force: boolean = false) => {
@@ -182,7 +182,7 @@ export default function CurrentSession() {
 
       currentSessionStore.updateCurrentSession({ sessionId: null, sessionStartTime: null });
 
-      await reSheduleNotifications();
+      await reScheduleNotifications();
     }
   };
 
