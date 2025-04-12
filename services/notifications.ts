@@ -65,7 +65,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
   const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
   const currentSessionStored = getCurrentSessionStore().getCurrentSession();
 
-  const remainingTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, date);
+  const availableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, date);
 
   if(currentSessionStored.sessionStartTime) {
     const objectiveMinExtraRemaining = contraceptionMethod.objective_min_extra - totalWearing;
@@ -77,7 +77,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
       scheduleNotificationPush(
         "Vous y êtes presque",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min_extra / 3_600_000}h, encore un petit effort`,
-        new Date(date.setTime(date.getTime() + objectiveMinExtraRemaining))
+        new Date(date.getTime() + objectiveMinExtraRemaining)
       )
     }
 
@@ -85,7 +85,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
       scheduleNotificationPush(
         "Objectif atteint",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min_extra / 3_600_000}h`,
-        new Date(date.setTime(date.getTime() + objectiveMinRemaining))
+        new Date(date.getTime() + objectiveMinRemaining)
       )
     }
 
@@ -93,7 +93,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
       scheduleNotificationPush(
         "Objectif atteint",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min_extra / 3_600_000}h, penser à retirer votre dispositif`,
-        new Date(date.setTime(date.getTime() + objectiveMaxRemaining))
+        new Date(date.getTime() + objectiveMaxRemaining)
       )
     }
 
@@ -101,24 +101,26 @@ async function scheduleNotifications(date: Date): Promise<void> {
       scheduleNotificationPush(
         "Objectif dépassé",
         `Cela fait maintenant ${contraceptionMethod.objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`,
-        new Date(date.setTime(date.getTime() + objectiveMaxExtraRemaining))
+        new Date(date.getTime() + objectiveMaxExtraRemaining)
       )
     }
   }
-  else if(contraceptionMethod.objective_min - totalWearing > 0 && remainingTime > 0) {
-    const remainingTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, date);
+  else if(contraceptionMethod.objective_min - totalWearing > 0 && availableTime > 0) {
 
     scheduleNotificationPush(
       "Vous n'avez plus beaucoup de temps !",
       `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-      new Date(date.getTime() + (remainingTime - 300_000))
+      new Date(date.getTime() + (availableTime - 300_000))
     )
 
     scheduleNotificationPush(
       "Vous n'avez plus beaucoup de temps !",
       `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-      new Date(date.getTime() + (remainingTime + 7_200_000 - 300_000))
+      new Date(date.getTime() + (availableTime + 7_200_000 - 300_000))
     )
+  }
+  else {
+    await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
   }
 }
 
@@ -137,5 +139,4 @@ export async function reScheduleNotifications(): Promise<void> {
 
   await scheduleNotifications(today);
   await scheduleNotifications(tomorrow);
-  // + next of tomorrow ?
 }
