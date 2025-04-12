@@ -1,11 +1,11 @@
-import { formatMilisecondsTime } from "@/services/date";
+import { formatMilisecondsTime, isDateToday } from "@/services/date";
 import { calculateTimeUntilUnreachableObjective, getColorFromStatus, getStatusFromObjective } from "@/services/session";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
 export default function ProgressBarDetails({ progressBarWidth, objective, totalWearing, date }: {progressBarWidth: number, objective: number, totalWearing: number, date: Date}) {
-  const [available, setAvailable] = useState<string>(formatMilisecondsTime(calculateTimeUntilUnreachableObjective(objective, date)));
+  const [available, setAvailable] = useState<string>(formatMilisecondsTime(calculateTimeUntilUnreachableObjective(objective, isDateToday(date) ? new Date() : date)));
   const remaining = formatMilisecondsTime(objective - totalWearing);
   const hour = objective / 3_600_000;
   const progress = Math.min(1, totalWearing / objective);
@@ -13,7 +13,7 @@ export default function ProgressBarDetails({ progressBarWidth, objective, totalW
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setAvailable(formatMilisecondsTime(calculateTimeUntilUnreachableObjective(objective, date)));
+      setAvailable(formatMilisecondsTime(calculateTimeUntilUnreachableObjective(objective, isDateToday(date) ? new Date() : date)));
     }, 1000);
 
     return () => clearInterval(intervalId);
