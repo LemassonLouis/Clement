@@ -16,14 +16,14 @@ on:
           - all
           - android
           - ios
-      # create_release:
-      #   description: "Créer une release GitHub ?"
-      #   required: true
-      #   default: "false"
-      #   type: choice
-      #   options:
-      #     - "true"
-      #     - "false"
+      create_release:
+        description: "Créer une release GitHub ?"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
 
 jobs:
   build:
@@ -89,10 +89,14 @@ jobs:
           fi
 
       - name: Upload to GitHub Release
+        if: ${{ github.event.inputs.create_release == 'true' || github.event_name == 'push' }}
         uses: softprops/action-gh-release@v2
         with:
+          generate_release_notes: true
           files: |
             app-android.zip
+            app-android.aab
             app-ios.zip
+            app-ios.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
