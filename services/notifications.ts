@@ -1,4 +1,4 @@
-import { cancelAllScheduledNotificationsAsync, requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationHandler } from "expo-notifications";
+import { AndroidImportance, AndroidNotificationVisibility, cancelAllScheduledNotificationsAsync, requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationChannelAsync, setNotificationHandler } from "expo-notifications";
 import { calculateTotalWearing, calculateTimeUntilUnreachableObjective } from "./session";
 import { getContraceptionMethod } from "./contraception";
 import { getUserStore } from "@/store/UserStore";
@@ -7,13 +7,21 @@ import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 import { getCurrentSessionStore } from "@/store/CurrentSessionStore";
 import { getAllSessionsBetweenDates } from "@/database/session";
 import { getNextDay, getStartAndEndDate } from "./date";
+import { Platform } from "react-native";
 
 
 /**
  * Initialize the notification système.
  */
 export async function initializeNotifications(): Promise<void> {
-  await requestPermissionsAsync();
+  await requestPermissionsAsync({
+    ios: {
+      allowAlert: true,
+      allowBadge: true,
+      allowSound: true,
+    },
+  });
+
   setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -21,8 +29,22 @@ export async function initializeNotifications(): Promise<void> {
       shouldSetBadge: true,
     })
   });
-  
+
+  await configureNotificationChannel();
   await reScheduleNotifications();
+}
+
+
+async function configureNotificationChannel(): Promise<void> {
+  if (Platform.OS === 'android') {
+    await setNotificationChannelAsync('default', {
+      name: 'Notifications par défaut',
+      importance: AndroidImportance.HIGH,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+      lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
+    });
+  }
 }
 
 
