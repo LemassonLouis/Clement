@@ -39,7 +39,7 @@ async function configureNotificationChannel(): Promise<void> {
   if (Platform.OS === 'android') {
     await setNotificationChannelAsync('default', {
       name: 'Notifications par défaut',
-      importance: AndroidImportance.HIGH,
+      importance: AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#FF231F7C',
       lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
@@ -90,11 +90,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
   const availableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, date);
   const availableTimeForMinExtraObjective = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min_extra, date);
 
-  console.log("now", new Date()) // TEMP
-  console.log("availableTime", availableTime, contraceptionMethod.objective_min - totalWearing) // TEMP
-
   if (availableTimeForMinExtraObjective === 0) {
-    console.log("its over for ", date.toLocaleString()) // TEMP
     await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
   }
   else if(currentSessionStored.sessionStartTime) {
@@ -102,13 +98,6 @@ async function scheduleNotifications(date: Date): Promise<void> {
     const objectiveMinRemaining = contraceptionMethod.objective_min - totalWearing;
     const objectiveMaxRemaining = contraceptionMethod.objective_max - totalWearing;
     const objectiveMaxExtraRemaining = contraceptionMethod.objective_max_extra - totalWearing;
-
-    console.log(
-      new Date(date.getTime() + objectiveMinExtraRemaining),
-      new Date(date.getTime() + objectiveMinRemaining),
-      new Date(date.getTime() + objectiveMaxRemaining),
-      new Date(date.getTime() + objectiveMaxExtraRemaining)
-    ) // TEMP
 
     if(objectiveMinExtraRemaining > 0) {
       scheduleNotificationPush(
@@ -121,7 +110,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
     if(objectiveMinRemaining > 0) {
       scheduleNotificationPush(
         "Objectif atteint",
-        `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min_extra / 3_600_000}h`,
+        `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min / 3_600_000}h`,
         new Date(date.getTime() + objectiveMinRemaining)
       )
     }
@@ -129,7 +118,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
     if(objectiveMaxRemaining > 0) {
       scheduleNotificationPush(
         "Objectif atteint",
-        `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min_extra / 3_600_000}h, penser à retirer votre dispositif`,
+        `Vous avez atteint l'objectif de ${contraceptionMethod.objective_max / 3_600_000}h, penser à retirer votre dispositif`,
         new Date(date.getTime() + objectiveMaxRemaining)
       )
     }
@@ -143,22 +132,19 @@ async function scheduleNotifications(date: Date): Promise<void> {
     }
   }
   else if(contraceptionMethod.objective_min - totalWearing > 0 && availableTime > 0) {
-    console.log(new Date(date.getTime() + (availableTime - 300_000)), new Date(date.getTime() + (availableTime + 7_200_000 - 300_000))) // TEMP
-
     scheduleNotificationPush(
-      "Vous n'avez plus beaucoup de temps !",
+      "Plus que 5min !",
       `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
       new Date(date.getTime() + (availableTime - 300_000))
     )
 
     scheduleNotificationPush(
       "Vous n'avez plus beaucoup de temps !",
-      `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-      new Date(date.getTime() + (availableTime + 7_200_000 - 300_000))
+      `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
+      new Date(date.getTime() + (availableTime - 7_200_000 - 300_000))
     )
   }
   else {
-    console.log("its over for ", date.toLocaleString()) // TEMP
     await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
   }
 }
@@ -169,7 +155,6 @@ async function scheduleNotifications(date: Date): Promise<void> {
  */
 export async function reScheduleNotifications(): Promise<void> {
   toast.success("reschedule notifications", { position: ToastPosition.BOTTOM }); // TEMP
-  console.log("reschedule notifications"); // TEMP
 
   cancelAllScheduledNotificationsAsync();
 
