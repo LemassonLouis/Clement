@@ -1,20 +1,20 @@
 import { createSession, updateSession } from "@/database/session";
-import { formatMilisecondsTime, formatTimefromDate, getDateDifference, getStartAndEndDate } from "@/services/date";
+import { formatMilisecondsTime, getDateDifference } from "@/services/date";
 import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Suspense, useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import SexWithoutProtection from "./SexWithoutProtection";
 import { getCurrentSessionStore, getCurrentSessionStored } from "@/store/CurrentSessionStore";
-import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
-import CustomModal from "./CustomModal";
 import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, splitSessionsByDay, calculateTimeUntilUnreachableObjective, timeVerifications } from "@/services/session";
 import { getContraceptionMethod } from "@/services/contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
-import TimeEditor from "./TimeEditor";
 import { reScheduleNotifications } from "@/services/notifications";
+import TimeText from "./TimeText";
+import CustomModal from "./CustomModal";
+import TimeEditor from "./TimeEditor";
+import SexWithoutProtection from "./SexWithoutProtection";
 
 const today: Date = new Date();
 
