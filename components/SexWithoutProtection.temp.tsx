@@ -16,15 +16,20 @@ function SexWithoutProtection({ date }: SexWithoutProtectionProps) {
   const [currentSessions, setCurrentSessions] = useState<any[]>([]);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
 
+  console.log("date", date)
 
   // Load sexWithoutProtectionState
   useEffect(() => {
     const fetchSessions = async () => {
       const { dateStart, dateEnd } = getStartAndEndDate(date);
       const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
+      const newHasSessionsSexWithoutProtection = hasSessionsSexWithoutProtection(sessions)
       setCurrentSessions(sessions);
-      setSexWithoutProtection(hasSessionsSexWithoutProtection(sessions));
+      setSexWithoutProtection(newHasSessionsSexWithoutProtection);
+      console.log("sessions", sessions) // TEMP
+      console.log("newHasSessionsSexWithoutProtection", newHasSessionsSexWithoutProtection) // TEMP
     };
+
 
     fetchSessions();
   }, [date]);
