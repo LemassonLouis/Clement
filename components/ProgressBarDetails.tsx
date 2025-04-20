@@ -9,7 +9,7 @@ export default function ProgressBarDetails({ progressBarWidth, objective, totalW
   const remaining = formatMilisecondsTime(objective - totalWearing);
   const hour = objective / 3_600_000;
   const progress = Math.min(1, totalWearing / objective);
-  const color = getColorFromStatus(getStatusFromObjective(objective, date));
+  const color = getColorFromStatus(getStatusFromObjective(objective, isDateToday(date) ? new Date() : date));
 
   useEffect(() => {
     const intervalId = setInterval(() => {
