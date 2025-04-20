@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     marginBottom: -15,
   },
   total: {
-    marginVertical: 30,
+    marginTop: 30,
     textAlign: 'center',
   },
   currentSession: {

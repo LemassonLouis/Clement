@@ -51,12 +51,12 @@ function SexWithoutProtection({ date }: SexWithoutProtectionProps) {
     updateStoredInfos();
   };
 
-  if(currentSessions.length < 1) return;
+  const disabled = currentSessions.length < 1;
 
   return (
     <View style={styles.switchContainer}>
-      <Text style={styles.switchText}>Rapport sexuel sans protection</Text>
-      <Switch style={styles.switch} value={sexWithoutProtection} onValueChange={toggleSexWithoutProtection} />
+      <Text style={[styles.switchText, disabled && {opacity: 0.4}]}>Rapport sexuel sans protection</Text>
+      <Switch style={styles.switch} value={sexWithoutProtection} onValueChange={toggleSexWithoutProtection} disabled={disabled}/>
     </View>
   )
 }
