@@ -34,11 +34,16 @@ export async function createSession(dateTimeStart: string, dateTimeEnd: string |
  * @param dateTimeEnd Date as an ISO string.
  * @returns 
  */
-export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTimeEnd: string): Promise<SessionInterface[]> {
+export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTimeEnd: string, getCurrentSession: boolean = true): Promise<SessionInterface[]> {
   const db = await getDB();
 
   try {
-    const sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeStart >= ? AND (dateTimeEnd <= ? OR dateTimeEnd IS NULL)", [dateTimeStart, dateTimeEnd]);
+    if(getCurrentSession) {
+      var sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeStart >= ? AND (dateTimeEnd <= ? OR dateTimeEnd IS NULL)", [dateTimeStart, dateTimeEnd]);
+    }
+    else {
+      var sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeStart >= ? AND (dateTimeEnd <= ? OR dateTimeEnd IS NULL) AND dateTimeStart <= dateTimeEnd", [dateTimeStart, dateTimeEnd]);
+    }
 
     return sessions.map(session => deserializeSession(session));
   }
