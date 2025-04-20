@@ -87,61 +87,63 @@ async function scheduleNotifications(date: Date): Promise<void> {
   const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
   const currentSessionStored = getCurrentSessionStore().getCurrentSession();
 
-  const availableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, date);
-  const availableTimeForMinExtraObjective = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min_extra, date);
+  const minExtraObjectiveAvailableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min_extra, date);
+  const minObjectiveAvailableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min, date);
+  const maxObjectiveAvailableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_max, date);
+  const maxExtraObjectiveAvailableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_max_extra, date);
 
-  if (availableTimeForMinExtraObjective === 0) {
+  if (minExtraObjectiveAvailableTime === 0) {
     await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
   }
   else if(currentSessionStored.sessionStartTime) {
-    const objectiveMinExtraRemaining = contraceptionMethod.objective_min_extra - totalWearing;
-    const objectiveMinRemaining = contraceptionMethod.objective_min - totalWearing;
-    const objectiveMaxRemaining = contraceptionMethod.objective_max - totalWearing;
-    const objectiveMaxExtraRemaining = contraceptionMethod.objective_max_extra - totalWearing;
+    const minExtraObjectiveRemaining = contraceptionMethod.objective_min_extra - totalWearing;
+    const minObjectiveRemaining = contraceptionMethod.objective_min - totalWearing;
+    const maxObjectiveRemaining = contraceptionMethod.objective_max - totalWearing;
+    const maxExtraObjectiveRemaining = contraceptionMethod.objective_max_extra - totalWearing;
 
-    if(objectiveMinExtraRemaining > 0) {
+    if(minExtraObjectiveRemaining > 0 && minExtraObjectiveAvailableTime > 0) {
       scheduleNotificationPush(
         "Vous y êtes presque",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min_extra / 3_600_000}h, encore un petit effort`,
-        new Date(date.getTime() + objectiveMinExtraRemaining)
+        new Date(date.getTime() + minExtraObjectiveRemaining)
       )
     }
 
-    if(objectiveMinRemaining > 0) {
+    if(minObjectiveRemaining > 0 && minObjectiveRemaining > 0) {
       scheduleNotificationPush(
         "Objectif atteint",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-        new Date(date.getTime() + objectiveMinRemaining)
+        new Date(date.getTime() + minObjectiveRemaining)
       )
     }
 
-    if(objectiveMaxRemaining > 0) {
+    if(maxObjectiveRemaining > 0 && maxObjectiveAvailableTime > 0) {
       scheduleNotificationPush(
         "Objectif atteint",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_max / 3_600_000}h, penser à retirer votre dispositif`,
-        new Date(date.getTime() + objectiveMaxRemaining)
+        new Date(date.getTime() + maxObjectiveRemaining)
       )
     }
 
-    if(objectiveMaxExtraRemaining > 0) {
+    if(maxExtraObjectiveRemaining > 0 && maxExtraObjectiveAvailableTime > 0) {
       scheduleNotificationPush(
         "Objectif dépassé",
         `Cela fait maintenant ${contraceptionMethod.objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`,
-        new Date(date.getTime() + objectiveMaxExtraRemaining)
+        new Date(date.getTime() + maxExtraObjectiveRemaining)
       )
     }
   }
-  else if(contraceptionMethod.objective_min - totalWearing > 0 && availableTime > 0) {
+  else if(contraceptionMethod.objective_min - totalWearing > 0 && minObjectiveAvailableTime > 0) {
     scheduleNotificationPush(
       "Plus que 5min !",
       `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-      new Date(date.getTime() + (availableTime - 300_000))
+      new Date(date.getTime() + (minObjectiveAvailableTime - 300_000))
     )
 
     scheduleNotificationPush(
       "Vous n'avez plus beaucoup de temps !",
       `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-      new Date(date.getTime() + (availableTime - 7_200_000 - 300_000))
+      new Date(date.getTime() + (minObjectiveAvailableTime - 7_200_000 - 300_000))
     )
   }
   else {

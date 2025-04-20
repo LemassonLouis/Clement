@@ -14,7 +14,6 @@ export default function SettingsScreen() {
   useEffect(() => {
     const fetchData = async () => {
       let notifications = await getAllScheduledNotificationsAsync();
-      console.log("get notifications")
       setCurrentNotifications(notifications);
     }
     fetchData();
@@ -54,7 +53,6 @@ export default function SettingsScreen() {
 
       <View>
         {currentNotifications.sort((a,b) => a?.trigger?.value - b?.trigger?.value).map((notification, index) => {
-          console.log("notification", notification.trigger);
           return <Text key={index}>Notification prévu le : {(new Date(notification?.trigger?.value)).toLocaleString()}</Text>
         })}
       </View>
