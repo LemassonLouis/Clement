@@ -4,7 +4,7 @@ import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Suspense, useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import SexWithoutProtection from "./SexWithoutProtection.temp";
+import SexWithoutProtection from "./SexWithoutProtection";
 import { getCurrentSessionStore, getCurrentSessionStored } from "@/store/CurrentSessionStore";
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";

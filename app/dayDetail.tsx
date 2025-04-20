@@ -4,7 +4,7 @@ import CurrentSession from "@/components/CurrentSession";
 import ProgressBarDetails from "@/components/ProgressBarDetails";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
-import SexWithoutProtection from "@/components/SexWithoutProtection.temp";
+import SexWithoutProtection from "@/components/SexWithoutProtection";
 import { deserializeSession } from "@/database/session";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { Status } from "@/enums/Status";

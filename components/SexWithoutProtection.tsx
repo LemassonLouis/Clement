@@ -1,7 +1,7 @@
 import { getAllSessionsBetweenDates, updateSessionsSexWithoutProtection } from "@/database/session";
 import { getStartAndEndDate } from "@/services/date";
-import { extractDateSessions, hasSessionsSexWithoutProtection } from "@/services/session";
-import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
+import { hasSessionsSexWithoutProtection } from "@/services/session";
+import { getSessionStore } from "@/store/SessionStore";
 import { memo, useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
