@@ -1,14 +1,10 @@
-import EditContraceptionModal from "@/components/EditContraceptionModal";
-import EditStartDateModal from "@/components/EditStartDateModal";
-import { makeNotificationPush, scheduleNotificationPush } from "@/services/notifications";
+import Section from "@/components/settings/Section";
+import SectionOption from "@/components/settings/SectionOption";
 import { getAllScheduledNotificationsAsync, NotificationRequest } from "expo-notifications";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 export default function SettingsScreen() {
-  const [editContraceptionModalVisible, setEditContraceptionModalVisible] = useState<boolean>(false);
-  const [editStartDateModalVisible, setEditStartDateModalVisible] = useState<boolean>(false);
-
   // TEMP
   const [currentNotifications, setCurrentNotifications] = useState<NotificationRequest[]>([])
   useEffect(() => {
@@ -21,36 +17,18 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => setEditContraceptionModalVisible(true)}>
-        <Text>Modifier la méthode de contraception</Text>
-      </TouchableOpacity>
+      <Section name="Contraception">
+        <SectionOption name="Méthode de contraception" navigateTo="contraceptionMethod"/>
+        <SectionOption name="Date de début de contraception" navigateTo="contraceptionStartDate"/>
+      </Section>
 
-      <TouchableOpacity onPress={() => setEditStartDateModalVisible(true)}>
-        <Text>Modifier la date de début de contraception</Text>
-      </TouchableOpacity>
+      <Section name="Général">
+        <SectionOption name="Notifications" navigateTo="notifications"/>
+        <SectionOption name="Style de l'application" navigateTo="appStyle"/>
+        <SectionOption name="À propos" navigateTo="about"/>
+      </Section>
 
-      <TouchableOpacity onPress={() => makeNotificationPush('Notif', "Maintenant")}>
-        <Text>Notification now</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => {
-        const date = new Date();
-        date.setTime(date.getTime() + 10 * 1000);
-        scheduleNotificationPush('Notif', "10 sec + tard", date);
-      }}>
-        <Text>Notification in 10 sec</Text>
-      </TouchableOpacity>
-
-      <EditContraceptionModal
-        visible={editContraceptionModalVisible}
-        additionalActionTrue={() => setEditContraceptionModalVisible(false)}
-      />
-
-      <EditStartDateModal
-        visible={editStartDateModalVisible}
-        additionalActionTrue={() => setEditStartDateModalVisible(false)}
-      />
-
+      {/* TEMP */}
       <View>
         {currentNotifications.sort((a,b) => a?.trigger?.value - b?.trigger?.value).map((notification, index) => {
           return <Text key={index}>Notification prévu le : {(new Date(notification?.trigger?.value)).toLocaleString()}</Text>
@@ -63,8 +41,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#fff",
   },
   text: {
