@@ -89,7 +89,7 @@ export default function Calendar() {
         </Text>
 
         <TouchableOpacity onPress={goToNextMonth} style={styles.monthButton}>
-        <Feather name="chevron-right" size={25} color='#000'/>
+          <Feather name="chevron-right" size={25} color='#000'/>
         </TouchableOpacity>
       </View>
 
