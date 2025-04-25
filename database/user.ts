@@ -5,7 +5,7 @@ import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 
 
 /**
- * Create the user table.
+ * Create the user table if needed.
  */
 export async function createUserTable(): Promise<void> {
   const db = await getDB();

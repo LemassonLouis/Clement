@@ -3,7 +3,7 @@ import { getDB } from "./db";
 
 
 /**
- * Create the session table.
+ * Create the session table if needed.
  */
 export async function createSessionTable(): Promise<void> {
   const db = await getDB();
