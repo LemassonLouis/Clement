@@ -5,6 +5,27 @@ import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 
 
 /**
+ * Create the user table.
+ */
+export async function createUserTable(): Promise<void> {
+  const db = await getDB();
+
+  try {
+    db.execAsync(`
+      CREATE TABLE IF NOT EXISTS User (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        method TEXT,
+        startDate TEXT
+      );
+    `);
+  }
+  catch (error) {
+    toast.error("Error while trying to create user table : " + error, { position: ToastPosition.BOTTOM });
+  }
+}
+
+
+/**
  * Get the only user
  * @returns 
  */

@@ -3,6 +3,28 @@ import { getDB } from "./db";
 
 
 /**
+ * Create the session table.
+ */
+export async function createSessionTable(): Promise<void> {
+  const db = await getDB();
+
+  try {
+    db.execAsync(`
+      CREATE TABLE IF NOT EXISTS Session (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        dateTimeStart TEXT NOT NULL,
+        dateTimeEnd TEXT,
+        sexWithoutProtection INTEGER NOT NULL
+      );
+    `);
+  }
+  catch (error) {
+    toast.error("Error while trying to create the session table : " + error, { position: ToastPosition.BOTTOM });
+  }
+}
+
+
+/**
  * Create a session.
  * @param dateTimeStart Date as an ISO string.
  * @param dateTimeEnd Date as an ISO string.

@@ -1,5 +1,6 @@
-import { toast, ToastPosition } from '@backpackapp-io/react-native-toast';
 import * as SQLite from 'expo-sqlite';
+import { createSessionTable } from './session';
+import { createUserTable } from './user';
 
 
 export const DB_NAME = 'clement';
@@ -18,26 +19,8 @@ export async function getDB(): Promise<SQLite.SQLiteDatabase> {
  * Create the tables if needed
  */
 export async function createTables(): Promise<void> {
-  const db: SQLite.SQLiteDatabase = await getDB();
-
-  try {
-    await db.execAsync(`
-      CREATE TABLE IF NOT EXISTS Session (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        dateTimeStart TEXT NOT NULL,
-        dateTimeEnd TEXT,
-        sexWithoutProtection INTEGER NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS User (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        method TEXT,
-        startDate TEXT
-      );
-    `);
-  } catch (error) {
-    toast.error("Error while trying to create tables : " + error, { position: ToastPosition.BOTTOM });
-  }
+  await createSessionTable();
+  await createUserTable();
 };
 
 
