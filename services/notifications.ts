@@ -3,7 +3,6 @@ import { calculateTotalWearing, calculateTimeUntilUnreachableObjective } from ".
 import { getContraceptionMethod } from "./contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
-import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 import { getCurrentSessionStore } from "@/store/CurrentSessionStore";
 import { getAllSessionsBetweenDates } from "@/database/session";
 import { getNextDay, getStartAndEndDate } from "./date";
@@ -135,13 +134,19 @@ async function scheduleNotifications(date: Date): Promise<void> {
   }
   else if(contraceptionMethod.objective_min - totalWearing > 0 && minObjectiveAvailableTime > 0) {
     scheduleNotificationPush(
-      "Plus que 5min !",
+      "Plus que 5 min !",
       `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
       new Date(date.getTime() + (minObjectiveAvailableTime - 300_000))
     )
 
     scheduleNotificationPush(
-      "Vous n'avez plus beaucoup de temps !",
+      "Plus que 1h",
+      `Il ne vous reste plus que 1 heure avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
+      new Date(date.getTime() + (minObjectiveAvailableTime - 3_600_000 - 300_000))
+    )
+
+    scheduleNotificationPush(
+      "Plus que 2h",
       `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
       new Date(date.getTime() + (minObjectiveAvailableTime - 7_200_000 - 300_000))
     )
@@ -156,8 +161,6 @@ async function scheduleNotifications(date: Date): Promise<void> {
  * Re schedule all notifications.
  */
 export async function reScheduleNotifications(): Promise<void> {
-  toast.success("reschedule notifications", { position: ToastPosition.BOTTOM }); // TEMP
-
   cancelAllScheduledNotificationsAsync();
 
   const today = new Date();
