@@ -32,6 +32,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -88,16 +90,26 @@ jobs:
             zip app-ios.zip app-ios.ipa
           fi
 
-      - name: Generate Changelog
-        run: |
-          npm run changelog
+      # - name: Generate Changelog
+      #   run: |
+      #     npm run changelog
+
+      - name: Generate changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          writeToFile: false
 
       - name: Upload to GitHub Release
         if: ${{ github.event.inputs.create_release == 'true' || github.event_name == 'push' }}
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          body_path: CHANGELOG.md
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changes }}
           files: |
             app-android.zip
             app-android.apk
