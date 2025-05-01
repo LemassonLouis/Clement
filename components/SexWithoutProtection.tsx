@@ -1,7 +1,7 @@
 import { getAllSessionsBetweenDates, updateSessionsSexWithoutProtection } from "@/database/session";
-import { getStartAndEndDate } from "@/services/date";
+import { getStartAndEndDate, isDateToday } from "@/services/date";
 import { hasSessionsSexWithoutProtection } from "@/services/session";
-import { getSessionStore } from "@/store/SessionStore";
+import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { memo, useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
@@ -20,14 +20,14 @@ function SexWithoutProtection({ date }: SexWithoutProtectionProps) {
   useEffect(() => {
     const fetchSessions = async () => {
       const { dateStart, dateEnd } = getStartAndEndDate(date);
-      const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString(), false);
+      const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString(), isDateToday(date));
       const newHasSessionsSexWithoutProtection = hasSessionsSexWithoutProtection(sessions)
       setCurrentSessions(sessions);
       setSexWithoutProtection(newHasSessionsSexWithoutProtection);
     };
 
     fetchSessions();
-  }, [date]);
+  }, [date, getSessionsStored()]);
 
 
   const toggleSexWithoutProtection = (toggleValue: boolean) => {

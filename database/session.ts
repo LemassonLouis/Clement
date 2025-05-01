@@ -54,6 +54,7 @@ export async function createSession(dateTimeStart: string, dateTimeEnd: string |
  * Get all sessions between 2 dates.
  * @param dateTimeStart Date as an ISO string.
  * @param dateTimeEnd Date as an ISO string.
+ * @param getCurrentSession If need to 
  * @returns 
  */
 export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTimeEnd: string, getCurrentSession: boolean = true): Promise<SessionInterface[]> {
