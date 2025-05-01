@@ -205,7 +205,17 @@ export default function CurrentSession() {
                 setDate={async (date) => {
                   const ok = timeVerifications({id: currentSessionStored.sessionId ?? 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date());
                   if(ok) {
+                    const newSession: SessionInterface = {
+                      id: currentSessionStored.sessionId,
+                      dateTimeStart: date,
+                      dateTimeEnd: null,
+                      sexWithoutProtection: currentSessions.some(session => session.sexWithoutProtection === true)
+                    };
+
+                    await updateSession(newSession.id, newSession.dateTimeStart.toISOString(), newSession.dateTimeEnd?.toISOString() ?? null, newSession.sexWithoutProtection);
                     currentSessionStored.sessionStartTime = date;
+                    sessionStore.updateSessions([newSession]);
+
                     await reScheduleNotifications();
                   }
                 }}
