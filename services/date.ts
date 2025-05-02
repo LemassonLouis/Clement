@@ -1,4 +1,4 @@
-import { getUserStore } from "@/store/UserStore";
+import { User } from "@/types/UserType";
 
 /**
  * Return the start date and end date from a date.
@@ -143,8 +143,8 @@ export function formatTimefromDate(date: Date): string {
  * @param date Date to check
  * @returns 
  */
-export function isDateInUserContraceptionRange(date: Date): boolean {
-  return date >= (getUserStore().getUser()?.startDate ?? new Date()) && date <= getStartAndEndDate(new Date()).dateStart;
+export function isDateInUserContraceptionRange(user: User, date: Date): boolean {
+  return date >= user.startDate && date <= getStartAndEndDate(new Date()).dateStart;
 }
 
 

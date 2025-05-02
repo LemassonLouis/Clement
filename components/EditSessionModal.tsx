@@ -1,14 +1,17 @@
 import CustomModal from "./CustomModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import TimeEditor from "./TimeEditor";
 import { updateSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";
 import { reScheduleNotifications } from "@/services/notifications";
+import { UserContext } from "@/context/UserContext";
 
 
 export default function EditSessionModal({ session, visible, setVisible }: DeleteSessionModalInterface) {
+  const { user } = useContext(UserContext);
+
   const sessionStore = getSessionStore();
 
   const [startTime, setStartTime] = useState<Date>(session.dateTimeStart);
@@ -27,7 +30,7 @@ export default function EditSessionModal({ session, visible, setVisible }: Delet
       sexWithoutProtection: session.sexWithoutProtection
     }]);
 
-    await reScheduleNotifications();
+    await reScheduleNotifications(user);
 
     setVisible(false);
   }

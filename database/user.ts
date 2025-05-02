@@ -2,6 +2,7 @@ import UserInterface from "@/interfaces/User";
 import { getDB } from "./db";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
+import { SerializedUser, User } from "@/types/UserType";
 
 
 /**
@@ -29,11 +30,11 @@ export async function createUserTable(): Promise<void> {
  * Get the only user
  * @returns 
  */
-export async function getUser(): Promise<UserInterface | null> {
+export async function getUser(): Promise<User | null> {
   const db = await getDB();
 
   try {
-    const user = await db.getFirstAsync<UserInterface>('SELECT * FROM User');
+    const user = await db.getFirstAsync<SerializedUser>('SELECT * FROM User');
 
     if(!user) return null;
 
@@ -51,18 +52,41 @@ export async function getUser(): Promise<UserInterface | null> {
  * @param method The contraception method.
  * @returns 
  */
-export async function createUser(method: ContraceptionMethods|null = null, startDate: string|null = null): Promise<number | null> {
-  const theUser = await getUser();
+export async function createUser(user: User): Promise<number | null> {
+  let currentUser = await getUser();
 
-  if(theUser == null) {
+  if(currentUser == null) {
     const db = await getDB();
+
+    const serializedUser = serializeUser(user);
 
     try {
       const statement = await db.prepareAsync(
-        'INSERT INTO User (method, startDate) VALUES (?, ?)'
+        `INSERT INTO User (
+          method,
+          startDate,
+          wantFiveMinutesRemainingNotification,
+          wantOneHourRemainingNotification,
+          wantTwoHoursRemainingNotification,
+          wantObjectiveMinExtraReachedNotification,
+          wantObjectiveMinReachedNotification,
+          wantObjectiveMaxReachedNotification,
+          wantObjectiveMaxExtraReachedNotification,
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
       );
 
-      const result = await statement.executeAsync([method, startDate]);
+      const result = await statement.executeAsync([
+        serializedUser.method,
+        serializedUser.startDate,
+        serializedUser.wantFiveMinutesRemainingNotification,
+        serializedUser.wantOneHourRemainingNotification,
+        serializedUser.wantTwoHoursRemainingNotification,
+        serializedUser.wantObjectiveMinExtraReachedNotification,
+        serializedUser.wantObjectiveMinReachedNotification,
+        serializedUser.wantObjectiveMaxReachedNotification,
+        serializedUser.wantObjectiveMaxExtraReachedNotification,
+      ]);
 
       return result.lastInsertRowId;
     }
@@ -71,7 +95,7 @@ export async function createUser(method: ContraceptionMethods|null = null, start
       return null;
     }
   }
-  else return theUser.id;
+  else return currentUser.id;
 }
 
 
@@ -79,11 +103,40 @@ export async function createUser(method: ContraceptionMethods|null = null, start
  * Update a user.
  * @param updatedUser The updated user.
  */
-export async function updateUser(id: number, method: ContraceptionMethods|null, startDate: string|null): Promise<void> {
+export async function updateUser(user: User): Promise<void> {
   const db = await getDB();
 
+  const serializedUser = serializeUser(user);
+
   try {
-    await db.runAsync("UPDATE User SET method = ?, startDate = ? WHERE id = ?", [method, startDate, id]);
+    await db.runAsync(`
+      UPDATE User
+      SET
+        method = ?,
+        startDate = ?,
+        wantFiveMinutesRemainingNotification = ?,
+        wantOneHourRemainingNotification = ?,
+        wantTwoHoursRemainingNotification = ?,
+        wantObjectiveMinExtraReachedNotification = ?,
+        wantObjectiveMinReachedNotification = ?,
+        wantObjectiveMaxReachedNotification = ?,
+        wantObjectiveMaxExtraReachedNotification = ?
+      WHERE
+        id = ?
+      `,
+      [
+        serializedUser.method,
+        serializedUser.startDate,
+        serializedUser.wantFiveMinutesRemainingNotification,
+        serializedUser.wantOneHourRemainingNotification,
+        serializedUser.wantTwoHoursRemainingNotification,
+        serializedUser.wantObjectiveMinExtraReachedNotification,
+        serializedUser.wantObjectiveMinReachedNotification,
+        serializedUser.wantObjectiveMaxReachedNotification,
+        serializedUser.wantObjectiveMaxExtraReachedNotification,
+        serializedUser.id,
+      ]
+    );
   }
   catch (error) {
     toast.error("Error while trying to update user : " + error, { position: ToastPosition.BOTTOM });
@@ -93,13 +146,32 @@ export async function updateUser(id: number, method: ContraceptionMethods|null, 
 
 /**
  * Deserialize a user.
- * @param user The user to deserialize
+ * @param user The serialized user to deserialize
  * @returns 
  */
-export function deserializeUser(user: UserInterface): UserInterface {
+function deserializeUser(user: SerializedUser): User {
   return {
-    id: user.id,
-    method: user.method,
-    startDate: user.startDate === null ? null : new Date(user.startDate),
+    ...user,
+    startDate: user.startDate === null ? new Date() : new Date(user.startDate),
+    wantFiveMinutesRemainingNotification: user.wantFiveMinutesRemainingNotification ? true : false,
+    wantOneHourRemainingNotification: user.wantOneHourRemainingNotification ? true : false,
+    wantTwoHoursRemainingNotification: user.wantTwoHoursRemainingNotification ? true : false,
+    wantObjectiveMinExtraReachedNotification: user.wantObjectiveMinExtraReachedNotification ? true : false,
+    wantObjectiveMinReachedNotification: user.wantObjectiveMinReachedNotification ? true : false,
+    wantObjectiveMaxReachedNotification: user.wantObjectiveMaxReachedNotification ? true : false,
+    wantObjectiveMaxExtraReachedNotification: user.wantObjectiveMaxExtraReachedNotification ? true : false,
+  }
+}
+
+
+/**
+ * Serialize a user.
+ * @param user The user to serialize
+ * @returns
+ */
+function serializeUser(user: User): SerializedUser {
+  return {
+    ...user,
+    startDate: user.startDate.toISOString()
   }
 }

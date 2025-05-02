@@ -3,21 +3,23 @@ import CalendarIcon from "./CalendarIcon";
 import { useNavigation } from "expo-router";
 import { isDateToday, isDateInUserContraceptionRange } from "@/services/date";
 import { getStatusFromTotalWearing, calculateTotalWearing } from "@/services/session";
-import React from "react";
+import React, { useContext } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Status } from "@/enums/Status";
+import { UserContext } from "@/context/UserContext";
 
 type NavigationType = NavigationProp<RootStackParamList, 'dayDetail'>;
 
 function CalendarDay(day: DayInterface) {
   const navigation = useNavigation<NavigationType>();
+  const { user } = useContext(UserContext);
 
   const handlePress = () => {
     navigation.navigate("dayDetail", { day: JSON.stringify(day) });
   };
 
   const totalWearing = calculateTotalWearing(day.sessions);
-  const status = totalWearing > 0 || isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE;
+  const status = totalWearing > 0 || isDateInUserContraceptionRange(user, day.date) ? getStatusFromTotalWearing(user, totalWearing) : Status.NONE;
   const sexWithoutProtection: boolean = day.sessions.some(session => session?.sexWithoutProtection);
 
   return (

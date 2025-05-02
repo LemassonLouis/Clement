@@ -1,14 +1,17 @@
 import CustomModal from "./CustomModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import TimeEditor from "./TimeEditor";
 import { createSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";
 import { reScheduleNotifications } from "@/services/notifications";
+import { UserContext } from "@/context/UserContext";
 
 
 export default function CreateSessionModal({ date, sexWithoutProtection, visible, setVisible }: {date: Date, sexWithoutProtection: boolean, visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>>}) {
+  const { user } = useContext(UserContext);
+
   const sessionStore = getSessionStore();
 
   const [startTime, setStartTime] = useState<Date>(date);
@@ -30,7 +33,7 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
       sessionStore.addSession(session);
     }
 
-    await reScheduleNotifications();
+    await reScheduleNotifications(user);
 
     setVisible(false);
   }

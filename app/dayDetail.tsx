@@ -5,18 +5,17 @@ import ProgressBarDetails from "@/components/ProgressBarDetails";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Session from "@/components/Session";
 import SexWithoutProtection from "@/components/SexWithoutProtection";
+import { UserContext } from "@/context/UserContext";
 import { deserializeSession } from "@/database/session";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { Status } from "@/enums/Status";
 import { getContraceptionMethod } from "@/services/contraception";
 import { isDateToday, isDateInUserContraceptionRange, formatMilisecondsTime } from "@/services/date";
 import { calculateTotalWearing, extractDateSessions, getColorFromStatus, getStatusFromTotalWearing } from "@/services/session";
 import { getCurrentSessionStored } from "@/store/CurrentSessionStore";
 import { getSessionsStored } from "@/store/SessionStore";
-import { getUserStore } from "@/store/UserStore";
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import * as Progress from 'react-native-progress';
 
@@ -31,18 +30,20 @@ const deserializeDay = (day: DayInterface): DayInterface => {
 export default function dayDetail() {
   const params = useLocalSearchParams();
   const navigation = useNavigation();
+  const { user } = useContext(UserContext);
+
   const day = deserializeDay(JSON.parse(String(params.day)));
   const sessionsStored = getSessionsStored();
   const currentSessionStored = getCurrentSessionStored();
 
   const [currentSessions, setCurrentSessions] = useState<SessionInterface[]>(extractDateSessions(sessionsStored, day.date));
   const [totalWearing, setTotalWearing] = useState<number>(calculateTotalWearing(currentSessions));
-  const [status, setStatus] = useState<string>(totalWearing > 0 || isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(totalWearing) : Status.NONE);
+  const [status, setStatus] = useState<string>(totalWearing > 0 || isDateInUserContraceptionRange(user, day.date) ? getStatusFromTotalWearing(user, totalWearing) : Status.NONE);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(currentSessions.some(session => session.sexWithoutProtection));
   const [createSessionModalVisible, setCreateSessionModalVisible] = useState<boolean>(false);
   const [showProgressBars, setShowProgessBars] = useState<boolean>(false);
 
-  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+  const contraceptionMethod = getContraceptionMethod(user.method);
   const notSameObjectiveMinMax = contraceptionMethod.objective_min !== contraceptionMethod.objective_max;
 
   const progressBarWidth: number = Dimensions.get('window').width * 0.8;
@@ -54,7 +55,7 @@ export default function dayDetail() {
   useEffect(() => {
     const newCurrentSessions = extractDateSessions(sessionsStored, day.date);
     const newTotalWearing = calculateTotalWearing(newCurrentSessions);
-    const newStatus = newTotalWearing > 0 || isDateInUserContraceptionRange(day.date) ? getStatusFromTotalWearing(newTotalWearing) : Status.NONE;
+    const newStatus = newTotalWearing > 0 || isDateInUserContraceptionRange(user, day.date) ? getStatusFromTotalWearing(user, newTotalWearing) : Status.NONE;
     const newSexWithoutProtection = newCurrentSessions.some(session => session.sexWithoutProtection);
 
     setCurrentSessions(newCurrentSessions);
@@ -154,7 +155,7 @@ export default function dayDetail() {
           renderItem={({item}) => <Session {...item}/>}
         />
 
-        {(totalWearing > 0 || isDateInUserContraceptionRange(day.date)) && <>
+        {(totalWearing > 0 || isDateInUserContraceptionRange(user, day.date)) && <>
           <TouchableOpacity style={styles.plusButton} onPress={() => setCreateSessionModalVisible(true)}>
             <Feather name='plus' size={35} color='#000'/>
           </TouchableOpacity>

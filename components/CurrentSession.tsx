@@ -2,23 +2,24 @@ import { createSession, updateSession } from "@/database/session";
 import { formatMilisecondsTime, getDateDifference } from "@/services/date";
 import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { Ionicons } from "@expo/vector-icons";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { getCurrentSessionStore, getCurrentSessionStored } from "@/store/CurrentSessionStore";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtection, splitSessionsByDay, calculateTimeUntilUnreachableObjective, timeVerifications } from "@/services/session";
 import { getContraceptionMethod } from "@/services/contraception";
-import { getUserStore } from "@/store/UserStore";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { reScheduleNotifications } from "@/services/notifications";
 import TimeText from "./TimeText";
 import CustomModal from "./CustomModal";
 import TimeEditor from "./TimeEditor";
 import SexWithoutProtection from "./SexWithoutProtection";
+import { UserContext } from "@/context/UserContext";
 
 const today: Date = new Date();
 
 export default function CurrentSession() {
+  const { user } = useContext(UserContext);
+
   const currentSessionStore = getCurrentSessionStore();
   const currentSessionStored = getCurrentSessionStored();
   const sessionStore = getSessionStore();
@@ -29,7 +30,7 @@ export default function CurrentSession() {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [remainingTime, setRemainingTime] = useState<number>(0);
 
-  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+  const contraceptionMethod = getContraceptionMethod(user.method);
 
 
   // Load current session
@@ -137,7 +138,7 @@ export default function CurrentSession() {
       currentSessionStore.updateCurrentSession({ sessionId: sessionId, sessionStartTime: startTime });
     }
 
-    await reScheduleNotifications();
+    await reScheduleNotifications(user);
   };
 
   const stopSession = async (force: boolean = false) => {
@@ -182,7 +183,7 @@ export default function CurrentSession() {
 
       currentSessionStore.updateCurrentSession({ sessionId: null, sessionStartTime: null });
 
-      await reScheduleNotifications();
+      await reScheduleNotifications(user);
     }
   };
 
@@ -216,7 +217,7 @@ export default function CurrentSession() {
                     currentSessionStored.sessionStartTime = date;
                     sessionStore.updateSessions([newSession]);
 
-                    await reScheduleNotifications();
+                    await reScheduleNotifications(user);
                   }
                 }}
               />

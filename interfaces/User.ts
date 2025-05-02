@@ -6,5 +6,12 @@ import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 export default interface UserInterface {
   id: number,
   method: ContraceptionMethods | null,
-  startDate: Date | null
+  startDate: Date | null,
+  // wantFiveMinutesRemainingNotification: boolean,
+  // wantOneHourRemainingNotification: boolean,
+  // wantTwoHoursRemainingNotification: boolean,
+  // wantObjectiveMinExtraReachedNotification: boolean,
+  // wantObjectiveMinReachedNotification: boolean,
+  // wantObjectiveMaxReachedNotification: boolean,
+  // wantObjectiveMaxExtraReachedNotification: boolean,
 }

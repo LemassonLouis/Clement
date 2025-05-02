@@ -1,34 +1,26 @@
 import Calendar from "@/components/Calendar";
 import CurrentSession from "@/components/CurrentSession";
 import CustomModal from "@/components/CustomModal";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { getUserStore } from "@/store/UserStore";
 import WelcomModal from "@/components/WelcomeModal";
 import EditContraceptionModal from "@/components/EditContraceptionModal";
 import EditStartDateModal from "@/components/EditStartDateModal";
+import { UserContext } from "@/context/UserContext";
 
 export default function Index() {
   const now: Date = new Date();
+  const { user } = useContext(UserContext);
 
   const [welcomeModalVisible, setWelcomeModalVisible] = useState<boolean>(false);
   const [contraceptionModalVisible, setContraceptionModalVisible] = useState<boolean>(false);
   const [startDateModalVisible, setStartDateModalVisible] = useState<boolean>(false);
   const [thanksModalVisible, setThanksModalVisible] = useState<boolean>(false);
 
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await getUserStore().loadUser();
-      const user = getUserStore().getUser();
-
-      if(!user) setWelcomeModalVisible(true);
-      else if(!user.method) setContraceptionModalVisible(true);
-      else if(!user.startDate) setStartDateModalVisible(true);
-    }
-
-    fetchData();
-  }, [])
+  if(!user) setWelcomeModalVisible(true);
+  else if(!user.method) setContraceptionModalVisible(true);
+  else if(!user.startDate) setStartDateModalVisible(true);
 
   return (
     <View style={styles.container}>

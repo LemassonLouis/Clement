@@ -2,19 +2,16 @@ import { Text } from "react-native";
 import CustomModal from "./CustomModal";
 import DateEditor from "./DateEditor";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
-import { useCallback, useState, useSyncExternalStore } from "react";
+import { useContext, useState } from "react";
 import { updateUser } from "@/database/user";
-import { getUserStore } from "@/store/UserStore";
 import { getStartAndEndDate } from "@/services/date";
+import { UserContext } from "@/context/UserContext";
+import { User } from "@/types/UserType";
 
 export default function EditStartDateModal({ visible, additionalActionTrue }: {visible: boolean, additionalActionTrue: () => void}) {
-  const userStore = getUserStore();
-  const userStored = useSyncExternalStore(
-    useCallback((callback) => userStore.subscribe(callback), [userStore]),
-    useCallback(() => userStore.getUser(), [userStore])
-  );
+  const { user, setUser } = useContext(UserContext);
 
-  const [startDate, setStartDate] = useState<Date>(userStored?.startDate ?? new Date());
+  const [startDate, setStartDate] = useState<Date>(user.startDate);
 
   return (
     <CustomModal
@@ -22,12 +19,13 @@ export default function EditStartDateModal({ visible, additionalActionTrue }: {v
       visible={visible}
       actionTrueText="Suivant"
       actionTrue={async () => {
-        await updateUser(userStored.id, userStored.method, getStartAndEndDate(startDate).dateStart.toISOString());
-        userStore.updateUser({
-          id: userStored.id,
-          method: userStored.method,
+        const newUser: User = {
+          ...user,
           startDate: getStartAndEndDate(startDate).dateStart
-        })
+        }
+
+        await updateUser(newUser);
+        setUser(newUser);
 
         additionalActionTrue();
       }}

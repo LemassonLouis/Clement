@@ -1,21 +1,18 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
 import CustomModal from "./CustomModal";
 import { getAllContraceptionMethods } from "@/services/contraception";
-import { useCallback, useState, useSyncExternalStore } from "react";
+import { useContext, useState } from "react";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { ContraceptionMethodInterface } from "@/interfaces/ContraceptionMethod";
 import { Feather } from "@expo/vector-icons";
 import { updateUser } from "@/database/user";
-import { getUserStore } from "@/store/UserStore";
+import { UserContext } from "@/context/UserContext";
+import { User } from "@/types/UserType";
 
 export default function EditContraceptionModal({ visible, additionalActionTrue }: {visible: boolean, additionalActionTrue: () => void}) {
-  const userStore = getUserStore();
-  const userStored = useSyncExternalStore(
-    useCallback((callback) => userStore.subscribe(callback), [userStore]),
-    useCallback(() => userStore.getUser(), [userStore])
-  );
+  const { user, setUser } = useContext(UserContext);
 
-  const [selectedContraception, setSelectedContraception] = useState<ContraceptionMethods>(userStore.getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+  const [selectedContraception, setSelectedContraception] = useState<ContraceptionMethods>(user.method);
 
   const chooseContraceptionMethod = (item: any) => {
     setSelectedContraception(item.slug);
@@ -39,12 +36,13 @@ export default function EditContraceptionModal({ visible, additionalActionTrue }
       visible={visible}
       actionTrueText="Suivant"
       actionTrue={async () => {
-        await updateUser(userStored.id, selectedContraception, null);
-        userStore.updateUser({
-          id: userStored.id,
-          method: selectedContraception,
-          startDate: userStored.startDate
-        });
+        const newUser: User = {
+          ...user,
+          method: selectedContraception
+        }
+
+        await updateUser(newUser);
+        setUser(newUser)
 
         additionalActionTrue();
       }}

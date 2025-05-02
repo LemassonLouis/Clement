@@ -2,16 +2,20 @@ import { deleteSession } from "@/database/session";
 import CustomModal from "./CustomModal";
 import { getSessionStore } from "@/store/SessionStore";
 import { reScheduleNotifications } from "@/services/notifications";
+import { UserContext } from "@/context/UserContext";
+import { useContext } from "react";
 
 
 export default function DeleteSessionModal({ session, visible, setVisible }: DeleteSessionModalInterface) {
+  const { user } = useContext(UserContext);
+
   const sessionStore = getSessionStore();
 
   const actionTrue = async () => {
     await deleteSession(session.id);
     sessionStore.removeSession(session);
 
-    await reScheduleNotifications();
+    await reScheduleNotifications(user);
 
     setVisible(false);
   }

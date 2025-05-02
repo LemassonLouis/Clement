@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { Suspense, useCallback, useContext, useEffect, useState, useSyncExternalStore } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarDay from "./CalendarDay";
 import { DaysOfWeek } from "@/enums/DaysOfWeek";
@@ -6,7 +6,7 @@ import { MonthNames } from "@/enums/MonthNames";
 import { Feather } from "@expo/vector-icons";
 import { getCalendarStartMonday, getCalendarLastSunday, getStartAndEndDate, isDateBetween } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
-import { getUserStore } from "@/store/UserStore";
+import { UserContext } from "@/context/UserContext";
 
 
 const getCalendarDays = (year: number, month: number, sessions: SessionInterface[]): DayInterface[] => {
@@ -35,17 +35,14 @@ const getCalendarDays = (year: number, month: number, sessions: SessionInterface
 
 
 export default function Calendar() {
+  const { user } = useContext(UserContext);
+
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   const sessionStore = getSessionStore();
   const sessionsStored = useSyncExternalStore(
     useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
     useCallback(() => sessionStore.getSessions(), [sessionStore])
-  );
-  const userStore = getUserStore();
-  const userStored = useSyncExternalStore(
-    useCallback((callback) => userStore.subscribe(callback), [userStore]),
-    useCallback(() => userStore.getUser(), [userStore])
   );
 
   const year: number = currentDate.getFullYear();
@@ -73,7 +70,7 @@ export default function Calendar() {
     }
 
     fetchData();
-  }, [year, month, sessionsStored, userStored]);
+  }, [year, month, sessionsStored, user]);
 
   const days = getCalendarDays(year, month, sessionsStored);
 

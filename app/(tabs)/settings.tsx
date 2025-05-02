@@ -13,7 +13,8 @@ export default function SettingsScreen() {
       setCurrentNotifications(notifications);
     }
     fetchData();
-  }, [])
+  }, [currentNotifications])
+  // TEMP
 
   return (
     <View style={styles.container}>
@@ -34,6 +35,7 @@ export default function SettingsScreen() {
           return <Text key={index}>Notification prévu le : {(new Date(notification?.trigger?.value)).toLocaleString()}</Text>
         })}
       </View>
+      {/* TEMP */}
     </View>
   );
 }

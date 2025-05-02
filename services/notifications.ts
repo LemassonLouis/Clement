@@ -1,18 +1,17 @@
 import { AndroidImportance, AndroidNotificationVisibility, cancelAllScheduledNotificationsAsync, requestPermissionsAsync, SchedulableTriggerInputTypes, scheduleNotificationAsync, setNotificationChannelAsync, setNotificationHandler } from "expo-notifications";
 import { calculateTotalWearing, calculateTimeUntilUnreachableObjective } from "./session";
 import { getContraceptionMethod } from "./contraception";
-import { getUserStore } from "@/store/UserStore";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { getCurrentSessionStore } from "@/store/CurrentSessionStore";
 import { getAllSessionsBetweenDates } from "@/database/session";
 import { getNextDay, getStartAndEndDate } from "./date";
 import { Platform } from "react-native";
+import { User } from "@/types/UserType";
 
 
 /**
  * Initialize the notification système.
  */
-export async function initializeNotifications(): Promise<void> {
+export async function initializeNotifications(user: User): Promise<void> {
   await requestPermissionsAsync({
     ios: {
       allowAlert: true,
@@ -30,7 +29,7 @@ export async function initializeNotifications(): Promise<void> {
   });
 
   await configureNotificationChannel();
-  await reScheduleNotifications();
+  await reScheduleNotifications(user);
 }
 
 
@@ -77,13 +76,13 @@ export async function scheduleNotificationPush(title: string, content: string = 
 }
 
 
-async function scheduleNotifications(date: Date): Promise<void> {
+async function scheduleNotifications(user: User, date: Date): Promise<void> {
   const { dateStart, dateEnd } = getStartAndEndDate(date);
 
   const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
   const totalWearing = calculateTotalWearing(sessions);
 
-  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+  const contraceptionMethod = getContraceptionMethod(user.method);
   const currentSessionStored = getCurrentSessionStore().getCurrentSession();
 
   const minExtraObjectiveAvailableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_min_extra, date);
@@ -92,7 +91,7 @@ async function scheduleNotifications(date: Date): Promise<void> {
   const maxExtraObjectiveAvailableTime = calculateTimeUntilUnreachableObjective(contraceptionMethod.objective_max_extra, date);
 
   if (minExtraObjectiveAvailableTime === 0) {
-    await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
+    await scheduleNotifications(user, getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
   }
   else if(currentSessionStored.sessionStartTime) {
     const minExtraObjectiveRemaining = contraceptionMethod.objective_min_extra - totalWearing;
@@ -133,26 +132,32 @@ async function scheduleNotifications(date: Date): Promise<void> {
     }
   }
   else if(contraceptionMethod.objective_min - totalWearing > 0 && minObjectiveAvailableTime > 0) {
-    scheduleNotificationPush(
-      "Plus que 5 min !",
-      `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-      new Date(date.getTime() + (minObjectiveAvailableTime - 300_000))
-    )
+    if(user.wantFiveMinutesRemainingNotification) {
+      scheduleNotificationPush(
+        "Plus que 5 min !",
+        `Il ne vous reste plus que 5 minutes avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
+        new Date(date.getTime() + (minObjectiveAvailableTime - 300_000))
+      )
+    }
 
-    scheduleNotificationPush(
-      "Plus que 1h",
-      `Il ne vous reste plus que 1 heure avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-      new Date(date.getTime() + (minObjectiveAvailableTime - 3_600_000 - 300_000))
-    )
+    if(user.wantOneHourRemainingNotification) {
+      scheduleNotificationPush(
+        "Plus que 1h",
+        `Il ne vous reste plus que 1 heure avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
+        new Date(date.getTime() + (minObjectiveAvailableTime - 3_600_000 - 300_000))
+      )
+    }
 
-    scheduleNotificationPush(
-      "Plus que 2h",
-      `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
-      new Date(date.getTime() + (minObjectiveAvailableTime - 7_200_000 - 300_000))
-    )
+    if(user.wantTwoHoursRemainingNotification) {
+      scheduleNotificationPush(
+        "Plus que 2h",
+        `Il ne vous reste plus que 2 heures avant de ne plus pouvoir réaliser l'objetif de ${contraceptionMethod.objective_min / 3_600_000}h`,
+        new Date(date.getTime() + (minObjectiveAvailableTime - 7_200_000 - 300_000))
+      )
+    }
   }
   else {
-    await scheduleNotifications(getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
+    await scheduleNotifications(user, getStartAndEndDate(getNextDay(getNextDay(date))).dateStart);
   }
 }
 
@@ -160,12 +165,12 @@ async function scheduleNotifications(date: Date): Promise<void> {
 /**
  * Re schedule all notifications.
  */
-export async function reScheduleNotifications(): Promise<void> {
+export async function reScheduleNotifications(user: User): Promise<void> {
   cancelAllScheduledNotificationsAsync();
 
   const today = new Date();
   const tomorrow = getStartAndEndDate(getNextDay(today)).dateStart;
 
-  await scheduleNotifications(today);
-  await scheduleNotifications(tomorrow);
+  await scheduleNotifications(user, today);
+  await scheduleNotifications(user, tomorrow);
 }

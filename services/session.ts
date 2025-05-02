@@ -5,6 +5,9 @@ import { getContraceptionMethod } from "./contraception";
 import { getUserStore } from "@/store/UserStore";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
+import { useContext } from "react";
+import { UserContext } from "@/context/UserContext";
+import { User } from "@/types/UserType";
 
 
 /**
@@ -23,8 +26,8 @@ export function calculateTotalWearing(sessions: SessionInterface[]): number {
  * @param totalWearing miliseconds (-1 = force to none status)
  * @returns
  */
-export function getStatusFromTotalWearing(totalWearing: number): Status {
-  const contraceptionMethod = getContraceptionMethod(getUserStore().getUser()?.method ?? ContraceptionMethods.ANDRO_SWITCH);
+export function getStatusFromTotalWearing(user: User, totalWearing: number): Status {
+  const contraceptionMethod = getContraceptionMethod(user.method);
 
   if(totalWearing === -1) {
     return Status.NONE;
