@@ -99,7 +99,7 @@ async function scheduleNotifications(user: User, date: Date): Promise<void> {
     const maxObjectiveRemaining = contraceptionMethod.objective_max - totalWearing;
     const maxExtraObjectiveRemaining = contraceptionMethod.objective_max_extra - totalWearing;
 
-    if(minExtraObjectiveRemaining > 0 && minExtraObjectiveAvailableTime > 0) {
+    if(minExtraObjectiveRemaining > 0 && minExtraObjectiveAvailableTime > 0 && user.wantObjectiveMinExtraReachedNotification) {
       scheduleNotificationPush(
         "Vous y êtes presque",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min_extra / 3_600_000}h, encore un petit effort`,
@@ -107,7 +107,7 @@ async function scheduleNotifications(user: User, date: Date): Promise<void> {
       )
     }
 
-    if(minObjectiveRemaining > 0 && minObjectiveRemaining > 0) {
+    if(minObjectiveRemaining > 0 && minObjectiveRemaining > 0 && user.wantObjectiveMinReachedNotification && contraceptionMethod.objective_min !== contraceptionMethod.objective_max) {
       scheduleNotificationPush(
         "Objectif bas atteint",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min / 3_600_000}h`,
@@ -115,7 +115,7 @@ async function scheduleNotifications(user: User, date: Date): Promise<void> {
       )
     }
 
-    if(maxObjectiveRemaining > 0 && maxObjectiveAvailableTime > 0) {
+    if(maxObjectiveRemaining > 0 && maxObjectiveAvailableTime > 0 && user.wantObjectiveMaxReachedNotification) {
       scheduleNotificationPush(
         "Objectif haut atteint",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_max / 3_600_000}h, penser à retirer votre dispositif`,
@@ -123,7 +123,7 @@ async function scheduleNotifications(user: User, date: Date): Promise<void> {
       )
     }
 
-    if(maxExtraObjectiveRemaining > 0 && maxExtraObjectiveAvailableTime > 0) {
+    if(maxExtraObjectiveRemaining > 0 && maxExtraObjectiveAvailableTime > 0 && user.wantObjectiveMaxExtraReachedNotification) {
       scheduleNotificationPush(
         "Objectif dépassé",
         `Cela fait maintenant ${contraceptionMethod.objective_max_extra / 3_600_000}h que vous portez votre dispositif, pensez à le retirer`,
