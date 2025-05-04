@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 export default function SettingsScreen() {
-  // TEMP
+  // TEMP : display scheduled notifications
   const [currentNotifications, setCurrentNotifications] = useState<NotificationRequest[]>([])
   useEffect(() => {
     const fetchData = async () => {
@@ -14,7 +14,7 @@ export default function SettingsScreen() {
     }
     fetchData();
   }, [currentNotifications])
-  // TEMP
+  // TEMP : display scheduled notifications
 
   return (
     <View style={styles.container}>
@@ -29,13 +29,13 @@ export default function SettingsScreen() {
         <SectionOption name="À propos" navigateTo="about"/>
       </Section>
 
-      {/* TEMP */}
+      {/* TEMP : display scheduled notifications */}
       <View>
         {currentNotifications.sort((a,b) => a?.trigger?.value - b?.trigger?.value).map((notification, index) => {
           return <Text key={index}>Notification prévu le : {(new Date(notification?.trigger?.value)).toLocaleString()}</Text>
         })}
       </View>
-      {/* TEMP */}
+      {/* TEMP : display scheduled notifications */}
     </View>
   );
 }

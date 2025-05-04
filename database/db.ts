@@ -24,7 +24,7 @@ export async function createTables(): Promise<void> {
 };
 
 
-// TEMP ?
+// TEMP ? : tables deletion
 export const deleteTables = async () => {
   const db = await getDB();
 
@@ -32,8 +32,8 @@ export const deleteTables = async () => {
     await db.execAsync(`DROP TABLE IF EXISTS Session;`);
     await db.execAsync(`DROP TABLE IF EXISTS User;`);
 
-    console.log('Tables supprimées avec succès'); // TEMP
+    console.log('Tables supprimées avec succès'); // TEMP : tables deletion succed
   } catch (error) {
-    console.error('Erreur lors de la suppression des tables:', error); // TEMP ?
+    console.error('Erreur lors de la suppression des tables:', error);
   }
 }
