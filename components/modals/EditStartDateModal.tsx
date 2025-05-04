@@ -30,7 +30,7 @@ export default function EditStartDateModal({ visible, additionalActionTrue }: {v
         additionalActionTrue();
       }}
     >
-      <Text style={{textAlign: "center", marginBottom: 20}}>À quel date souhaitez vous ou avez commencer la contraception ?</Text>
+      <Text style={{textAlign: "center", marginBottom: 20}}>À quel date souhaitez vous ou avez commencé la contraception ?</Text>
       <DateEditor
         icon={TimeTextIcon.CALENDAR_START}
         date={startDate}

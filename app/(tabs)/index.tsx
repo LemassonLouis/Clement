@@ -3,7 +3,6 @@ import CurrentSession from "@/components/CurrentSession";
 import CustomModal from "@/components/modals/CustomModal";
 import { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { getUserStore } from "@/store/UserStore";
 import WelcomModal from "@/components/modals/WelcomeModal";
 import EditContraceptionModal from "@/components/modals/EditContraceptionModal";
 import EditStartDateModal from "@/components/modals/EditStartDateModal";

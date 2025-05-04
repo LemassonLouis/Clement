@@ -26,7 +26,7 @@ export default function DeleteSessionModal({ session, visible, setVisible }: Del
 
   return (
     <CustomModal
-      title="Êtes-vous sur de vouloir supprimer cette session ?"
+      title="Êtes-vous sûr de vouloir supprimer cette session ?"
       visible={visible}
       actionFalseText="Non"
       actionFalse={actionFalse}

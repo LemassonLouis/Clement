@@ -48,7 +48,7 @@ export default function EditContraceptionModal({ visible, additionalActionTrue }
         additionalActionTrue();
       }}
     >
-      <Text style={{textAlign: "center"}}>Quel méthode de contracepation thèrmique utilisez-vous ou souhaitez-vous utiliser ?</Text>
+      <Text style={{textAlign: "center"}}>Quelle méthode de contracepation thermique utilisez-vous ou souhaitez-vous utiliser ?</Text>
       <FlatList
         numColumns={1}
         style={styles.contraceptionList}
