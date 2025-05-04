@@ -1,6 +1,6 @@
 import { Text } from "react-native";
 import CustomModal from "./CustomModal";
-import DateEditor from "./DateEditor";
+import DateEditor from "../DateEditor";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import { useContext, useState } from "react";
 import { updateUser } from "@/database/user";

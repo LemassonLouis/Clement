@@ -10,7 +10,7 @@ import { calculateTotalWearing, extractDateSessions, hasSessionsSexWithoutProtec
 import { getContraceptionMethod } from "@/services/contraception";
 import { reScheduleNotifications } from "@/services/notifications";
 import TimeText from "./TimeText";
-import CustomModal from "./CustomModal";
+import CustomModal from "./modals/CustomModal";
 import TimeEditor from "./TimeEditor";
 import SexWithoutProtection from "./SexWithoutProtection";
 import { UserContext } from "@/context/UserContext";

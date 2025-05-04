@@ -1,7 +1,7 @@
 import CustomModal from "./CustomModal";
 import { useContext, useState } from "react";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
-import TimeEditor from "./TimeEditor";
+import TimeEditor from "../TimeEditor";
 import { createSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";

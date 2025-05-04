@@ -1,5 +1,5 @@
 import CalendarIcon from "@/components/CalendarIcon";
-import CreateSessionModal from "@/components/CreateSessionModal";
+import CreateSessionModal from "@/components/modals/CreateSessionModal";
 import CurrentSession from "@/components/CurrentSession";
 import ProgressBarDetails from "@/components/ProgressBarDetails";
 import ProgressIndicator from "@/components/ProgressIndicator";

@@ -1,4 +1,4 @@
-import EditContraceptionModal from "@/components/EditContraceptionModal";
+import EditContraceptionModal from "@/components/modals/EditContraceptionModal";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity } from "react-native";

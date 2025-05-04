@@ -1,12 +1,12 @@
 import Calendar from "@/components/Calendar";
 import CurrentSession from "@/components/CurrentSession";
-import CustomModal from "@/components/CustomModal";
+import CustomModal from "@/components/modals/CustomModal";
 import { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { getUserStore } from "@/store/UserStore";
-import WelcomModal from "@/components/WelcomeModal";
-import EditContraceptionModal from "@/components/EditContraceptionModal";
-import EditStartDateModal from "@/components/EditStartDateModal";
+import WelcomModal from "@/components/modals/WelcomeModal";
+import EditContraceptionModal from "@/components/modals/EditContraceptionModal";
+import EditStartDateModal from "@/components/modals/EditStartDateModal";
 import { UserContext } from "@/context/UserContext";
 
 export default function Index() {

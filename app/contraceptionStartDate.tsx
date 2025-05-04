@@ -1,4 +1,4 @@
-import EditStartDateModal from "@/components/EditStartDateModal";
+import EditStartDateModal from "@/components/modals/EditStartDateModal";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
