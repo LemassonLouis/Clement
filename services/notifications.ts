@@ -109,7 +109,7 @@ async function scheduleNotifications(user: User, date: Date): Promise<void> {
 
     if(minObjectiveRemaining > 0 && minObjectiveRemaining > 0 && user.wantObjectiveMinReachedNotification && contraceptionMethod.objective_min !== contraceptionMethod.objective_max) {
       scheduleNotificationPush(
-        "Objectif bas atteint",
+        "Objectif atteint",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_min / 3_600_000}h`,
         new Date(date.getTime() + minObjectiveRemaining)
       )
@@ -117,7 +117,7 @@ async function scheduleNotifications(user: User, date: Date): Promise<void> {
 
     if(maxObjectiveRemaining > 0 && maxObjectiveAvailableTime > 0 && user.wantObjectiveMaxReachedNotification) {
       scheduleNotificationPush(
-        "Objectif haut atteint",
+        "Objectif atteint",
         `Vous avez atteint l'objectif de ${contraceptionMethod.objective_max / 3_600_000}h, penser à retirer votre dispositif`,
         new Date(date.getTime() + maxObjectiveRemaining)
       )
