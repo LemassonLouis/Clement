@@ -38,7 +38,8 @@ export default function EditContraceptionModal({ visible, additionalActionTrue }
       actionTrue={async () => {
         const newUser: User = {
           ...user,
-          method: selectedContraception
+          method: selectedContraception,
+          wantObjectiveMinReachedNotification: selectedContraception !== ContraceptionMethods.SPERMA_PAUSE
         }
 
         await updateUser(newUser);
