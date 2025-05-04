@@ -11,6 +11,7 @@ export type User = {
   wantObjectiveMinReachedNotification: boolean,
   wantObjectiveMaxReachedNotification: boolean,
   wantObjectiveMaxExtraReachedNotification: boolean,
+  isActive: boolean,
 }
 
 export type SerializedUser = Omit<User, 'startDate'> & {

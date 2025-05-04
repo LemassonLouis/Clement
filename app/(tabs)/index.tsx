@@ -7,19 +7,21 @@ import WelcomModal from "@/components/modals/WelcomeModal";
 import EditContraceptionModal from "@/components/modals/EditContraceptionModal";
 import EditStartDateModal from "@/components/modals/EditStartDateModal";
 import { UserContext } from "@/context/UserContext";
+import { User } from "@/types/UserType";
+import { updateUser } from "@/database/user";
 
 export default function Index() {
   const now: Date = new Date();
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const [welcomeModalVisible, setWelcomeModalVisible] = useState<boolean>(false);
   const [contraceptionModalVisible, setContraceptionModalVisible] = useState<boolean>(false);
   const [startDateModalVisible, setStartDateModalVisible] = useState<boolean>(false);
   const [thanksModalVisible, setThanksModalVisible] = useState<boolean>(false);
 
-  if(!user) setWelcomeModalVisible(true);
-  else if(!user.method) setContraceptionModalVisible(true);
-  else if(!user.startDate) setStartDateModalVisible(true);
+  useEffect(() => {
+    setWelcomeModalVisible(!user.isActive);
+  }, [user])
 
   return (
     <View style={styles.container}>
@@ -55,10 +57,20 @@ export default function Index() {
         title="C'est terminé !"
         visible={thanksModalVisible}
         actionTrueText="Terminer"
-        actionTrue={() => setThanksModalVisible(false)}
+        actionTrue={async () => {
+          setThanksModalVisible(false);
+          
+          const newUser: User = {
+            ...user,
+            isActive: true
+          }
+
+          await updateUser(newUser);
+          setUser(newUser);
+        }}
       >
         <Text style={{textAlign: "center"}}>Merci d'avoir télécharger Clément !</Text>
-        <Text style={{textAlign: "center"}}>Nous vous souhaitons de réussir votre contracéption</Text>
+        <Text style={{textAlign: "center"}}>Je vous souahite de réussir votre contracéption</Text>
       </CustomModal>
     </View>
   )

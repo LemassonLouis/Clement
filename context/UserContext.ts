@@ -14,7 +14,8 @@ export const defaultUser: User = {
   wantObjectiveMinExtraReachedNotification: true,
   wantObjectiveMinReachedNotification: true,
   wantObjectiveMaxReachedNotification: true,
-  wantObjectiveMaxExtraReachedNotification: true
+  wantObjectiveMaxExtraReachedNotification: true,
+  isActive: true,
 }
 
 

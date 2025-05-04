@@ -31,9 +31,9 @@ export default function RootLayout() {
       }
       setUser(currentUser!); // Im sure that i have a user here
 
-      SplashScreen.hideAsync();
-
       await initializeNotifications(currentUser!);
+
+      SplashScreen.hideAsync();
     }
 
     asyncTasks();

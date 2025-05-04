@@ -9,17 +9,12 @@ export async function migrateTables(): Promise<void> {
   const db = await getDB();
 
   const NOTIFICATION_MIGRATION = 1;
+  const USER_ACTIVE_MIGRATION = 2;
 
   // TEMP : reset pragma version
   // await db.execAsync(`
-  //   ALTER TABLE User DROP COLUMN wantFiveMinutesRemainingNotification;
-  //   ALTER TABLE User DROP COLUMN wantOneHourRemainingNotification;
-  //   ALTER TABLE User DROP COLUMN wantTwoHoursRemainingNotification;
-  //   ALTER TABLE User DROP COLUMN wantObjectiveMinExtraReachedNotification;
-  //   ALTER TABLE User DROP COLUMN wantObjectiveMinReachedNotification;
-  //   ALTER TABLE User DROP COLUMN wantObjectiveMaxReachedNotification;
-  //   ALTER TABLE User DROP COLUMN wantObjectiveMaxExtraReachedNotification;
-  //   PRAGMA user_version = 0;
+  //   ALTER TABLE User DROP COLUMN isActive;
+  //   PRAGMA user_version = 1;
   // `);
 
   const [{ user_version }] = await db.getAllAsync<{ user_version: number }>(
@@ -66,16 +61,23 @@ export async function migrateTables(): Promise<void> {
     }
   }
 
-  // Next migration
-  // if (user_version < ) {
-  //   try {
-  //     await db.execAsync(`
+  // User active migration
+  if (user_version < USER_ACTIVE_MIGRATION) {
+    try {
+      await db.execAsync(`
+        ALTER TABLE User ADD COLUMN isActive INTEGER DEFAULT 0;
+        PRAGMA user_version = ${USER_ACTIVE_MIGRATION};
+      `);
 
-  //       PRAGMA user_version = ${};
-  //     `);
-  //   }
-  //   catch (error) {
-  //     toast.error(`Error while trying to migrate user table to version ${} : ` + error, { position: ToastPosition.BOTTOM })
-  //   }
-  // }
+      await db.execAsync(`
+        UPDATE User SET
+          isActive = 1
+        WHERE
+          isActive IS NULL;
+      `);
+    }
+    catch (error) {
+      toast.error(`Error while trying to migrate user table to version ${USER_ACTIVE_MIGRATION} : ` + error, { position: ToastPosition.BOTTOM })
+    }
+  }
 }

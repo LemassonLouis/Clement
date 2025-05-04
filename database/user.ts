@@ -70,8 +70,9 @@ export async function createUser(user: User): Promise<number | null> {
           wantObjectiveMinReachedNotification,
           wantObjectiveMaxReachedNotification,
           wantObjectiveMaxExtraReachedNotification,
+          isActive,
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       );
 
       const result = await statement.executeAsync([
@@ -84,6 +85,7 @@ export async function createUser(user: User): Promise<number | null> {
         serializedUser.wantObjectiveMinReachedNotification,
         serializedUser.wantObjectiveMaxReachedNotification,
         serializedUser.wantObjectiveMaxExtraReachedNotification,
+        serializedUser.isActive,
       ]);
 
       return result.lastInsertRowId;
@@ -118,7 +120,8 @@ export async function updateUser(user: User): Promise<void> {
         wantObjectiveMinExtraReachedNotification = ?,
         wantObjectiveMinReachedNotification = ?,
         wantObjectiveMaxReachedNotification = ?,
-        wantObjectiveMaxExtraReachedNotification = ?
+        wantObjectiveMaxExtraReachedNotification = ?,
+        isActive = ?
       WHERE
         id = ?
       `,
@@ -132,6 +135,7 @@ export async function updateUser(user: User): Promise<void> {
         serializedUser.wantObjectiveMinReachedNotification,
         serializedUser.wantObjectiveMaxReachedNotification,
         serializedUser.wantObjectiveMaxExtraReachedNotification,
+        serializedUser.isActive,
         serializedUser.id,
       ]
     );
@@ -158,6 +162,7 @@ function deserializeUser(user: SerializedUser): User {
     wantObjectiveMinReachedNotification: user.wantObjectiveMinReachedNotification ? true : false,
     wantObjectiveMaxReachedNotification: user.wantObjectiveMaxReachedNotification ? true : false,
     wantObjectiveMaxExtraReachedNotification: user.wantObjectiveMaxExtraReachedNotification ? true : false,
+    isActive: user.isActive ? true : false,
   }
 }
 
