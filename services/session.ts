@@ -2,11 +2,7 @@ import { getDateDifference, getStartAndEndDate, isDateBetween } from "./date";
 import { Status } from "@/enums/Status";
 import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { getContraceptionMethod } from "./contraception";
-import { getUserStore } from "@/store/UserStore";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
-import { useContext } from "react";
-import { UserContext } from "@/context/UserContext";
 import { User } from "@/types/UserType";
 
 

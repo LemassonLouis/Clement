@@ -1,6 +1,4 @@
-import UserInterface from "@/interfaces/User";
 import { getDB } from "./db";
-import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 import { SerializedUser, User } from "@/types/UserType";
 
