@@ -1,7 +1,7 @@
 import Calendar from "@/components/Calendar";
 import CurrentSession from "@/components/CurrentSession";
 import CustomModal from "@/components/modals/CustomModal";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import WelcomModal from "@/components/modals/WelcomeModal";
 import EditContraceptionModal from "@/components/modals/EditContraceptionModal";
@@ -13,6 +13,7 @@ import { updateUser } from "@/database/user";
 export default function Index() {
   const now: Date = new Date();
   const { user, setUser } = useContext(UserContext);
+  const hasUserConfigured = useRef(false);
 
   const [welcomeModalVisible, setWelcomeModalVisible] = useState<boolean>(false);
   const [contraceptionModalVisible, setContraceptionModalVisible] = useState<boolean>(false);
@@ -20,8 +21,11 @@ export default function Index() {
   const [thanksModalVisible, setThanksModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    setWelcomeModalVisible(!user.isActive);
-  }, [user])
+    if (!hasUserConfigured.current && typeof user.isActive === 'boolean') {
+      setWelcomeModalVisible(!user.isActive);
+      hasUserConfigured.current = true;
+    }
+  }, [user]);
 
   return (
     <View style={styles.container}>
