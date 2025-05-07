@@ -1,5 +1,6 @@
 import { UserContext } from "@/context/UserContext";
 import { updateUser } from "@/database/user";
+import { reScheduleNotifications } from "@/services/notifications";
 import { User } from "@/types/UserType";
 import { useContext, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
@@ -35,6 +36,8 @@ export default function NotificationSwitch({ label, userSettingKey }: Notificati
 
     await updateUser(newUser);
     setUser(newUser);
+
+    reScheduleNotifications(newUser);
   }
 
 
