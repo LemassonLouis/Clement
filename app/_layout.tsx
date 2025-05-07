@@ -26,7 +26,7 @@ export default function RootLayout() {
       // Get or create the user
       let currentUser = await getUser();
       if(!currentUser) {
-        await createUser(user)
+        await createUser(user);
         currentUser = await getUser();
       }
       setUser(currentUser!); // Im sure that i have a user here
