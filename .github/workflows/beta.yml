@@ -82,12 +82,12 @@ jobs:
       - name: Download artifacts
         run: |
           if [[ -n "$ANDROID_URL" ]]; then
-            curl -L "$ANDROID_URL" -o app-android.apk
-            zip app-android.zip app-android.apk
+            curl -L "$ANDROID_URL" -o "app-android-${{ github.ref_name }}.apk"
+            zip "app-android-${{ github.ref_name }}.zip" "app-android-${{ github.ref_name }}.apk"
           fi
           if [[ -n "$IOS_URL" ]]; then
-            curl -L "$IOS_URL" -o app-ios.ipa
-            zip app-ios.zip app-ios.ipa
+            curl -L "$IOS_URL" -o "app-ios-${{ github.ref_name }}.ipa"
+            zip "app-ios-${{ github.ref_name }}.zip" "app-ios-${{ github.ref_name }}.ipa"
           fi
 
       # - name: Generate Changelog
@@ -113,9 +113,9 @@ jobs:
           tag_name: ${{ github.ref_name }}
           body: ${{ steps.changelog.outputs.changes }}
           files: |
-            app-android.zip
-            app-android.apk
-            app-ios.zip
-            app-ios.ipa
+            "app-android-${{ github.ref_name }}.zip"
+            "app-android-${{ github.ref_name }}.apk"
+            "app-ios-${{ github.ref_name }}.zip"
+            "app-ios-${{ github.ref_name }}.ipa"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
