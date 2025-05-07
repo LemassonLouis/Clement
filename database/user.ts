@@ -70,7 +70,7 @@ export async function createUser(user: User): Promise<number | null> {
           wantObjectiveMinReachedNotification,
           wantObjectiveMaxReachedNotification,
           wantObjectiveMaxExtraReachedNotification,
-          isActive,
+          isActive
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       );
