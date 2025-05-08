@@ -58,7 +58,7 @@ jobs:
           PLATFORM=${{ github.event.inputs.platform || 'all' }}
           eas build --platform "$PLATFORM" --profile development --non-interactive --wait --json > build-info.json
 
-      - name: Check build results and stores URLs
+      - name: Check build results and store URLs
         id: check
         run: |
           PLATFORM=${{ github.event.inputs.platform || 'all' }}
@@ -116,12 +116,12 @@ jobs:
       - name: Download artifacts
         run: |
           if [[ -n "${{ needs.build.outputs.ANDROID_URL }}" ]]; then
-            curl -L "${{ needs.build.outputs.ANDROID_URL }}" -o "app-android-${{ github.ref_name }}.apk"
-            zip "app-android-${{ github.ref_name }}.zip" "app-android-${{ github.ref_name }}.apk"
+            curl -L "${{ needs.build.outputs.ANDROID_URL }}" -o "clement-android-${{ github.ref_name }}.apk"
+            zip "clement-android-${{ github.ref_name }}.zip" "clement-android-${{ github.ref_name }}.apk"
           fi
           if [[ -n "${{ needs.build.outputs.IOS_URL }}" ]]; then
-            curl -L "${{ needs.build.outputs.IOS_URL }}" -o "app-ios-${{ github.ref_name }}.ipa"
-            zip "app-ios-${{ github.ref_name }}.zip" "app-ios-${{ github.ref_name }}.ipa"
+            curl -L "${{ needs.build.outputs.IOS_URL }}" -o "clement-ios-${{ github.ref_name }}.ipa"
+            zip "clement-ios-${{ github.ref_name }}.zip" "clement-ios-${{ github.ref_name }}.ipa"
           fi
 
       - name: Upload to GitHub Release
