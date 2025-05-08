@@ -13,16 +13,16 @@ export async function migrateTables(): Promise<void> {
   const USER_ACTIVE_MIGRATION = 2;
 
   // TEMP : reset pragma version
-  await resetMigration("User", [
-    'wantFiveMinutesRemainingNotification',
-    'wantOneHourRemainingNotification',
-    'wantTwoHoursRemainingNotification',
-    'wantObjectiveMinExtraReachedNotification',
-    'wantObjectiveMinReachedNotification',
-    'wantObjectiveMaxReachedNotification',
-    'wantObjectiveMaxExtraReachedNotification',
-    'isActive',
-  ]);
+  // await resetMigration("User", [
+  //   'wantFiveMinutesRemainingNotification',
+  //   'wantOneHourRemainingNotification',
+  //   'wantTwoHoursRemainingNotification',
+  //   'wantObjectiveMinExtraReachedNotification',
+  //   'wantObjectiveMinReachedNotification',
+  //   'wantObjectiveMaxReachedNotification',
+  //   'wantObjectiveMaxExtraReachedNotification',
+  //   'isActive',
+  // ]);
 
   const [{ user_version }] = await db.getAllAsync<{ user_version: number }>(
     'PRAGMA user_version;'
@@ -89,6 +89,12 @@ export async function migrateTables(): Promise<void> {
   }
 }
 
+
+/**
+ * __/!\ DANGEROUS /!\__ Reset the table migrations.
+ * @param table The table that needs to be reset
+ * @param columnsToDrop The columns to drop
+ */
 async function resetMigration(table: string, columnsToDrop: string[]): Promise<void> {
   const db = await getDB();
 
