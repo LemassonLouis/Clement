@@ -27,8 +27,12 @@ on:
 
 jobs:
   build:
-    name: Build and release
+    name: Build application
     runs-on: ubuntu-latest
+
+    outputs:
+      ANDROID_URL: ${{ steps.check.outputs.ANDROID_URL }}
+      IOS_URL: ${{ steps.check.outputs.IOS_URL }}
 
     steps:
       - uses: actions/checkout@v4
@@ -54,12 +58,12 @@ jobs:
           PLATFORM=${{ github.event.inputs.platform || 'all' }}
           eas build --platform "$PLATFORM" --profile development --non-interactive --wait --json > build-info.json
 
-      - name: Check build results
+      - name: Check build results and stores URLs
         id: check
         run: |
           PLATFORM=${{ github.event.inputs.platform || 'all' }}
 
-          check_status() {
+          get_url() {
             local platform=$1
 
             local status=$(jq -r --arg PLATFORM "$platform" '.[] | select(.platform == ($PLATFORM | ascii_upcase)) | .status' build-info.json)
@@ -69,30 +73,26 @@ jobs:
             fi
 
             local url=$(jq -r --arg PLATFORM "$platform" '.[] | select(.platform == ($PLATFORM | ascii_upcase)) | .artifacts.buildUrl' build-info.json)
-            echo "${platform^^}_URL=$url" >> $GITHUB_ENV
+            echo "${platform^^}_URL=$url" >> $GITHUB_OUTPUT
           }
 
           if [[ "$PLATFORM" == "all" || "$PLATFORM" == "android" ]]; then
-            check_status android
+            get_url android
           fi
           if [[ "$PLATFORM" == "all" || "$PLATFORM" == "ios" ]]; then
-            check_status ios
+            get_url ios
           fi
 
-      - name: Download artifacts
-        run: |
-          if [[ -n "$ANDROID_URL" ]]; then
-            curl -L "$ANDROID_URL" -o "app-android-${{ github.ref_name }}.apk"
-            zip "app-android-${{ github.ref_name }}.zip" "app-android-${{ github.ref_name }}.apk"
-          fi
-          if [[ -n "$IOS_URL" ]]; then
-            curl -L "$IOS_URL" -o "app-ios-${{ github.ref_name }}.ipa"
-            zip "app-ios-${{ github.ref_name }}.zip" "app-ios-${{ github.ref_name }}.ipa"
-          fi
+  changelog:
+    name: Generate changelog
+    runs-on: ubuntu-latest
+    needs: build
 
-      # - name: Generate Changelog
-      #   run: |
-      #     npm run changelog
+    outputs:
+      CHANGELOG_BODY: ${{ steps.changelog.outputs.changes }}
+
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Generate changelog
         id: changelog
@@ -104,18 +104,37 @@ jobs:
           includeInvalidCommits: true
           excludeTypes: ""
 
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build, changelog]
+    if: ${{ github.event.inputs.create_release == 'true' || github.event_name == 'push' }}
+
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Download artifacts
+        run: |
+          if [[ -n "${{ needs.build.outputs.ANDROID_URL }}" ]]; then
+            curl -L "${{ needs.build.outputs.ANDROID_URL }}" -o "app-android-${{ github.ref_name }}.apk"
+            zip "app-android-${{ github.ref_name }}.zip" "app-android-${{ github.ref_name }}.apk"
+          fi
+          if [[ -n "${{ needs.build.outputs.IOS_URL }}" ]]; then
+            curl -L "${{ needs.build.outputs.IOS_URL }}" -o "app-ios-${{ github.ref_name }}.ipa"
+            zip "app-ios-${{ github.ref_name }}.zip" "app-ios-${{ github.ref_name }}.ipa"
+          fi
+
       - name: Upload to GitHub Release
-        if: ${{ github.event.inputs.create_release == 'true' || github.event_name == 'push' }}
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          body: ${{ steps.changelog.outputs.changes }}
+          body: ${{ needs.changelog.outputs.CHANGELOG_BODY }}
           files: |
-            "app-android-${{ github.ref_name }}.zip"
-            "app-android-${{ github.ref_name }}.apk"
-            "app-ios-${{ github.ref_name }}.zip"
-            "app-ios-${{ github.ref_name }}.ipa"
+            app-android-${{ github.ref_name }}.zip
+            app-android-${{ github.ref_name }}.apk
+            app-ios-${{ github.ref_name }}.zip
+            app-ios-${{ github.ref_name }}.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
