@@ -12,17 +12,16 @@ export async function migrateTables(): Promise<void> {
   const USER_ACTIVE_MIGRATION = 2;
 
   // TEMP : reset pragma version
-  // await db.execAsync(`
-  //   ALTER TABLE User DROP COLUMN wantFiveMinutesRemainingNotification;
-  //   ALTER TABLE User DROP COLUMN wantOneHourRemainingNotification;
-  //   ALTER TABLE User DROP COLUMN wantTwoHoursRemainingNotification;
-  //   ALTER TABLE User DROP COLUMN wantObjectiveMinExtraReachedNotification;
-  //   ALTER TABLE User DROP COLUMN wantObjectiveMinReachedNotification;
-  //   ALTER TABLE User DROP COLUMN wantObjectiveMaxReachedNotification;
-  //   ALTER TABLE User DROP COLUMN wantObjectiveMaxExtraReachedNotification;
-  //   ALTER TABLE User DROP COLUMN isActive;
-  //   PRAGMA user_version = 0;
-  // `);
+  await resetMigration("User", [
+    'wantFiveMinutesRemainingNotification',
+    'wantOneHourRemainingNotification',
+    'wantTwoHoursRemainingNotification',
+    'wantObjectiveMinExtraReachedNotification',
+    'wantObjectiveMinReachedNotification',
+    'wantObjectiveMaxReachedNotification',
+    'wantObjectiveMaxExtraReachedNotification',
+    'isActive',
+  ]);
 
   const [{ user_version }] = await db.getAllAsync<{ user_version: number }>(
     'PRAGMA user_version;'
@@ -86,5 +85,28 @@ export async function migrateTables(): Promise<void> {
     catch (error) {
       toast.error(`Error while trying to migrate user table to version ${USER_ACTIVE_MIGRATION} : ` + error, { position: ToastPosition.BOTTOM })
     }
+  }
+}
+
+async function resetMigration(table: string, columnsToDrop: string[]): Promise<void> {
+  const db = await getDB();
+
+  const tableSchema = await db.getAllAsync<{
+    cid: number;
+    name: string;
+    type: string;
+    notnull: number;
+    dflt_value: string | null;
+    pk: number;
+  }>(`PRAGMA table_info(${table});`)
+
+  try {
+    tableSchema
+      .filter(col => columnsToDrop.includes(col.name))
+      .forEach(async col => {
+        await db.execAsync(`ALTER TABLE ${table} DROP COLUMN ${col.name}`);
+      });
+  }
+  catch (error) {
   }
 }
