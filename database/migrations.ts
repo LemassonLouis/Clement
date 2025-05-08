@@ -13,16 +13,16 @@ export async function migrateTables(): Promise<void> {
   const USER_ACTIVE_MIGRATION = 2;
 
   // TEMP : reset pragma version
-  await resetMigration("User", [
-    'wantFiveMinutesRemainingNotification',
-    'wantOneHourRemainingNotification',
-    'wantTwoHoursRemainingNotification',
-    'wantObjectiveMinExtraReachedNotification',
-    'wantObjectiveMinReachedNotification',
-    'wantObjectiveMaxReachedNotification',
-    'wantObjectiveMaxExtraReachedNotification',
-    'isActive',
-  ]);
+  // await resetMigration("User", [
+  //   'wantFiveMinutesRemainingNotification',
+  //   'wantOneHourRemainingNotification',
+  //   'wantTwoHoursRemainingNotification',
+  //   'wantObjectiveMinExtraReachedNotification',
+  //   'wantObjectiveMinReachedNotification',
+  //   'wantObjectiveMaxReachedNotification',
+  //   'wantObjectiveMaxExtraReachedNotification',
+  //   'isActive',
+  // ]);
 
   const [{ user_version }] = await db.getAllAsync<{ user_version: number }>(
     'PRAGMA user_version;'
