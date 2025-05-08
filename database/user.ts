@@ -1,6 +1,7 @@
 import { getDB } from "./db";
-import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
+import { toast } from "@backpackapp-io/react-native-toast";
 import { SerializedUser, User } from "@/types/UserType";
+import { DEFAULT_TOAST_ERROR_CONFIG } from "@/services/toast";
 
 
 /**
@@ -19,7 +20,7 @@ export async function createUserTable(): Promise<void> {
     `);
   }
   catch (error) {
-    toast.error("Error while trying to create user table : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while trying to create user table : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
 
@@ -39,7 +40,7 @@ export async function getUser(): Promise<User | null> {
     return deserializeUser(user);
   }
   catch (error) {
-    toast.error("Error when trying to fetch user : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error when trying to fetch user : " + error, DEFAULT_TOAST_ERROR_CONFIG);
     return null;
   }
 }
@@ -91,7 +92,7 @@ export async function createUser(user: User): Promise<number | null> {
       return result.lastInsertRowId;
     }
     catch (error) {
-      toast.error("Error while trying to create user : " + error, { position: ToastPosition.BOTTOM });
+      toast.error("Error while trying to create user : " + error, DEFAULT_TOAST_ERROR_CONFIG);
       return null;
     }
   }
@@ -141,7 +142,7 @@ export async function updateUser(user: User): Promise<void> {
     );
   }
   catch (error) {
-    toast.error("Error while trying to update user : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while trying to update user : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
 

@@ -1,5 +1,6 @@
-import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
+import { toast } from "@backpackapp-io/react-native-toast";
 import { getDB } from "./db";
+import { DEFAULT_TOAST_ERROR_CONFIG } from "@/services/toast";
 
 
 /**
@@ -19,7 +20,7 @@ export async function createSessionTable(): Promise<void> {
     `);
   }
   catch (error) {
-    toast.error("Error while trying to create the session table : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while trying to create the session table : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
 
@@ -44,7 +45,7 @@ export async function createSession(dateTimeStart: string, dateTimeEnd: string |
     return result.lastInsertRowId;
   }
   catch (error) {
-    toast.error("Error while trying to create session : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while trying to create session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
     return null;
   }
 };
@@ -71,7 +72,7 @@ export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTime
     return sessions.map(session => deserializeSession(session));
   }
   catch (error) {
-    toast.error("Error while tryingto fetch all sessions : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while tryingto fetch all sessions : " + error, DEFAULT_TOAST_ERROR_CONFIG);
     return [];
   }
 };
@@ -94,7 +95,7 @@ export async function getFirstUnfinishedSession(): Promise<SessionInterface | nu
     return deserializeSession(session);
   }
   catch (error) {
-    toast.error("Error while trying to fetch unfinished session : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while trying to fetch unfinished session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
     return null;
   }
 }
@@ -114,7 +115,7 @@ export async function updateSession(id: number, dateTimeStart: string, dateTimeE
     await db.runAsync("UPDATE Session SET dateTimeStart = ?, dateTimeEnd = ?, sexWithoutProtection = ? WHERE id = ?", [dateTimeStart, dateTimeEnd, sexWithoutProtection, id]);
   }
   catch (error) {
-    toast.error("Error while trying to update session : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while trying to update session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
 
@@ -132,7 +133,7 @@ export async function updateSessionsSexWithoutProtection(ids: number[], sexWitho
     await db.runAsync(`UPDATE Session SET sexWithoutProtection = ? WHERE id IN (${placeholders})`, [sexWithoutProtection, ...ids]);
   }
   catch (error) {
-    toast.error("Error while trying to update multiple sessions : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while trying to update multiple sessions : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
 
@@ -148,7 +149,7 @@ export async function deleteSession(id: number): Promise<void> {
     await db.runAsync('DELETE FROM Session WHERE id = ?', [id]);
   }
   catch (error) {
-    toast.error("Error while trying to delete session : " + error, { position: ToastPosition.BOTTOM });
+    toast.error("Error while trying to delete session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
 

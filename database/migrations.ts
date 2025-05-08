@@ -1,5 +1,6 @@
-import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
+import { toast } from "@backpackapp-io/react-native-toast";
 import { getDB } from "./db";
+import { DEFAULT_TOAST_ERROR_CONFIG, DEFAULT_TOAST_SUCCESS_CONFIG } from "@/services/toast";
 
 
 /**
@@ -29,7 +30,7 @@ export async function migrateTables(): Promise<void> {
 
   // Notification migration
   if (user_version < NOTIFICATION_MIGRATION) {
-    toast.success(`migrate to version ${NOTIFICATION_MIGRATION}`, { position: ToastPosition.BOTTOM }); // TEMP
+    toast.success(`migrate to version ${NOTIFICATION_MIGRATION}`, DEFAULT_TOAST_SUCCESS_CONFIG); // TEMP
     try {
       await db.execAsync(`
         ALTER TABLE User ADD COLUMN wantFiveMinutesRemainingNotification INTEGER DEFAULT 1;
@@ -62,13 +63,13 @@ export async function migrateTables(): Promise<void> {
       `);
     }
     catch (error) {
-      toast.error(`Error while trying to migrate user table to version ${NOTIFICATION_MIGRATION} : ` + error, { position: ToastPosition.BOTTOM });
+      toast.error(`Error while trying to migrate user table to version ${NOTIFICATION_MIGRATION} : ` + error, DEFAULT_TOAST_ERROR_CONFIG);
     }
   }
 
   // User active migration
   if (user_version < USER_ACTIVE_MIGRATION) {
-    toast.success(`migrate to version ${USER_ACTIVE_MIGRATION}`, { position: ToastPosition.BOTTOM }); // TEMP
+    toast.success(`migrate to version ${USER_ACTIVE_MIGRATION}`, DEFAULT_TOAST_SUCCESS_CONFIG); // TEMP
     try {
       await db.execAsync(`
         ALTER TABLE User ADD COLUMN isActive INTEGER DEFAULT 0;
@@ -83,7 +84,7 @@ export async function migrateTables(): Promise<void> {
       `);
     }
     catch (error) {
-      toast.error(`Error while trying to migrate user table to version ${USER_ACTIVE_MIGRATION} : ` + error, { position: ToastPosition.BOTTOM })
+      toast.error(`Error while trying to migrate user table to version ${USER_ACTIVE_MIGRATION} : ` + error, DEFAULT_TOAST_ERROR_CONFIG)
     }
   }
 }
@@ -108,5 +109,6 @@ async function resetMigration(table: string, columnsToDrop: string[]): Promise<v
       });
   }
   catch (error) {
+    toast.error(`Error while trying to reset migrations : ` + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
