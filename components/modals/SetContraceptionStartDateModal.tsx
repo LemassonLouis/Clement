@@ -4,13 +4,13 @@ import { useRef } from "react";
 import ContraceptionStartDateForm from "../forms/ContraceptionStartDateForm";
 
 
-type EditStartDateModalProps = {
+type SetContraceptionStartDateModalProps = {
   visible: boolean,
   additionalActionTrue: () => void
 }
 
 
-export default function EditStartDateModal({ visible, additionalActionTrue }: EditStartDateModalProps) {
+export default function SetContraceptionStartDateModal({ visible, additionalActionTrue }: SetContraceptionStartDateModalProps) {
   const contraceptionStartDateForm = useRef<{ saveForm: () => void }>();
 
   return (

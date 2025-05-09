@@ -5,7 +5,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import WelcomModal from "@/components/modals/WelcomeModal";
 import SetContraceptionMethodModal from "@/components/modals/SetContraceptionMethodModal";
-import EditStartDateModal from "@/components/modals/EditStartDateModal";
+import SetContraceptionStartDateModal from "@/components/modals/SetContraceptionStartDateModal";
 import { UserContext } from "@/context/UserContext";
 import { User } from "@/types/UserType";
 import { updateUser } from "@/database/user";
@@ -49,7 +49,7 @@ export default function Index() {
         }}
       />
 
-      <EditStartDateModal
+      <SetContraceptionStartDateModal
         visible={startDateModalVisible}
         additionalActionTrue={async () => {
           setStartDateModalVisible(false);
