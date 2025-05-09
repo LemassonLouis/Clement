@@ -24,14 +24,14 @@ const ContraceptionMethodFrom = forwardRef(({ autoValidate = false }: Contracept
     setSelectedContraception(item.slug);
 
     if(autoValidate) {
-      saveForm()
+      saveForm(item.slug)
     }
   }
 
-  const saveForm = async () => {
+  const saveForm = async (method: ContraceptionMethods = selectedContraception) => {
     const newUser: User = {
       ...user,
-      method: selectedContraception
+      method: method
     }
 
     await updateUser(newUser);
