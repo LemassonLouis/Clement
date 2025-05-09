@@ -1,26 +1,33 @@
-import EditStartDateModal from "@/components/modals/EditStartDateModal";
+import ContraceptionStartDateForm from "@/components/forms/ContraceptionStartDateForm";
 import { useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function ContraceptionStartDate() {
   const navigation = useNavigation();
-  const [editStartDateModalVisible, setEditStartDateModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     navigation.setOptions({ title: "Date de début de contraception"});
   }, [navigation]);
 
   return (
-    <>
-      <TouchableOpacity onPress={() => setEditStartDateModalVisible(true)}>
-        <Text>Modifier la date de début de contraception</Text>
-      </TouchableOpacity>
-
-      <EditStartDateModal
-        visible={editStartDateModalVisible}
-        additionalActionTrue={() => setEditStartDateModalVisible(false)}
-      />
-    </>
+    <View style={styles.container}>
+      <Text style={styles.title}>Modifier la date de début de contraception</Text>
+      <ContraceptionStartDateForm autoValidate={true} />
+    </View>
   )
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    width: '80%',
+    marginHorizontal: 'auto',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    marginVertical: 10,
+    fontSize: 16,
+  }
+});

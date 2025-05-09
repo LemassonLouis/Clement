@@ -3,15 +3,17 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { getStartAndEndDate } from "@/services/date";
 
 interface DateEditorInterface {
   icon: TimeTextIcon,
   date: Date,
   setDate: React.Dispatch<React.SetStateAction<Date>>,
+  additionnalOnConfirm?: (date?: Date) => void,
 }
 
 
-export default function DateEditor({ icon, date, setDate }: DateEditorInterface) {
+export default function DateEditor({ icon, date, setDate, additionnalOnConfirm }: DateEditorInterface) {
   const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
 
   return (
@@ -24,8 +26,12 @@ export default function DateEditor({ icon, date, setDate }: DateEditorInterface)
       <DateTimePickerModal
         isVisible={datePickerOpen}
         mode="date"
+        date={date}
         onConfirm={thisDate => {
-          setDate(thisDate);
+          const validatedDate = getStartAndEndDate(thisDate).dateStart;
+
+          setDate(validatedDate);
+          if(additionnalOnConfirm) additionnalOnConfirm(validatedDate);
           setDatePickerOpen(false);
         }}
         onCancel={() => {
