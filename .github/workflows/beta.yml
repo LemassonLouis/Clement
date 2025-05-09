@@ -113,16 +113,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
   
-      - name: Download artifacts
+      - name: Download and package artifacts
+        id: package
         run: |
+          ANDROID_FILE_NAME="clement-android-${{ github.ref_name }}"
+          IOS_FILE_NAME="clement-ios-${{ github.ref_name }}"
+
+          FILES=()
+
           if [[ -n "${{ needs.build.outputs.ANDROID_URL }}" ]]; then
-            curl -L "${{ needs.build.outputs.ANDROID_URL }}" -o "clement-android-${{ github.ref_name }}.apk"
-            zip "clement-android-${{ github.ref_name }}.zip" "clement-android-${{ github.ref_name }}.apk"
+            curl -L "${{ needs.build.outputs.ANDROID_URL }}" -o "${ANDROID_FILE_NAME}.apk"
+            zip "${ANDROID_FILE_NAME}.zip" "${ANDROID_FILE_NAME}.apk"
+            FILES+=("${ANDROID_FILE_NAME}.apk" "${ANDROID_FILE_NAME}.zip")
           fi
+
           if [[ -n "${{ needs.build.outputs.IOS_URL }}" ]]; then
-            curl -L "${{ needs.build.outputs.IOS_URL }}" -o "clement-ios-${{ github.ref_name }}.ipa"
-            zip "clement-ios-${{ github.ref_name }}.zip" "clement-ios-${{ github.ref_name }}.ipa"
+            curl -L "${{ needs.build.outputs.IOS_URL }}" -o "${IOS_FILE_NAME}.ipa"
+            zip "${IOS_FILE_NAME}.zip" "${IOS_FILE_NAME}.ipa"
+            FILES+=("${IOS_FILE_NAME}.ipa" "${IOS_FILE_NAME}.zip")
           fi
+
+          echo "files=${FILES[*]}" >> $GITHUB_OUTPUT
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
@@ -131,10 +142,6 @@ jobs:
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           body: ${{ needs.changelog.outputs.CHANGELOG_BODY }}
-          files: |
-            app-android-${{ github.ref_name }}.zip
-            app-android-${{ github.ref_name }}.apk
-            app-ios-${{ github.ref_name }}.zip
-            app-ios-${{ github.ref_name }}.ipa
+          files: ${{ steps.package.outputs.files }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
