@@ -86,7 +86,7 @@ export async function createUser(user: User): Promise<number | null> {
         serializedUser.wantObjectiveMinReachedNotification,
         serializedUser.wantObjectiveMaxReachedNotification,
         serializedUser.wantObjectiveMaxExtraReachedNotification,
-        serializedUser.isActive,
+        false,
       ]);
 
       return result.lastInsertRowId;

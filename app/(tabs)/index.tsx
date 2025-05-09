@@ -21,8 +21,8 @@ export default function Index() {
   const [thanksModalVisible, setThanksModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!hasUserConfigured.current && typeof user.isActive === 'boolean') {
-      setWelcomeModalVisible(!user.isActive);
+    if (!hasUserConfigured.current && !user.isActive) {
+      setWelcomeModalVisible(true);
       hasUserConfigured.current = true;
     }
   }, [user]);
