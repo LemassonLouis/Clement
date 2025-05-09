@@ -41,6 +41,7 @@ async function configureNotificationChannel(): Promise<void> {
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#FF231F7C',
       lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
+      sound: 'clement-notification.mp3'
     });
   }
 }
@@ -55,7 +56,8 @@ export async function makeNotificationPush(title: string, content: string): Prom
   await scheduleNotificationAsync({
     content: {
       title: title,
-      body: content
+      body: content,
+      sound: 'clement-notification.mp3',
     },
     trigger: null
   });
@@ -66,7 +68,8 @@ export async function scheduleNotificationPush(title: string, content: string = 
   await scheduleNotificationAsync({
     content: {
       title: title,
-      body: content
+      body: content,
+      sound: 'clement-notification.mp3',
     },
     trigger: {
       type: SchedulableTriggerInputTypes.DATE,
