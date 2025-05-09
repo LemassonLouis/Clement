@@ -4,7 +4,7 @@ import CustomModal from "@/components/modals/CustomModal";
 import { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import WelcomModal from "@/components/modals/WelcomeModal";
-import EditContraceptionModal from "@/components/modals/EditContraceptionModal";
+import SetContraceptionMethodModal from "@/components/modals/SetContraceptionMethodModal";
 import EditStartDateModal from "@/components/modals/EditStartDateModal";
 import { UserContext } from "@/context/UserContext";
 import { User } from "@/types/UserType";
@@ -41,7 +41,7 @@ export default function Index() {
         }}
       />
 
-      <EditContraceptionModal
+      <SetContraceptionMethodModal
         visible={contraceptionModalVisible}
         additionalActionTrue={async () => {
           setContraceptionModalVisible(false);

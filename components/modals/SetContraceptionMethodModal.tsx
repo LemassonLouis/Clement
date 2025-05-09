@@ -4,13 +4,13 @@ import { useRef } from "react";
 import ContraceptionMethodFrom from "../forms/ContraceptionMethodForm";
 
 
-type EditContraceptionModalProps = {
+type SetContraceptionMethodProps = {
   visible: boolean,
   additionalActionTrue: () => void
 }
 
 
-export default function EditContraceptionModal({ visible, additionalActionTrue }: EditContraceptionModalProps) {
+export default function SetContraceptionMethodModal({ visible, additionalActionTrue }: SetContraceptionMethodProps) {
   const contraceptionMethodFrom = useRef<{ saveForm: () => void }>();
 
   return (
