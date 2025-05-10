@@ -6,7 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { createTables, deleteTables } from "@/database/db";
 import { migrateTables } from "@/database/migrations";
-import { initializeNotifications, makeNotificationPush } from "@/services/notifications";
+import { initializeNotifications } from "@/services/notifications";
 import { Toasts } from '@backpackapp-io/react-native-toast';
 import { createUser, getUser } from "@/database/user";
 import { defaultUser, UserContext } from "@/context/UserContext";
@@ -16,8 +16,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [user, setUser] = useState<User>(defaultUser);
-
-  makeNotificationPush("test", "OMG");
 
   useEffect(() => {
     const asyncTasks = async () => {

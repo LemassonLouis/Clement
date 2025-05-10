@@ -1,8 +1,9 @@
 import Section from "@/components/settings/Section";
 import SectionOption from "@/components/settings/SectionOption";
+import { makeNotificationPush } from "@/services/notifications";
 import { getAllScheduledNotificationsAsync, NotificationRequest } from "expo-notifications";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Button } from "react-native";
 
 export default function SettingsScreen() {
   // TEMP : display scheduled notifications
@@ -28,6 +29,10 @@ export default function SettingsScreen() {
         <SectionOption name="Style de l'application" navigateTo="appStyle"/>
         <SectionOption name="À propos" navigateTo="about"/>
       </Section>
+
+      <Button title="Make notification" onPress={() => {
+        makeNotificationPush("TEST", 'OMG');
+      }}/>
 
       {/* TEMP : display scheduled notifications */}
       <View>
