@@ -4,7 +4,16 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
-export default function ProgressBarDetails({ progressBarWidth, objective, totalWearing, date }: {progressBarWidth: number, objective: number, totalWearing: number, date: Date}) {
+
+type ProgressBarDetailsProps = {
+  progressBarWidth: number,
+  objective: number,
+  totalWearing: number,
+  date: Date
+}
+
+
+export default function ProgressBarDetails({ progressBarWidth, objective, totalWearing, date }: ProgressBarDetailsProps) {
   const [available, setAvailable] = useState<string>(formatMilisecondsTime(calculateTimeUntilUnreachableObjective(objective, isDateToday(date) ? new Date() : date)));
   const remaining = formatMilisecondsTime(objective - totalWearing);
   const hour = objective / 3_600_000;

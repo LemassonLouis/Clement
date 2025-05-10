@@ -9,13 +9,20 @@ import { reScheduleNotifications } from "@/services/notifications";
 import { UserContext } from "@/context/UserContext";
 
 
-export default function EditSessionModal({ session, visible, setVisible }: DeleteSessionModalInterface) {
+type EditSessionModalProps = {
+  session: SessionInterface,
+  visible: boolean,
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>,
+}
+
+
+export default function EditSessionModal({ session, visible, setVisible }: EditSessionModalProps) {
   const { user } = useContext(UserContext);
 
   const sessionStore = getSessionStore();
 
   const [startTime, setStartTime] = useState<Date>(session.dateTimeStart);
-  const [endTime, setEndTime] = useState<Date>(session.dateTimeEnd);
+  const [endTime, setEndTime] = useState<Date>(session.dateTimeEnd!);
 
   const actionTrue = async () => {
     const ok = timeVerifications(session, startTime, endTime, 'MODAL::1');
@@ -43,7 +50,7 @@ export default function EditSessionModal({ session, visible, setVisible }: Delet
       actionTrueText="Modifier"
       actionFalse={() => {
         setStartTime(session.dateTimeStart);
-        setEndTime(session.dateTimeEnd);
+        setEndTime(session.dateTimeEnd!);
         setVisible(false);
       }}
       actionTrue={actionTrue}

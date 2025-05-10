@@ -1,7 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 
 
-export default function ProgressIndicator({ hour, progressBarWidth, isTop }: ProgressIndicatorInterface) {
+type ProgressIndicatorProps = {
+  hour: number,
+  progressBarWidth: number,
+  isTop: boolean,
+}
+
+
+export default function ProgressIndicator({ hour, progressBarWidth, isTop }: ProgressIndicatorProps) {
   return (
     <View style={[styles.indicator, isTop && styles.indicatorTop, { left: hour * progressBarWidth / 24 }]}>
       {!isTop && <Text>|</Text>}

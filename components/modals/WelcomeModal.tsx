@@ -1,7 +1,14 @@
 import { Text } from "react-native";
 import CustomModal from "./CustomModal";
 
-export default function WelcomModal({ visible, additionalActionTrue }: {visible: boolean, additionalActionTrue: () => {}}) {
+
+type WelcomModalProps = {
+  visible: boolean,
+  additionalActionTrue: () => {}
+}
+
+
+export default function WelcomModal({ visible, additionalActionTrue }: WelcomModalProps) {
   return (
     <CustomModal
       title="Bienvenue !"

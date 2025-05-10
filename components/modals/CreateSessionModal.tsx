@@ -9,7 +9,15 @@ import { reScheduleNotifications } from "@/services/notifications";
 import { UserContext } from "@/context/UserContext";
 
 
-export default function CreateSessionModal({ date, sexWithoutProtection, visible, setVisible }: {date: Date, sexWithoutProtection: boolean, visible: boolean, setVisible: React.Dispatch<React.SetStateAction<boolean>>}) {
+type CreateSessionModalProps = {
+  date: Date,
+  sexWithoutProtection: boolean,
+  visible: boolean,
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+
+export default function CreateSessionModal({ date, sexWithoutProtection, visible, setVisible }: CreateSessionModalProps) {
   const { user } = useContext(UserContext);
 
   const sessionStore = getSessionStore();

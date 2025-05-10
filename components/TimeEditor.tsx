@@ -8,14 +8,14 @@ import { formatTimefromDate } from "@/services/date";
 import { LinearGradient } from "expo-linear-gradient";
 
 
-interface TimeEditorInterface {
+type TimeEditorProps = {
   icon: TimeTextIcon,
   date: Date | null,
   setDate: (date: Date) => void,
 }
 
 
-export default function TimeEditor({ icon, date, setDate }: TimeEditorInterface) {
+export default function TimeEditor({ icon, date, setDate }: TimeEditorProps) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [time, setTime] = useState<Date>(() => date ?? new Date());
 

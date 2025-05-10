@@ -6,7 +6,14 @@ import { UserContext } from "@/context/UserContext";
 import { useContext } from "react";
 
 
-export default function DeleteSessionModal({ session, visible, setVisible }: DeleteSessionModalInterface) {
+type DeleteSessionModalProps = {
+  session: SessionInterface,
+  visible: boolean,
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>,
+}
+
+
+export default function DeleteSessionModal({ session, visible, setVisible }: DeleteSessionModalProps) {
   const { user } = useContext(UserContext);
 
   const sessionStore = getSessionStore();

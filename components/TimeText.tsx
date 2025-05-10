@@ -1,9 +1,15 @@
-import TimeTextInterface from "@/interfaces/TimeText";
+import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
 
-export default function TimeText({ value, icon }: TimeTextInterface) {
+type TimeTextProps = {
+  value: string | null,
+  icon: TimeTextIcon,
+}
+
+
+export default function TimeText({ value, icon }: TimeTextProps) {
   return (
     <View style={styles.container}>
       <MaterialCommunityIcons name={icon} size={25} color='#000'/>

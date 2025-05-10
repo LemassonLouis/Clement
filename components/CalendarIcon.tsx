@@ -4,7 +4,14 @@ import { Feather } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 
 
-export default function CalendarIcon({ status, sexWithoutProtection, size }: CalendarIconInterface) {
+type CalendarIconProps = {
+  status: string,
+  sexWithoutProtection: boolean,
+  size: number,
+}
+
+
+export default function CalendarIcon({ status, sexWithoutProtection, size }: CalendarIconProps) {
   const icon = (): React.JSX.Element => {
     switch (status) {
       case Status.FAILED:

@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { getStartAndEndDate } from "@/services/date";
 
-interface DateEditorInterface {
+type DateEditorProps = {
   icon: TimeTextIcon,
   date: Date,
   setDate: React.Dispatch<React.SetStateAction<Date>>,
@@ -13,7 +13,7 @@ interface DateEditorInterface {
 }
 
 
-export default function DateEditor({ icon, date, setDate, additionnalOnConfirm }: DateEditorInterface) {
+export default function DateEditor({ icon, date, setDate, additionnalOnConfirm }: DateEditorProps) {
   const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
 
   return (
