@@ -50,7 +50,6 @@
         "expo-notifications",
         {
           "sounds": [
-            "./assets/sounds/clement_notification.mp3",
             "./assets/sounds/clement_notification.wav"
           ]
         }
