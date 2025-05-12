@@ -4,10 +4,11 @@ import { getSessionStore } from "@/store/SessionStore";
 import { reScheduleNotifications } from "@/services/notifications";
 import { UserContext } from "@/context/UserContext";
 import { useContext } from "react";
+import { Session } from "@/types/SessionType";
 
 
 type DeleteSessionModalProps = {
-  session: SessionInterface,
+  session: Session,
   visible: boolean,
   setVisible: React.Dispatch<React.SetStateAction<boolean>>,
 }

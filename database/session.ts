@@ -1,6 +1,7 @@
 import { toast } from "@backpackapp-io/react-native-toast";
 import { getDB } from "./db";
 import { DEFAULT_TOAST_ERROR_CONFIG } from "@/services/toast";
+import { SerializedSession, Session } from "@/types/SessionType";
 
 
 /**
@@ -32,15 +33,21 @@ export async function createSessionTable(): Promise<void> {
  * @param sexWithoutProtection Default = `false`.
  * @returns 
  */
-export async function createSession(dateTimeStart: string, dateTimeEnd: string | null = null, sexWithoutProtection: boolean = false): Promise<number | null> {
+export async function createSession(session: Session): Promise<number | null> {
   const db = await getDB();
-
+  
   try {
+    let serializedSession = serializeSession(session);
+
     const  statement = await db.prepareAsync(
       'INSERT INTO Session (dateTimeStart, dateTimeEnd, sexWithoutProtection) VALUES (?, ?, ?)'
     );
 
-    const result = await statement.executeAsync([dateTimeStart, dateTimeEnd, sexWithoutProtection ? 1 : 0]);
+    const result = await statement.executeAsync([
+      serializedSession.dateTimeStart,
+      serializedSession.dateTimeEnd,
+      serializedSession.sexWithoutProtection
+    ]);
 
     return result.lastInsertRowId;
   }
@@ -58,15 +65,15 @@ export async function createSession(dateTimeStart: string, dateTimeEnd: string |
  * @param getCurrentSession If need to 
  * @returns 
  */
-export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTimeEnd: string, getCurrentSession: boolean = true): Promise<SessionInterface[]> {
+export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTimeEnd: string, getCurrentSession: boolean = true): Promise<Session[]> {
   const db = await getDB();
 
   try {
     if(getCurrentSession) {
-      var sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeStart >= ? AND (dateTimeEnd <= ? OR dateTimeEnd IS NULL)", [dateTimeStart, dateTimeEnd]);
+      var sessions = await db.getAllAsync<SerializedSession>("SELECT * FROM Session WHERE dateTimeStart >= ? AND (dateTimeEnd <= ? OR dateTimeEnd IS NULL)", [dateTimeStart, dateTimeEnd]);
     }
     else {
-      var sessions = await db.getAllAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeStart >= ? AND (dateTimeEnd <= ? OR dateTimeEnd IS NULL) AND dateTimeStart <= dateTimeEnd", [dateTimeStart, dateTimeEnd]);
+      var sessions = await db.getAllAsync<SerializedSession>("SELECT * FROM Session WHERE dateTimeStart >= ? AND (dateTimeEnd <= ? OR dateTimeEnd IS NULL) AND dateTimeStart <= dateTimeEnd", [dateTimeStart, dateTimeEnd]);
     }
 
     return sessions.map(session => deserializeSession(session));
@@ -82,11 +89,11 @@ export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTime
  * Get the first unfinished session.
  * @returns 
  */
-export async function getFirstUnfinishedSession(): Promise<SessionInterface | null> {
+export async function getFirstUnfinishedSession(): Promise<Session | null> {
   const db = await getDB();
 
   try {
-    const session = await db.getFirstAsync<SessionInterface>("SELECT * FROM Session WHERE dateTimeEnd IS NULL");
+    const session = await db.getFirstAsync<SerializedSession>("SELECT * FROM Session WHERE dateTimeEnd IS NULL");
 
     if(!session) {
       return null;
@@ -108,11 +115,27 @@ export async function getFirstUnfinishedSession(): Promise<SessionInterface | nu
  * @param dateTimeEnd The new date time end.
  * @param sexWithoutProtection The new sex without protection.
  */
-export async function updateSession(id: number, dateTimeStart: string, dateTimeEnd: string | null, sexWithoutProtection: boolean): Promise<void> {
+export async function updateSession(session: Session): Promise<void> {
   const db = await getDB();
 
   try {
-    await db.runAsync("UPDATE Session SET dateTimeStart = ?, dateTimeEnd = ?, sexWithoutProtection = ? WHERE id = ?", [dateTimeStart, dateTimeEnd, sexWithoutProtection, id]);
+    let serializedSession = serializeSession(session);
+
+    await db.runAsync(
+      `UPDATE Session SET
+        dateTimeStart = ?,
+        dateTimeEnd = ?,
+        sexWithoutProtection = ?
+      WHERE
+        id = ?`
+      ,
+      [
+        serializedSession.dateTimeStart,
+        serializedSession.dateTimeEnd,
+        serializedSession.sexWithoutProtection,
+        serializedSession.id
+      ]
+    );
   }
   catch (error) {
     toast.error("Error while trying to update session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
@@ -159,10 +182,20 @@ export async function deleteSession(id: number): Promise<void> {
  * @param session 
  * @returns 
  */
-export function deserializeSession(session: SessionInterface): SessionInterface {
-  session.dateTimeStart = new Date(session.dateTimeStart);
-  session.dateTimeEnd = session.dateTimeEnd === null ? null : new Date(session.dateTimeEnd);
-  session.sexWithoutProtection = session.sexWithoutProtection ? true : false;
+export function deserializeSession(session: SerializedSession): Session {
+  return {
+    ...session,
+    dateTimeStart: new Date(session.dateTimeStart),
+    dateTimeEnd: session.dateTimeEnd ? new Date(session.dateTimeEnd) : null,
+    sexWithoutProtection: !!session.sexWithoutProtection,
+  }
+}
 
-  return session;
+
+function serializeSession(session: Session): SerializedSession {
+  return {
+    ...session,
+    dateTimeStart: session.dateTimeStart.toISOString(),
+    dateTimeEnd: session.dateTimeEnd && session.dateTimeEnd.toISOString(),
+  }
 }

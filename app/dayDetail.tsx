@@ -3,7 +3,7 @@ import CreateSessionModal from "@/components/modals/CreateSessionModal";
 import CurrentSession from "@/components/CurrentSession";
 import ProgressBarDetails from "@/components/ProgressBarDetails";
 import ProgressIndicator from "@/components/ProgressIndicator";
-import Session from "@/components/Session";
+import SessionCard from "@/components/SessionCard";
 import SexWithoutProtection from "@/components/SexWithoutProtection";
 import { UserContext } from "@/context/UserContext";
 import { deserializeSession } from "@/database/session";
@@ -18,8 +18,10 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import * as Progress from 'react-native-progress';
+import { Session } from "@/types/SessionType";
+import { Day, SerializedDay } from "@/types/DayType";
 
-const deserializeDay = (day: DayInterface): DayInterface => {
+const deserializeDay = (day: SerializedDay): Day => {
   return {
     date: new Date(day.date),
     isCurrentMonth: day.isCurrentMonth,
@@ -36,7 +38,7 @@ export default function dayDetail() {
   const sessionsStored = getSessionsStored();
   const currentSessionStored = getCurrentSessionStored();
 
-  const [currentSessions, setCurrentSessions] = useState<SessionInterface[]>(extractDateSessions(sessionsStored, day.date));
+  const [currentSessions, setCurrentSessions] = useState<Session[]>(extractDateSessions(sessionsStored, day.date));
   const [totalWearing, setTotalWearing] = useState<number>(calculateTotalWearing(currentSessions));
   const [status, setStatus] = useState<string>(totalWearing > 0 || isDateInUserContraceptionRange(user, day.date) ? getStatusFromTotalWearing(user, totalWearing) : Status.NONE);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(currentSessions.some(session => session.sexWithoutProtection));
@@ -152,7 +154,7 @@ export default function dayDetail() {
               : 0;
           })}
           keyExtractor={session => session.id.toString()}
-          renderItem={({item}) => <Session {...item}/>}
+          renderItem={({item}) => <SessionCard {...item}/>}
         />
 
         {(totalWearing > 0 || isDateInUserContraceptionRange(user, day.date)) && <>

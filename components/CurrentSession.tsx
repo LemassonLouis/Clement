@@ -14,6 +14,7 @@ import CustomModal from "./modals/CustomModal";
 import TimeEditor from "./TimeEditor";
 import SexWithoutProtection from "./SexWithoutProtection";
 import { UserContext } from "@/context/UserContext";
+import { Session } from "@/types/SessionType";
 
 const today: Date = new Date();
 
@@ -102,20 +103,19 @@ export default function CurrentSession() {
       if(splitedSession.length > 1) {
         splitedSession.forEach(async session => {
           if(session.id !== 0) {
-            await updateSession(session.id, session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString() ?? null, session.sexWithoutProtection);
+            await updateSession(session);
 
-            sessionStore.updateSessions([{
-              id: session.id,
-              dateTimeStart: session.dateTimeStart,
-              dateTimeEnd: session.dateTimeEnd,
-              sexWithoutProtection: session.sexWithoutProtection
-            }]);
+            sessionStore.updateSessions([session]);
           }
           else {
-            const sessionId = await createSession(session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString(), session.sexWithoutProtection);
+            const sessionId = await createSession(session);
 
             if(sessionId) {
-              sessionStore.addSession({id: sessionId, dateTimeStart: session.dateTimeStart, dateTimeEnd: session.dateTimeEnd, sexWithoutProtection: session.sexWithoutProtection});
+              sessionStore.addSession({
+                ...session,
+                id: sessionId
+              });
+
               if(session.dateTimeEnd === null) currentSessionStore.updateCurrentSession({ sessionId: sessionId, sessionStartTime: session.dateTimeStart });
             }
           }
@@ -131,7 +131,12 @@ export default function CurrentSession() {
 
     const startTime: Date = new Date();
     const sexWithoutProtection = hasSessionsSexWithoutProtection(currentSessions);
-    const sessionId = await createSession(startTime.toISOString(), null, sexWithoutProtection);
+    const sessionId = await createSession({
+      id: 0,
+      dateTimeStart: startTime,
+      dateTimeEnd: null,
+      sexWithoutProtection: sexWithoutProtection
+    });
 
     if(sessionId) {
       sessionStore.addSession({id: sessionId, dateTimeStart: startTime, dateTimeEnd: null, sexWithoutProtection: sexWithoutProtection});
@@ -163,20 +168,18 @@ export default function CurrentSession() {
 
       splitedSession.forEach(async session => {
         if(session.id !== 0) {
-          await updateSession(session.id, session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString() ?? null, session.sexWithoutProtection);
+          await updateSession(session);
 
-          sessionStore.updateSessions([{
-            id: session.id,
-            dateTimeStart: session.dateTimeStart,
-            dateTimeEnd: session.dateTimeEnd,
-            sexWithoutProtection: session.sexWithoutProtection
-          }]);
+          sessionStore.updateSessions([session]);
         }
         else {
-          const sessionId = await createSession(session.dateTimeStart.toISOString(), session.dateTimeEnd?.toISOString(), session.sexWithoutProtection);
+          const sessionId = await createSession(session);
 
           if(sessionId) {
-            sessionStore.addSession({id: sessionId, dateTimeStart: session.dateTimeStart, dateTimeEnd: session.dateTimeEnd, sexWithoutProtection: session.sexWithoutProtection});
+            sessionStore.addSession({
+              ...session,
+              id: sessionId
+            });
           }
         }
       });
@@ -206,14 +209,14 @@ export default function CurrentSession() {
                 setDate={async (date) => {
                   const ok = timeVerifications({id: currentSessionStored.sessionId ?? 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date());
                   if(ok) {
-                    const newSession: SessionInterface = {
-                      id: currentSessionStored.sessionId,
+                    const newSession: Session = {
+                      id: currentSessionStored.sessionId!,
                       dateTimeStart: date,
                       dateTimeEnd: null,
                       sexWithoutProtection: currentSessions.some(session => session.sexWithoutProtection === true)
                     };
 
-                    await updateSession(newSession.id, newSession.dateTimeStart.toISOString(), newSession.dateTimeEnd?.toISOString() ?? null, newSession.sexWithoutProtection);
+                    await updateSession(newSession);
                     currentSessionStored.sessionStartTime = date;
                     sessionStore.updateSessions([newSession]);
 

@@ -4,6 +4,7 @@ import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
 import { getContraceptionMethod } from "./contraception";
 import { toast, ToastPosition } from "@backpackapp-io/react-native-toast";
 import { User } from "@/types/UserType";
+import { Session } from "@/types/SessionType";
 
 
 /**
@@ -11,7 +12,7 @@ import { User } from "@/types/UserType";
  * @param sessions Sessions
  * @returns miliseconds
  */
-export function calculateTotalWearing(sessions: SessionInterface[]): number {
+export function calculateTotalWearing(sessions: Session[]): number {
   return sessions.reduce((previous, current) => {
     return previous + getDateDifference(current.dateTimeStart, current.dateTimeEnd ?? new Date());
   }, 0);
@@ -91,7 +92,7 @@ export function getColorFromStatus(status: Status | string): string {
  * @param date The date from which extract the sessions.
  * @returns 
  */
-export function extractDateSessions(sessions: SessionInterface[], date: Date): SessionInterface[] {
+export function extractDateSessions(sessions: Session[], date: Date): Session[] {
   const { dateStart, dateEnd } = getStartAndEndDate(date);
 
   return sessions.filter(session => {
@@ -105,7 +106,7 @@ export function extractDateSessions(sessions: SessionInterface[], date: Date): S
  * @param sessions The sessions to test.
  * @returns 
  */
-export function hasSessionsSexWithoutProtection(sessions: SessionInterface[]): boolean {
+export function hasSessionsSexWithoutProtection(sessions: Session[]): boolean {
   return sessions.some(session => session.sexWithoutProtection === true);
 }
 
@@ -117,7 +118,7 @@ export function hasSessionsSexWithoutProtection(sessions: SessionInterface[]): b
  * @param endTime the end time
  * @returns 
  */
-export function timeVerifications(session: SessionInterface, startTime: Date, endTime: Date, toastProviderKey: string = 'DEFAULT'): boolean {
+export function timeVerifications(session: Session, startTime: Date, endTime: Date, toastProviderKey: string = 'DEFAULT'): boolean {
   const sessionStore = getSessionStore();
   let ok = true;
   const errors = [];
@@ -198,8 +199,8 @@ export function calculateTimeUntilUnreachableObjective(objective: number, date: 
  * @param session Session to split.
  * @returns 
  */
-export function splitSessionsByDay(session: SessionInterface): SessionInterface[] {
-  const sessions: SessionInterface[] = [];
+export function splitSessionsByDay(session: Session): Session[] {
+  const sessions: Session[] = [];
   let currentStart = new Date(session.dateTimeStart);
   const now = new Date();
 

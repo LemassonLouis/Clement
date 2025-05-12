@@ -7,6 +7,7 @@ import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";
 import { reScheduleNotifications } from "@/services/notifications";
 import { UserContext } from "@/context/UserContext";
+import { Session } from "@/types/SessionType";
 
 
 type CreateSessionModalProps = {
@@ -26,7 +27,7 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
   const [endTime, setEndTime] = useState<Date>(date);
 
   const actionTrue = async () => {
-    const session: SessionInterface = {
+    const session: Session = {
       id: 0,
       dateTimeStart: startTime,
       dateTimeEnd: endTime,
@@ -35,7 +36,13 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
     const ok = timeVerifications(session, startTime, endTime, 'MODAL::1');
     if(!ok) return;
 
-    const sessionId = await createSession(startTime.toISOString(), endTime.toISOString(), sexWithoutProtection);
+    const sessionId = await createSession({
+      id: 0,
+      dateTimeStart: startTime,
+      dateTimeEnd: endTime,
+      sexWithoutProtection: sexWithoutProtection,
+    });
+
     if(sessionId) {
       session.id = sessionId;
       sessionStore.addSession(session);

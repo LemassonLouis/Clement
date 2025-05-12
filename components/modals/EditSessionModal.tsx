@@ -7,10 +7,11 @@ import { getSessionStore } from "@/store/SessionStore";
 import { timeVerifications } from "@/services/session";
 import { reScheduleNotifications } from "@/services/notifications";
 import { UserContext } from "@/context/UserContext";
+import { Session } from "@/types/SessionType";
 
 
 type EditSessionModalProps = {
-  session: SessionInterface,
+  session: Session,
   visible: boolean,
   setVisible: React.Dispatch<React.SetStateAction<boolean>>,
 }
@@ -28,14 +29,14 @@ export default function EditSessionModal({ session, visible, setVisible }: EditS
     const ok = timeVerifications(session, startTime, endTime, 'MODAL::1');
     if(!ok) return;
 
-    await updateSession(session.id, startTime.toISOString(), endTime.toISOString(), session.sexWithoutProtection);
-
-    sessionStore.updateSessions([{
-      id: session.id,
+    const newSession = {
+      ...session,
       dateTimeStart: startTime,
-      dateTimeEnd: endTime,
-      sexWithoutProtection: session.sexWithoutProtection
-    }]);
+      dateTimeEnd: endTime
+    }
+
+    await updateSession(newSession);
+    sessionStore.updateSessions([newSession]);
 
     await reScheduleNotifications(user);
 

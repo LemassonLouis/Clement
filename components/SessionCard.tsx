@@ -6,9 +6,10 @@ import DeleteSessionModal from "./modals/DeleteSessionModal";
 import EditSessionModal from "./modals/EditSessionModal";
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
+import { Session } from "@/types/SessionType";
 
 
-export default function Session(session: SessionInterface) {
+export default function SessionCard(session: Session) {
   if(!session.dateTimeEnd) return;
 
   const [deleteModalVisible, setDeleteSessionModalVisible] = useState(false);

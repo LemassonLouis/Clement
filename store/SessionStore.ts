@@ -1,9 +1,10 @@
 import { getAllSessionsBetweenDates } from "@/database/session";
 import { getCalendarLastSunday, getCalendarStartMonday, getStartAndEndDate } from "@/services/date";
+import { Session } from "@/types/SessionType";
 import { useCallback, useSyncExternalStore } from "react";
 
 class SessionStore {
-  private sessions: SessionInterface[] = [];
+  private sessions: Session[] = [];
   private listeners: Set<() => void> = new Set();
   private startDate: string | null = null;
   private endDate: string | null = null;
@@ -21,26 +22,19 @@ class SessionStore {
       this.startDate = calendarFirstMonday;
       this.endDate = calendarLastSunday;
 
-      // const sessionsCached = await getCacheData(`sessions_${year}_${month}`);
-      // if(sessionsCached) {
-      //   this.sessions = JSON.parse(sessionsCached).map((session: SessionInterface) => deserializeSession(session));
-      // }
-      // else {
-        const sessions = await getAllSessionsBetweenDates(calendarFirstMonday, calendarLastSunday);
-        this.sessions = sessions;
-      //   await storeCacheData(`sessions_${year}_${month}`, JSON.stringify(sessions));
-      // }
-
+      const sessions = await getAllSessionsBetweenDates(calendarFirstMonday, calendarLastSunday);
+      this.sessions = sessions;
+  
       this.notifyListeners();
     }
   }
 
-  public addSession(session: SessionInterface) {
+  public addSession(session: Session) {
     this.sessions = [...this.sessions, session];
     this.notifyListeners();
   }
 
-  public updateSessions(updatedSessions: SessionInterface[]) {
+  public updateSessions(updatedSessions: Session[]) {
     updatedSessions.forEach(session => {
       const index = this.sessions.findIndex(s => s.id === session.id);
   
@@ -53,7 +47,7 @@ class SessionStore {
     this.notifyListeners();
   }
 
-  public removeSession(session: SessionInterface) {
+  public removeSession(session: Session) {
     const index = this.sessions.findIndex(s => s.id === session.id);
 
     if(index !== -1) {
@@ -85,7 +79,7 @@ export function getSessionStore(): SessionStore {
   return sessionStore;
 }
 
-export function getSessionsStored(): SessionInterface[] {
+export function getSessionsStored(): Session[] {
   return useSyncExternalStore(
     useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
     useCallback(() => sessionStore.getSessions(), [sessionStore])

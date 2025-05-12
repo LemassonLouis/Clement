@@ -7,10 +7,11 @@ import React, { useContext } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Status } from "@/enums/Status";
 import { UserContext } from "@/context/UserContext";
+import { Day } from "@/types/DayType";
 
 type NavigationType = NavigationProp<RootStackParamList, 'dayDetail'>;
 
-function CalendarDay(day: DayInterface) {
+function CalendarDay(day: Day) {
   const navigation = useNavigation<NavigationType>();
   const { user } = useContext(UserContext);
 

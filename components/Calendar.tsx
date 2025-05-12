@@ -7,9 +7,11 @@ import { Feather } from "@expo/vector-icons";
 import { getCalendarStartMonday, getCalendarLastSunday, getStartAndEndDate, isDateBetween } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
 import { UserContext } from "@/context/UserContext";
+import { Session } from "@/types/SessionType";
+import { DayInterface } from "@/types/DayType";
 
 
-const getCalendarDays = (year: number, month: number, sessions: SessionInterface[]): DayInterface[] => {
+const getCalendarDays = (year: number, month: number, sessions: Session[]): DayInterface[] => {
   const firstDayOfMonth: Date = new Date(year, month, 1);
   const calendarFirstMonday: Date = getStartAndEndDate(getCalendarStartMonday(firstDayOfMonth)).dateStart;
   const calendarLastSunday: Date = getStartAndEndDate(getCalendarLastSunday(firstDayOfMonth)).dateEnd;

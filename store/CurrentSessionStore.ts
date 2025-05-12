@@ -1,4 +1,5 @@
 import { getFirstUnfinishedSession } from "@/database/session";
+import { Session } from "@/types/SessionType";
 import { useCallback, useSyncExternalStore } from "react";
 
 class CurrentSessionStore {
@@ -13,7 +14,7 @@ class CurrentSessionStore {
   }
 
   public async loadCurrentSession(): Promise<void> {
-    const currentSession: SessionInterface | null = await getFirstUnfinishedSession();
+    const currentSession: Session | null = await getFirstUnfinishedSession();
 
     if(this.currentSession.sessionId !== currentSession?.id && this.currentSession.sessionStartTime !== currentSession?.dateTimeStart) {
       this.currentSession.sessionId = currentSession?.id ?? null;
