@@ -1,4 +1,4 @@
-name: Build and release
+name: Beta build and release
 
 on:
   push:
@@ -124,20 +124,17 @@ jobs:
           ANDROID_FILE_NAME="clement-android-${{ github.ref_name }}"
           IOS_FILE_NAME="clement-ios-${{ github.ref_name }}"
 
-          FILES=()
-
           if [[ -n "${{ needs.build_android.outputs.ANDROID_URL }}" ]]; then
             curl -L "${{ needs.build_android.outputs.ANDROID_URL }}" -o "${ANDROID_FILE_NAME}.apk"
             zip "${ANDROID_FILE_NAME}.zip" "${ANDROID_FILE_NAME}.apk"
-            FILES+=("${ANDROID_FILE_NAME}.apk" "${ANDROID_FILE_NAME}.zip")
           fi
 
           if [[ -n "${{ needs.build_ios.outputs.IOS_URL }}" ]]; then
             curl -L "${{ needs.build_ios.outputs.IOS_URL }}" -o "${IOS_FILE_NAME}.tar.gz"
-            FILES+=("${IOS_FILE_NAME}.tar.gz")
           fi
 
-          echo "files=${FILES[*]}" >> $GITHUB_OUTPUT
+          echo "ANDROID_FILE_NAME=$ANDROID_FILE_NAME" >> $GITHUB_ENV
+          echo "IOS_FILE_NAME=$IOS_FILE_NAME" >> $GITHUB_ENV
 
       - name: Upload to GitHub release
         uses: softprops/action-gh-release@v2
@@ -146,6 +143,9 @@ jobs:
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           body: ${{ needs.changelog.outputs.CHANGELOG_BODY }}
-          files: ${{ steps.package.outputs.files }}
+          files: |
+            ${{ env.ANDROID_FILE_NAME }}.apk
+            ${{ env.ANDROID_FILE_NAME }}.zip
+            ${{ env.IOS_FILE_NAME }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
