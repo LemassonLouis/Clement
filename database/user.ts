@@ -156,14 +156,14 @@ function deserializeUser(user: SerializedUser): User {
   return {
     ...user,
     startDate: user.startDate === null ? new Date() : new Date(user.startDate),
-    wantFiveMinutesRemainingNotification: user.wantFiveMinutesRemainingNotification ? true : false,
-    wantOneHourRemainingNotification: user.wantOneHourRemainingNotification ? true : false,
-    wantTwoHoursRemainingNotification: user.wantTwoHoursRemainingNotification ? true : false,
-    wantObjectiveMinExtraReachedNotification: user.wantObjectiveMinExtraReachedNotification ? true : false,
-    wantObjectiveMinReachedNotification: user.wantObjectiveMinReachedNotification ? true : false,
-    wantObjectiveMaxReachedNotification: user.wantObjectiveMaxReachedNotification ? true : false,
-    wantObjectiveMaxExtraReachedNotification: user.wantObjectiveMaxExtraReachedNotification ? true : false,
-    isActive: user.isActive ? true : false,
+    wantFiveMinutesRemainingNotification: !!user.wantFiveMinutesRemainingNotification,
+    wantOneHourRemainingNotification: !!user.wantOneHourRemainingNotification,
+    wantTwoHoursRemainingNotification: !!user.wantTwoHoursRemainingNotification,
+    wantObjectiveMinExtraReachedNotification: !!user.wantObjectiveMinExtraReachedNotification,
+    wantObjectiveMinReachedNotification: !!user.wantObjectiveMinReachedNotification,
+    wantObjectiveMaxReachedNotification: !!user.wantObjectiveMaxReachedNotification,
+    wantObjectiveMaxExtraReachedNotification: !!user.wantObjectiveMaxExtraReachedNotification,
+    isActive: !!user.isActive,
   }
 }
 
