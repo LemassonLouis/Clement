@@ -21,6 +21,7 @@ export async function createSessionTable(): Promise<void> {
     `);
   }
   catch (error) {
+    console.error("Error while trying to create the session table : " + error);
     toast.error("Error while trying to create the session table : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
@@ -52,7 +53,9 @@ export async function createSession(session: Session): Promise<number | null> {
     return result.lastInsertRowId;
   }
   catch (error) {
+    console.error("Error while trying to create session : " + error);
     toast.error("Error while trying to create session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
+
     return null;
   }
 };
@@ -79,7 +82,9 @@ export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTime
     return sessions.map(session => deserializeSession(session));
   }
   catch (error) {
+    console.error("Error while tryingto fetch all sessions : " + error);
     toast.error("Error while tryingto fetch all sessions : " + error, DEFAULT_TOAST_ERROR_CONFIG);
+
     return [];
   }
 };
@@ -102,7 +107,9 @@ export async function getFirstUnfinishedSession(): Promise<Session | null> {
     return deserializeSession(session);
   }
   catch (error) {
+    console.error("Error while trying to fetch unfinished session : " + error);
     toast.error("Error while trying to fetch unfinished session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
+
     return null;
   }
 }
@@ -138,6 +145,7 @@ export async function updateSession(session: Session): Promise<void> {
     );
   }
   catch (error) {
+    console.error("Error while trying to update session : " + error);
     toast.error("Error while trying to update session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
@@ -156,6 +164,7 @@ export async function updateSessionsSexWithoutProtection(ids: number[], sexWitho
     await db.runAsync(`UPDATE Session SET sexWithoutProtection = ? WHERE id IN (${placeholders})`, [sexWithoutProtection, ...ids]);
   }
   catch (error) {
+    console.error("Error while trying to update multiple sessions : " + error);
     toast.error("Error while trying to update multiple sessions : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
@@ -172,6 +181,7 @@ export async function deleteSession(id: number): Promise<void> {
     await db.runAsync('DELETE FROM Session WHERE id = ?', [id]);
   }
   catch (error) {
+    console.error("Error while trying to delete session : " + error);
     toast.error("Error while trying to delete session : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }

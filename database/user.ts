@@ -20,6 +20,7 @@ export async function createUserTable(): Promise<void> {
     `);
   }
   catch (error) {
+    console.error("Error while trying to create user table : " + error);
     toast.error("Error while trying to create user table : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
@@ -40,7 +41,9 @@ export async function getUser(): Promise<User | null> {
     return deserializeUser(user);
   }
   catch (error) {
+    console.error("Error when trying to fetch user : " + error);
     toast.error("Error when trying to fetch user : " + error, DEFAULT_TOAST_ERROR_CONFIG);
+
     return null;
   }
 }
@@ -92,7 +95,9 @@ export async function createUser(user: User): Promise<number | null> {
       return result.lastInsertRowId;
     }
     catch (error) {
+      console.error("Error while trying to create user : " + error);
       toast.error("Error while trying to create user : " + error, DEFAULT_TOAST_ERROR_CONFIG);
+
       return null;
     }
   }
@@ -142,6 +147,7 @@ export async function updateUser(user: User): Promise<void> {
     );
   }
   catch (error) {
+    console.error("Error while trying to update user : " + error);
     toast.error("Error while trying to update user : " + error, DEFAULT_TOAST_ERROR_CONFIG);
   }
 }
