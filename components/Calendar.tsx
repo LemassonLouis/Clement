@@ -8,15 +8,15 @@ import { getCalendarStartMonday, getCalendarLastSunday, getStartAndEndDate, isDa
 import { getSessionStore } from "@/store/SessionStore";
 import { UserContext } from "@/context/UserContext";
 import { Session } from "@/types/SessionType";
-import { DayInterface } from "@/types/DayType";
+import { Day } from "@/types/DayType";
 
 
-const getCalendarDays = (year: number, month: number, sessions: Session[]): DayInterface[] => {
+const getCalendarDays = (year: number, month: number, sessions: Session[]): Day[] => {
   const firstDayOfMonth: Date = new Date(year, month, 1);
   const calendarFirstMonday: Date = getStartAndEndDate(getCalendarStartMonday(firstDayOfMonth)).dateStart;
   const calendarLastSunday: Date = getStartAndEndDate(getCalendarLastSunday(firstDayOfMonth)).dateEnd;
 
-  const days: DayInterface[] = [];
+  const days: Day[] = [];
 
   let currentDate: Date = new Date(calendarFirstMonday);
   while (currentDate <= calendarLastSunday) {
