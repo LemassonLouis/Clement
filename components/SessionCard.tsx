@@ -7,6 +7,7 @@ import EditSessionModal from "./modals/EditSessionModal";
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import { Session } from "@/types/SessionType";
+import SessionNote from "./SessionNote";
 
 
 export default function SessionCard(session: Session) {
@@ -32,14 +33,18 @@ export default function SessionCard(session: Session) {
         <TimeText icon={TimeTextIcon.CALENDAR_END} value={endTime} />
       </View>
 
-      <View>
-        <TouchableOpacity style={styles.button} onPress={() => setEditSessionModalVisible(true)}>
-          <Feather name='edit-3' size={20} color='#000'/>
-        </TouchableOpacity>
+      <View style={styles.buttonsContainer}>
+        <SessionNote session={session}/>
 
-        <TouchableOpacity style={styles.button} onPress={() => setDeleteSessionModalVisible(true)}>
-          <Feather name='trash-2' size={20} color='#f00'/>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity style={styles.button} onPress={() => setEditSessionModalVisible(true)}>
+            <Feather name='edit-3' size={20} color='#000'/>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={() => setDeleteSessionModalVisible(true)}>
+            <Feather name='trash-2' size={20} color='#f00'/>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   )
@@ -61,15 +66,10 @@ const styles = StyleSheet.create({
   sessionInfoContainer: {
     gap: 3,
   },
-  sessionInfo: {
+  buttonsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  sessionInfoTime: {
-    // marginLeft: 10,
-  },
-  infoText: {
-    marginLeft: 5,
+    gap: 10,
   },
   button: {
     marginRight: 10,

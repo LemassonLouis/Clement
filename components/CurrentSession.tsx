@@ -15,8 +15,11 @@ import TimeEditor from "./TimeEditor";
 import SexWithoutProtection from "./SexWithoutProtection";
 import { UserContext } from "@/context/UserContext";
 import { Session } from "@/types/SessionType";
+import SessionNote from "./SessionNote";
+
 
 const today: Date = new Date();
+
 
 export default function CurrentSession() {
   const { user } = useContext(UserContext);
@@ -97,7 +100,8 @@ export default function CurrentSession() {
         id: currentSessionStored.sessionId,
         dateTimeStart: currentSessionStored.sessionStartTime,
         dateTimeEnd: null,
-        sexWithoutProtection: hasSessionsSexWithoutProtection(currentSessions)
+        sexWithoutProtection: hasSessionsSexWithoutProtection(currentSessions),
+        note: getCurrentSessionRelativeSession()?.note ?? null,
       });
 
       if(splitedSession.length > 1) {
@@ -125,6 +129,9 @@ export default function CurrentSession() {
   }, [elapsedTime]);
 
 
+  const getCurrentSessionRelativeSession = (): Session|null => {
+    return currentSessions.find(session => session.id === currentSessionStored.sessionId) ?? null;
+  }
 
   const startSession = async () => {
     setElapsedTime(0);
@@ -135,11 +142,18 @@ export default function CurrentSession() {
       id: 0,
       dateTimeStart: startTime,
       dateTimeEnd: null,
-      sexWithoutProtection: sexWithoutProtection
+      sexWithoutProtection: sexWithoutProtection,
+      note: getCurrentSessionRelativeSession()?.note ?? null,
     });
 
     if(sessionId) {
-      sessionStore.addSession({id: sessionId, dateTimeStart: startTime, dateTimeEnd: null, sexWithoutProtection: sexWithoutProtection});
+      sessionStore.addSession({
+        id: sessionId,
+        dateTimeStart: startTime,
+        dateTimeEnd: null,
+        sexWithoutProtection: sexWithoutProtection,
+        note: getCurrentSessionRelativeSession()?.note ?? null,
+      });
       currentSessionStore.updateCurrentSession({ sessionId: sessionId, sessionStartTime: startTime });
     }
 
@@ -163,7 +177,8 @@ export default function CurrentSession() {
         id: currentSessionStored.sessionId,
         dateTimeStart: currentSessionStored.sessionStartTime,
         dateTimeEnd: endTime,
-        sexWithoutProtection: hasSessionsSexWithoutProtection(currentSessions)
+        sexWithoutProtection: hasSessionsSexWithoutProtection(currentSessions),
+        note: getCurrentSessionRelativeSession()?.note ?? null,
       });
 
       splitedSession.forEach(async session => {
@@ -207,13 +222,21 @@ export default function CurrentSession() {
                 icon={TimeTextIcon.CALENDAR_START}
                 date={currentSessionStored.sessionStartTime}
                 setDate={async (date) => {
-                  const ok = timeVerifications({id: currentSessionStored.sessionId ?? 0, dateTimeStart: date, dateTimeEnd: new Date(), sexWithoutProtection: false}, date, new Date());
+                  const ok = timeVerifications({
+                    id: currentSessionStored.sessionId ?? 0,
+                    dateTimeStart: date,
+                    dateTimeEnd: new Date(),
+                    sexWithoutProtection: false,
+                    note: null,
+                  }, date, new Date());
+
                   if(ok) {
                     const newSession: Session = {
                       id: currentSessionStored.sessionId!,
                       dateTimeStart: date,
                       dateTimeEnd: null,
-                      sexWithoutProtection: currentSessions.some(session => session.sexWithoutProtection === true)
+                      sexWithoutProtection: currentSessions.some(session => session.sexWithoutProtection === true),
+                      note: getCurrentSessionRelativeSession()?.note ?? null,
                     };
 
                     await updateSession(newSession);
@@ -226,6 +249,10 @@ export default function CurrentSession() {
               />
             </View>
             <TimeText icon={TimeTextIcon.CLOCK_FAST} value={currentSessionStored.sessionId ? formatMilisecondsTime(elapsedTime) : null} />
+          </View>
+
+          <View>
+            <SessionNote session={getCurrentSessionRelativeSession()} disabled={getCurrentSessionRelativeSession() === null} />
           </View>
         </View>
 
@@ -269,7 +296,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e5e5e5',
   },
   durations: {
-    flex: 3/7,
+    flex: 4/7,
     justifyContent: 'space-evenly',
     gap: 10,
     marginLeft: 10,
@@ -277,25 +304,4 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     borderLeftColor: '#777'
   },
-  duration: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  durationText: {
-    marginLeft: 10,
-    fontWeight: 'bold',
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  switchText: {
-    marginTop: 2,
-    fontSize: 16,
-  },
-  switch: {
-    marginTop: 5,
-    marginLeft: 2,
-  }
 })

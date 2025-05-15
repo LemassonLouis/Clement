@@ -8,6 +8,8 @@ import { timeVerifications } from "@/services/session";
 import { reScheduleNotifications } from "@/services/notifications";
 import { UserContext } from "@/context/UserContext";
 import { Session } from "@/types/SessionType";
+import { StyleSheet, View } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 
 
 type CreateSessionModalProps = {
@@ -25,23 +27,20 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
 
   const [startTime, setStartTime] = useState<Date>(date);
   const [endTime, setEndTime] = useState<Date>(date);
+  const [note, setNote] = useState<string>("")
 
   const actionTrue = async () => {
     const session: Session = {
       id: 0,
       dateTimeStart: startTime,
       dateTimeEnd: endTime,
-      sexWithoutProtection: sexWithoutProtection
+      sexWithoutProtection: sexWithoutProtection,
+      note: note
     }
     const ok = timeVerifications(session, startTime, endTime, 'MODAL::1');
     if(!ok) return;
 
-    const sessionId = await createSession({
-      id: 0,
-      dateTimeStart: startTime,
-      dateTimeEnd: endTime,
-      sexWithoutProtection: sexWithoutProtection,
-    });
+    const sessionId = await createSession(session);
 
     if(sessionId) {
       session.id = sessionId;
@@ -70,8 +69,27 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
         <TimeEditor icon={TimeTextIcon.CALENDAR_START} date={startTime} setDate={setStartTime} />
         <TimeEditor icon={TimeTextIcon.CALENDAR_END} date={endTime} setDate={setEndTime} />
       </View>
+
+      <TextInput
+        editable
+        multiline
+        numberOfLines={8}
+        maxLength={1000}
+        onChangeText={text => setNote(text)}
+        value={note}
+        placeholder="Annotation"
+        style={styles.input}
+      />
     </CustomModal>
   )
 }
 
-
+const styles = StyleSheet.create({
+  input: {
+    marginTop: 10,
+    width: '100%',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#e5e5e5',
+  }
+})

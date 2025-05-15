@@ -6,6 +6,7 @@ export type Session = {
   dateTimeStart: Date,
   dateTimeEnd: Date | null,
   sexWithoutProtection: boolean,
+  note: string | null,
 }
 
 

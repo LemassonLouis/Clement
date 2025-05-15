@@ -41,13 +41,14 @@ export async function createSession(session: Session): Promise<number | null> {
     let serializedSession = serializeSession(session);
 
     const  statement = await db.prepareAsync(
-      'INSERT INTO Session (dateTimeStart, dateTimeEnd, sexWithoutProtection) VALUES (?, ?, ?)'
+      'INSERT INTO Session (dateTimeStart, dateTimeEnd, sexWithoutProtection, note) VALUES (?, ?, ?, ?)'
     );
 
     const result = await statement.executeAsync([
       serializedSession.dateTimeStart,
       serializedSession.dateTimeEnd,
-      serializedSession.sexWithoutProtection
+      serializedSession.sexWithoutProtection,
+      serializedSession.note,
     ]);
 
     return result.lastInsertRowId;
@@ -132,7 +133,8 @@ export async function updateSession(session: Session): Promise<void> {
       `UPDATE Session SET
         dateTimeStart = ?,
         dateTimeEnd = ?,
-        sexWithoutProtection = ?
+        sexWithoutProtection = ?,
+        note = ?
       WHERE
         id = ?`
       ,
@@ -140,6 +142,7 @@ export async function updateSession(session: Session): Promise<void> {
         serializedSession.dateTimeStart,
         serializedSession.dateTimeEnd,
         serializedSession.sexWithoutProtection,
+        serializedSession.note,
         serializedSession.id
       ]
     );

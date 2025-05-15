@@ -212,7 +212,8 @@ export function splitSessionsByDay(session: Session): Session[] {
       id: session.dateTimeStart.toISOString() === currentStart.toISOString() ? session.id : 0,
       dateTimeStart: new Date(currentStart),
       dateTimeEnd: currentEnd,
-      sexWithoutProtection: session.sexWithoutProtection
+      sexWithoutProtection: session.sexWithoutProtection,
+      note: session.dateTimeStart.toISOString() === currentStart.toISOString() ? session.note : null,
     });
 
     currentStart = new Date(dateStart);
