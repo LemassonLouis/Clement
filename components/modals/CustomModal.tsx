@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     alignItems: 'center',
-    margin: 20,
+    width: '80%',
     padding: 35,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   modalContent: {
-    alignItems: 'center',
+    width: '100%',
     marginTop: 10,
     marginBottom: 20,
   },

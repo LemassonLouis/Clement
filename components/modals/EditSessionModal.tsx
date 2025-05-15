@@ -8,6 +8,7 @@ import { timeVerifications } from "@/services/session";
 import { reScheduleNotifications } from "@/services/notifications";
 import { UserContext } from "@/context/UserContext";
 import { Session } from "@/types/SessionType";
+import { View } from "react-native";
 
 
 type EditSessionModalProps = {
@@ -56,8 +57,10 @@ export default function EditSessionModal({ session, visible, setVisible }: EditS
       }}
       actionTrue={actionTrue}
     >
-      <TimeEditor icon={TimeTextIcon.CALENDAR_START} date={startTime} setDate={setStartTime} />
-      <TimeEditor icon={TimeTextIcon.CALENDAR_END} date={endTime} setDate={setEndTime} />
+      <View style={{ alignItems: 'flex-start', margin: 'auto' }}>
+        <TimeEditor icon={TimeTextIcon.CALENDAR_START} date={startTime} setDate={setStartTime} />
+        <TimeEditor icon={TimeTextIcon.CALENDAR_END} date={endTime} setDate={setEndTime} />
+      </View>
     </CustomModal>
   )
 }

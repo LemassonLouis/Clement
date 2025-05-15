@@ -57,7 +57,20 @@ export default function TimeEditor({ icon, date, setDate }: TimeEditorProps) {
             ));
           }}
           LinearGradient={LinearGradient}
-          styles={{backgroundColor: '#fff'}} 
+          styles={{
+            backgroundColor: '#fff',
+            pickerContainer: {
+              justifyContent: 'center',
+              width: '100%',
+            },
+            pickerItemContainer: {
+              width: 50,
+              marginRight: 12,
+            },
+            pickerItem: {
+              fontSize: 22,
+            },
+          }}
         />
       </CustomModal>
     </>

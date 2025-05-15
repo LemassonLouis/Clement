@@ -66,8 +66,10 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
       }}
       actionTrue={actionTrue}
     >
-      <TimeEditor icon={TimeTextIcon.CALENDAR_START} date={startTime} setDate={setStartTime} />
-      <TimeEditor icon={TimeTextIcon.CALENDAR_END} date={endTime} setDate={setEndTime} />
+      <View style={{ alignItems: 'flex-start', margin: 'auto' }}>
+        <TimeEditor icon={TimeTextIcon.CALENDAR_START} date={startTime} setDate={setStartTime} />
+        <TimeEditor icon={TimeTextIcon.CALENDAR_END} date={endTime} setDate={setEndTime} />
+      </View>
     </CustomModal>
   )
 }
