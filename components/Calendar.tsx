@@ -3,12 +3,17 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native
 import CalendarDay from "./CalendarDay";
 import { DaysOfWeek } from "@/enums/DaysOfWeek";
 import { MonthNames } from "@/enums/MonthNames";
-import { Feather } from "@expo/vector-icons";
 import { getCalendarStartMonday, getCalendarLastSunday, getStartAndEndDate, isDateBetween } from "@/services/date";
 import { getSessionStore } from "@/store/SessionStore";
 import { UserContext } from "@/context/UserContext";
 import { Session } from "@/types/SessionType";
 import { Day } from "@/types/DayType";
+import CustomModal from "./modals/CustomModal";
+import MonthSelectorCalendar from 'react-native-month-selector';
+import PreviousIcon from "./Icons/PreviousIcon";
+import NextIcon from "./Icons/NextIcon";
+import moment, { Moment } from "moment";
+import 'moment/locale/fr';
 
 
 const getCalendarDays = (year: number, month: number, sessions: Session[]): Day[] => {
@@ -39,13 +44,15 @@ const getCalendarDays = (year: number, month: number, sessions: Session[]): Day[
 export default function Calendar() {
   const { user } = useContext(UserContext);
 
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
-
   const sessionStore = getSessionStore();
   const sessionsStored = useSyncExternalStore(
     useCallback((callback) => sessionStore.subscribe(callback), [sessionStore]),
     useCallback(() => sessionStore.getSessions(), [sessionStore])
   );
+
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [monthYearPickerModalVisible, setMonthYearPickerModalVisible] = useState<boolean>(false);
+  const [monthYearPickerValue, setMonthYearPickerValue] = useState<Moment>(moment());
 
   const year: number = currentDate.getFullYear();
   const month: number = currentDate.getMonth();
@@ -72,7 +79,7 @@ export default function Calendar() {
     }
 
     fetchData();
-  }, [year, month, sessionsStored, user]);
+  }, [sessionsStored, user]);
 
   const days = getCalendarDays(year, month, sessionsStored);
 
@@ -80,15 +87,42 @@ export default function Calendar() {
     <View style={styles.calendar}>
       <View style={styles.monthBar}>
         <TouchableOpacity onPress={goToPreviousMonth} style={styles.monthButton}>
-          <Feather name="chevron-left" size={25} color='#000'/>
+          <PreviousIcon/>
         </TouchableOpacity>
 
-        <Text style={styles.monthText}>
-          {currentMonthName} {year}
-        </Text>
+        <TouchableOpacity onPress={() => setMonthYearPickerModalVisible(true)}>
+          <Text style={styles.monthText}>
+            {currentMonthName} {year}
+          </Text>
+        </TouchableOpacity>
+
+        <CustomModal
+          title="Changer le mois affiché"
+          visible={monthYearPickerModalVisible}
+          actionFalseText="Annuler"
+          actionFalse={() => {
+            setMonthYearPickerValue(moment());
+            setMonthYearPickerModalVisible(false);
+          }}
+          actionTrueText="Modifier"
+          actionTrue={() => {
+            const newDate: Date = new Date(monthYearPickerValue.year(), monthYearPickerValue.month());
+            setCurrentDate(newDate);
+            setMonthYearPickerModalVisible(false);
+          }}
+        >
+          <MonthSelectorCalendar
+            selectedDate={monthYearPickerValue}
+            prevIcon={<PreviousIcon/>}
+            nextIcon={<NextIcon/>}
+            maxDate={moment(`${currentDate.getFullYear() + 10}-12-31`)}
+            localeLanguage="fr"
+            onMonthTapped={date => setMonthYearPickerValue(date)}
+          />
+        </CustomModal>
 
         <TouchableOpacity onPress={goToNextMonth} style={styles.monthButton}>
-          <Feather name="chevron-right" size={25} color='#000'/>
+          <NextIcon/>
         </TouchableOpacity>
       </View>
 
