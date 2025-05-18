@@ -63,6 +63,27 @@ export async function createSession(session: Session): Promise<number | null> {
 
 
 /**
+ * Get all sessions.
+ * @returns 
+ */
+export async function getAllSessions(): Promise<Session[]> {
+  const db = await getDB();
+
+  try {
+    const sessions = await db.getAllAsync<SerializedSession>("SELECT * FROM Session");
+
+    return sessions.map(session => deserializeSession(session));
+  }
+  catch (error) {
+    console.error("Error while trying to fetch all sessions : " + error);
+    toast.error("Error while trying to fetch all sessions : " + error, DEFAULT_TOAST_ERROR_CONFIG);
+
+    return [];
+  }
+}
+
+
+/**
  * Get all sessions between 2 dates.
  * @param dateTimeStart Date as an ISO string.
  * @param dateTimeEnd Date as an ISO string.
@@ -83,8 +104,8 @@ export async function getAllSessionsBetweenDates(dateTimeStart: string, dateTime
     return sessions.map(session => deserializeSession(session));
   }
   catch (error) {
-    console.error("Error while tryingto fetch all sessions : " + error);
-    toast.error("Error while tryingto fetch all sessions : " + error, DEFAULT_TOAST_ERROR_CONFIG);
+    console.error("Error while tryingto fetch all sessions between dates : " + error);
+    toast.error("Error while tryingto fetch all sessions between dates : " + error, DEFAULT_TOAST_ERROR_CONFIG);
 
     return [];
   }

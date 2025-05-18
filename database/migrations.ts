@@ -1,6 +1,7 @@
 import { toast } from "@backpackapp-io/react-native-toast";
-import { getDB } from "./db";
+import { getDB, getTableSchema } from "./db";
 import { DEFAULT_TOAST_ERROR_CONFIG } from "@/services/toast";
+import { TableSchema } from "@/types/TableSchema";
 
 
 /**
@@ -125,14 +126,7 @@ async function resetMigrations(): Promise<void> {
 
   try {
     migrations.forEach(async table => {
-      const tableSchema = await db.getAllAsync<{
-        cid: number;
-        name: string;
-        type: string;
-        notnull: number;
-        dflt_value: string | null;
-        pk: number;
-      }>(`PRAGMA table_info(${table.name});`);
+      const tableSchema: TableSchema[] = await getTableSchema(table.name);
 
       tableSchema
         .filter(col => table.columns.includes(col.name))
