@@ -1,7 +1,7 @@
 import { getAllSessions } from "@/database/session";
 import { Session } from "@/types/SessionType";
 import { toast } from "@backpackapp-io/react-native-toast";
-import { DEFAULT_TOAST_ERROR_CONFIG } from "./toast";
+import { DEFAULT_TOAST_ERROR_CONFIG, DEFAULT_TOAST_SUCCESS_CONFIG } from "./toast";
 import { ExportType } from "@/enums/ExportTypes";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 import * as FileSystem from 'expo-file-system';
@@ -71,6 +71,8 @@ async function saveCSVToFile(sessions: Session[]): Promise<void> {
         encoding: FileSystem.EncodingType.UTF8,
       });
 
+      toast.success("Export terminé dans " + fileUri, DEFAULT_TOAST_SUCCESS_CONFIG);
+
       return;
     } catch (error) {
       console.error("Error while trying to save file on Android : " + error);
@@ -95,6 +97,8 @@ async function saveCSVToFile(sessions: Session[]): Promise<void> {
       }
 
       await shareAsync(fileUri);
+
+      toast.success("Export terminé dans " + fileUri, DEFAULT_TOAST_SUCCESS_CONFIG);
       return;
     } catch (error) {
       console.error("Error while trying to save file on iOS : " + error);
