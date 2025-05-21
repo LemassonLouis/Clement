@@ -73,7 +73,7 @@ export default function Index() {
           setUser(newUser);
         }}
       >
-        <Text style={{textAlign: "center"}}>Merci d'avoir télécharger Clément !</Text>
+        <Text style={{textAlign: "center", marginBottom: 10}}>Merci d'avoir télécharger Clément !</Text>
         <Text style={{textAlign: "center"}}>Je vous souahite de réussir votre contracéption</Text>
       </CustomModal>
     </View>

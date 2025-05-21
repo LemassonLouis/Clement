@@ -1,4 +1,4 @@
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import CustomModal from "./CustomModal";
 import { useRef } from "react";
 import ContraceptionStartDateForm from "../forms/ContraceptionStartDateForm";
@@ -24,8 +24,10 @@ export default function SetContraceptionStartDateModal({ visible, additionalActi
         additionalActionTrue();
       }}
     >
-      <Text style={{textAlign: "center", marginBottom: 20}}>À quel date souhaitez vous ou avez commencé la contraception ?</Text>
-      <ContraceptionStartDateForm ref={contraceptionStartDateForm} />
+      <View style={{alignItems: 'center'}}>
+        <Text style={{textAlign: "center", marginBottom: 20}}>À quel date souhaitez vous ou avez commencé la contraception ?</Text>
+        <ContraceptionStartDateForm ref={contraceptionStartDateForm} />
+      </View>
     </CustomModal>
   )
 }
