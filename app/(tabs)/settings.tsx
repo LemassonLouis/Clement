@@ -23,6 +23,7 @@ export default function SettingsScreen() {
         <SectionOption name="Méthode de contraception" navigateTo="contraceptionMethod"/>
         <SectionOption name="Date de début de contraception" navigateTo="contraceptionStartDate"/>
         <SectionOption name="Exporter mes données" navigateTo="exportData"/>
+        <SectionOption name="Importer des données" navigateTo="importData"/>
       </Section>
 
       <Section name="Général">

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Clément",
     "slug": "clement",
-    "version": "beta-1.7.0",
+    "version": "beta-1.8.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
