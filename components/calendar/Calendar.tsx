@@ -79,7 +79,7 @@ export default function Calendar() {
     }
 
     fetchData();
-  }, [sessionsStored, user]);
+  }, [currentDate, sessionsStored, user]);
 
   const days = getCalendarDays(year, month, sessionsStored);
 
