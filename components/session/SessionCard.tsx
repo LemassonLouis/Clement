@@ -2,9 +2,9 @@ import { formatMilisecondsTime, formatTimefromDate, getDateDifference } from "@/
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import DeleteSessionModal from "./modals/DeleteSessionModal";
-import EditSessionModal from "./modals/EditSessionModal";
-import TimeText from "./TimeText";
+import DeleteSessionModal from "../modals/DeleteSessionModal";
+import EditSessionModal from "../modals/EditSessionModal";
+import TimeText from "../dateAndTime/TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import { Session } from "@/types/SessionType";
 import SessionNote from "./SessionNote";

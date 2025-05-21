@@ -1,7 +1,7 @@
 import { Session } from "@/types/SessionType";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import CustomModal from "./modals/CustomModal";
+import CustomModal from "../modals/CustomModal";
 import { useState } from "react";
 import { updateSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";

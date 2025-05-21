@@ -8,10 +8,10 @@ import { getSessionStore } from "@/store/SessionStore";
 import { UserContext } from "@/context/UserContext";
 import { Session } from "@/types/SessionType";
 import { Day } from "@/types/DayType";
-import CustomModal from "./modals/CustomModal";
+import CustomModal from "../modals/CustomModal";
 import MonthSelectorCalendar from 'react-native-month-selector';
-import PreviousIcon from "./Icons/PreviousIcon";
-import NextIcon from "./Icons/NextIcon";
+import PreviousIcon from "../Icons/PreviousIcon";
+import NextIcon from "../Icons/NextIcon";
 import moment, { Moment } from "moment";
 import 'moment/locale/fr';
 

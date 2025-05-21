@@ -1,10 +1,10 @@
-import CalendarIcon from "@/components/CalendarIcon";
+import CalendarIcon from "@/components/calendar/CalendarIcon";
 import CreateSessionModal from "@/components/modals/CreateSessionModal";
-import CurrentSession from "@/components/CurrentSession";
-import ProgressBarDetails from "@/components/ProgressBarDetails";
-import ProgressIndicator from "@/components/ProgressIndicator";
-import SessionCard from "@/components/SessionCard";
-import SexWithoutProtection from "@/components/SexWithoutProtection";
+import CurrentSession from "@/components/session/CurrentSession";
+import ProgressBarDetails from "@/components/session/ProgressBarDetails";
+import ProgressIndicator from "@/components/session/ProgressIndicator";
+import SessionCard from "@/components/session/SessionCard";
+import SexWithoutProtection from "@/components/session/SexWithoutProtection";
 import { UserContext } from "@/context/UserContext";
 import { deserializeSession } from "@/database/session";
 import { Status } from "@/enums/Status";

@@ -1,5 +1,5 @@
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
-import DateEditor from "../DateEditor";
+import DateEditor from "../dateAndTime/DateEditor";
 import { forwardRef, useContext, useImperativeHandle, useState } from "react";
 import { UserContext } from "@/context/UserContext";
 import { StyleSheet, View } from "react-native";

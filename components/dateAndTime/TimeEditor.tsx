@@ -1,5 +1,5 @@
 import { TimerPicker } from "react-native-timer-picker";
-import CustomModal from "./modals/CustomModal";
+import CustomModal from "../modals/CustomModal";
 import { useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import TimeText from "./TimeText";

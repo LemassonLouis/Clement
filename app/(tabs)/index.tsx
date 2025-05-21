@@ -1,5 +1,5 @@
-import Calendar from "@/components/Calendar";
-import CurrentSession from "@/components/CurrentSession";
+import Calendar from "@/components/calendar/Calendar";
+import CurrentSession from "@/components/session/CurrentSession";
 import CustomModal from "@/components/modals/CustomModal";
 import { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
