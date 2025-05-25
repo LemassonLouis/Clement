@@ -5,6 +5,8 @@ import { UserContext } from "@/context/UserContext";
 import { StyleSheet, View } from "react-native";
 import { User } from "@/types/UserType";
 import { updateUser } from "@/database/user";
+import { getStartAndEndDate } from "@/services/date";
+import { reScheduleNotifications } from "@/services/notifications";
 
 
 type ContraceptionStartDateFormProps = {
@@ -20,11 +22,12 @@ const ContraceptionStartDateForm = forwardRef(({ autoValidate = false }: Contrac
   const saveForm = async (date: Date = startDate) => {
     const newUser: User = {
       ...user,
-      startDate: date
+      startDate: getStartAndEndDate(date).dateStart
     }
 
     await updateUser(newUser);
     setUser(newUser);
+    reScheduleNotifications(newUser);
   }
 
   useImperativeHandle(ref, () => ({

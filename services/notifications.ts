@@ -86,6 +86,8 @@ export async function scheduleNotificationPush(title: string, content: string = 
 async function scheduleNotifications(user: User, date: Date): Promise<void> {
   const { dateStart, dateEnd } = getStartAndEndDate(date);
 
+  if(dateStart < user.startDate) return;
+
   const sessions = await getAllSessionsBetweenDates(dateStart.toISOString(), dateEnd.toISOString());
   const totalWearing = calculateTotalWearing(sessions);
 
