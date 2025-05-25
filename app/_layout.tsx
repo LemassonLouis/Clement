@@ -16,10 +16,11 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [user, setUser] = useState<User>(defaultUser);
+  const [isReady, setIsReady] = useState<boolean>(false);
 
   useEffect(() => {
     const asyncTasks = async () => {
-      // await deleteTables();
+      // await deleteTables(); // TEMP
       await createTables();
       await migrateTables();
 
@@ -33,11 +34,14 @@ export default function RootLayout() {
 
       await initializeNotifications(currentUser!);
 
+      setIsReady(true);
       SplashScreen.hideAsync();
     }
 
     asyncTasks();
   }, []);
+
+  if(!isReady) return;
 
   return (
     <SafeAreaProvider>
