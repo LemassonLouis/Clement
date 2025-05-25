@@ -60,37 +60,16 @@ export async function createUser(user: User): Promise<number | null> {
   if(currentUser == null) {
     const db = await getDB();
 
-    const serializedUser = serializeUser(user);
-
     try {
-      const statement = await db.prepareAsync(
-        `INSERT INTO User (
-          method,
-          startDate,
-          wantFiveMinutesRemainingNotification,
-          wantOneHourRemainingNotification,
-          wantTwoHoursRemainingNotification,
-          wantObjectiveMinExtraReachedNotification,
-          wantObjectiveMinReachedNotification,
-          wantObjectiveMaxReachedNotification,
-          wantObjectiveMaxExtraReachedNotification,
-          isActive
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-      );
+      const serializedUser = serializeUser({ ...user, isActive: false });
+      const { id, ...fields } = serializedUser;
+      const keys = Object.keys(fields);
+      const placeholders = keys.map(() => '?').join(', ');
+      const cols = keys.join(', ');
+      const values = Object.values(fields);
 
-      const result = await statement.executeAsync([
-        serializedUser.method,
-        serializedUser.startDate,
-        serializedUser.wantFiveMinutesRemainingNotification,
-        serializedUser.wantOneHourRemainingNotification,
-        serializedUser.wantTwoHoursRemainingNotification,
-        serializedUser.wantObjectiveMinExtraReachedNotification,
-        serializedUser.wantObjectiveMinReachedNotification,
-        serializedUser.wantObjectiveMaxReachedNotification,
-        serializedUser.wantObjectiveMaxExtraReachedNotification,
-        false,
-      ]);
+      const statement = await db.prepareAsync(`INSERT INTO User (${cols}) VALUES (${placeholders})`);
+      const result = await statement.executeAsync(values);
 
       return result.lastInsertRowId;
     }
@@ -112,39 +91,14 @@ export async function createUser(user: User): Promise<number | null> {
 export async function updateUser(user: User): Promise<void> {
   const db = await getDB();
 
-  const serializedUser = serializeUser(user);
-
   try {
-    await db.runAsync(`
-      UPDATE User
-      SET
-        method = ?,
-        startDate = ?,
-        wantFiveMinutesRemainingNotification = ?,
-        wantOneHourRemainingNotification = ?,
-        wantTwoHoursRemainingNotification = ?,
-        wantObjectiveMinExtraReachedNotification = ?,
-        wantObjectiveMinReachedNotification = ?,
-        wantObjectiveMaxReachedNotification = ?,
-        wantObjectiveMaxExtraReachedNotification = ?,
-        isActive = ?
-      WHERE
-        id = ?
-      `,
-      [
-        serializedUser.method,
-        serializedUser.startDate,
-        serializedUser.wantFiveMinutesRemainingNotification,
-        serializedUser.wantOneHourRemainingNotification,
-        serializedUser.wantTwoHoursRemainingNotification,
-        serializedUser.wantObjectiveMinExtraReachedNotification,
-        serializedUser.wantObjectiveMinReachedNotification,
-        serializedUser.wantObjectiveMaxReachedNotification,
-        serializedUser.wantObjectiveMaxExtraReachedNotification,
-        serializedUser.isActive,
-        serializedUser.id,
-      ]
-    );
+    const serializedUser = serializeUser(user);
+    const { id, ...fields } = serializedUser;
+    const keys = Object.keys(fields);
+    const setters = keys.map(key =>  `${key} = ?`).join(', ');
+    const values = [...Object.values(fields), id];
+
+    await db.runAsync(`UPDATE User SET ${setters} WHERE id = ?`, [values]);
   }
   catch (error) {
     console.error("Error while trying to update user : " + error);

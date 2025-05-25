@@ -39,17 +39,14 @@ export async function createSession(session: Session): Promise<number | null> {
   
   try {
     let serializedSession = serializeSession(session);
+    const { id, ...fields } = serializedSession;
+    const keys = Object.keys(fields);
+    const placeholders = keys.map(() => '?').join(', ');
+    const cols = keys.join(', ');
+    const values = Object.values(fields);
 
-    const  statement = await db.prepareAsync(
-      'INSERT INTO Session (dateTimeStart, dateTimeEnd, sexWithoutProtection, note) VALUES (?, ?, ?, ?)'
-    );
-
-    const result = await statement.executeAsync([
-      serializedSession.dateTimeStart,
-      serializedSession.dateTimeEnd,
-      serializedSession.sexWithoutProtection,
-      serializedSession.note,
-    ]);
+    const statement = await db.prepareAsync(`INSERT INTO Session (${cols}) VALUES (${placeholders})`);
+    const result = await statement.executeAsync(values);
 
     return result.lastInsertRowId;
   }
@@ -149,24 +146,12 @@ export async function updateSession(session: Session): Promise<void> {
 
   try {
     let serializedSession = serializeSession(session);
+    const { id, ...fields } = serializedSession;
+    const keys = Object.keys(fields);
+    const setters = keys.map(key =>  `${key} = ?`).join(', ');
+    const values = [...Object.values(fields), id];
 
-    await db.runAsync(
-      `UPDATE Session SET
-        dateTimeStart = ?,
-        dateTimeEnd = ?,
-        sexWithoutProtection = ?,
-        note = ?
-      WHERE
-        id = ?`
-      ,
-      [
-        serializedSession.dateTimeStart,
-        serializedSession.dateTimeEnd,
-        serializedSession.sexWithoutProtection,
-        serializedSession.note,
-        serializedSession.id
-      ]
-    );
+    await db.runAsync(`UPDATE Session SET ${setters} WHERE id = ?`, [values]);
   }
   catch (error) {
     console.error("Error while trying to update session : " + error);

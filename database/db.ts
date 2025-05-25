@@ -54,6 +54,7 @@ export const deleteTables = async () => {
   try {
     await db.execAsync(`DROP TABLE IF EXISTS Session;`);
     await db.execAsync(`DROP TABLE IF EXISTS User;`);
+    await db.execAsync('PRAGMA user_version = 0');
 
     console.log('Tables supprimées avec succès'); // TEMP : tables deletion succed
   } catch (error) {
