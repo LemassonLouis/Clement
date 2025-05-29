@@ -98,7 +98,7 @@ export async function updateUser(user: User): Promise<void> {
     const setters = keys.map(key =>  `${key} = ?`).join(', ');
     const values = [...Object.values(fields), id];
 
-    await db.runAsync(`UPDATE User SET ${setters} WHERE id = ?`, [values]);
+    await db.runAsync(`UPDATE User SET ${setters} WHERE id = ?`, values);
   }
   catch (error) {
     console.error("Error while trying to update user : " + error);
