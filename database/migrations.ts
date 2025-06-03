@@ -13,6 +13,7 @@ export async function migrateTables(): Promise<void> {
   const NOTIFICATION_MIGRATION = 1;
   const USER_ACTIVE_MIGRATION = 2;
   const SESSION_NOTE_MIGRATION = 3;
+  const USER_STYLE_MIGRATION = 4;
 
   // await resetMigrations(); // TEMP : reset pragma version
 
@@ -88,6 +89,19 @@ export async function migrateTables(): Promise<void> {
         toast.error(`Error while trying to migrate user table to version ${SESSION_NOTE_MIGRATION} : ` + error, DEFAULT_TOAST_ERROR_CONFIG);
       }
     }
+
+    // User style migration
+    if (user_version < USER_STYLE_MIGRATION) {
+      console.log(`migrate to version ${USER_STYLE_MIGRATION}`); // TEMP
+      try {
+        await db.execAsync(`ALTER TABLE User ADD COLUMN style TEXT DEFAULT "default";`);
+        await db.execAsync(`PRAGMA user_version = ${USER_STYLE_MIGRATION};`);
+      }
+      catch (error) {
+        console.error(`Error while trying to migrate user table to version ${USER_STYLE_MIGRATION} : ` + error);
+        toast.error(`Error while trying to migrate user table to version ${USER_STYLE_MIGRATION} : ` + error, DEFAULT_TOAST_ERROR_CONFIG);
+      }
+    }
   }
   catch(error) {
     console.error(`Error while trying to make migrations : ` + error);
@@ -114,6 +128,7 @@ async function resetMigrations(): Promise<void> {
         'wantObjectiveMaxReachedNotification',
         'wantObjectiveMaxExtraReachedNotification',
         'isActive',
+        'style'
       ]
     },
     {

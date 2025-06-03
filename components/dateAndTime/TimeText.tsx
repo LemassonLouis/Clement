@@ -1,5 +1,8 @@
+import { ThemeContext } from "@/context/ThemeContext";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
+import { getTheme } from "@/services/appStyle";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 
@@ -10,10 +13,13 @@ type TimeTextProps = {
 
 
 export default function TimeText({ value, icon }: TimeTextProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
+
   return (
     <View style={styles.container}>
-      <MaterialCommunityIcons name={icon} size={25} color='#000'/>
-      <Text style={styles.text}>{value ?? '- - -'}</Text>
+      <MaterialCommunityIcons name={icon} size={25} color={currentTheme.text_color}/>
+      <Text style={[ styles.text, { color: currentTheme.text_color }]}>{value ?? '- - -'}</Text>
     </View>
   )
 }

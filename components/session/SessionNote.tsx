@@ -2,9 +2,11 @@ import { Session } from "@/types/SessionType";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import CustomModal from "../modals/CustomModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { updateSession } from "@/database/session";
 import { getSessionStore } from "@/store/SessionStore";
+import { getTheme } from "@/services/appStyle";
+import { ThemeContext } from "@/context/ThemeContext";
 
 
 type SessionNoteProps = {
@@ -14,13 +16,16 @@ type SessionNoteProps = {
 
 
 export default function SessionNote({ session, disabled = false }: SessionNoteProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
+
   const [sessionNoteModalVisible, setSessionNoteModalVisible] = useState<boolean>(false);
   const [note, setNote] = useState<string>(session?.note ?? "");
 
   return(
     <>
-      <TouchableOpacity style={[styles.button, disabled && {opacity: 0.4}]} onPress={() => setSessionNoteModalVisible(true)} disabled={disabled}>
-        <Ionicons name='document-text-outline' size={20} color='#000'/>
+      <TouchableOpacity style={[styles.button, { backgroundColor: currentTheme.background_2 }, disabled && {opacity: 0.4}]} onPress={() => setSessionNoteModalVisible(true)} disabled={disabled}>
+        <Ionicons name='document-text-outline' size={20} color={currentTheme.text_color}/>
       </TouchableOpacity>
 
       <CustomModal
@@ -53,7 +58,8 @@ export default function SessionNote({ session, disabled = false }: SessionNotePr
           onChangeText={text => setNote(text)}
           value={note}
           placeholder="Annotation"
-          style={styles.input}
+          placeholderTextColor={currentTheme.text_color_2}
+          style={[styles.input, { backgroundColor: currentTheme.background_2, color: currentTheme.text_color }]}
         />
       </CustomModal>
     </>
@@ -65,7 +71,6 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     borderRadius: 50,
-    backgroundColor: '#e5e5e5',
   },
   inputContainer: {
     borderWidth: 1
@@ -74,6 +79,5 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 10,
     paddingHorizontal: 12,
-    backgroundColor: '#e5e5e5',
   }
 })

@@ -1,11 +1,13 @@
 import { TimerPicker } from "react-native-timer-picker";
 import CustomModal from "../modals/CustomModal";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import TimeText from "./TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import { formatTimefromDate } from "@/services/date";
 import { LinearGradient } from "expo-linear-gradient";
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 
 
 type TimeEditorProps = {
@@ -16,6 +18,9 @@ type TimeEditorProps = {
 
 
 export default function TimeEditor({ icon, date, setDate }: TimeEditorProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
+
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [time, setTime] = useState<Date>(() => date ?? new Date());
 
@@ -58,7 +63,10 @@ export default function TimeEditor({ icon, date, setDate }: TimeEditorProps) {
           }}
           LinearGradient={LinearGradient}
           styles={{
-            backgroundColor: '#fff',
+            backgroundColor: currentTheme.background_1,
+            text: {
+              color: currentTheme.text_color,
+            },
             pickerContainer: {
               justifyContent: 'center',
               width: '100%',

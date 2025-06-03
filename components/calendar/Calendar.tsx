@@ -14,6 +14,8 @@ import PreviousIcon from "../Icons/PreviousIcon";
 import NextIcon from "../Icons/NextIcon";
 import moment, { Moment } from "moment";
 import 'moment/locale/fr';
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 
 
 const getCalendarDays = (year: number, month: number, sessions: Session[]): Day[] => {
@@ -43,6 +45,8 @@ const getCalendarDays = (year: number, month: number, sessions: Session[]): Day[
 
 export default function Calendar() {
   const { user } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
 
   const sessionStore = getSessionStore();
   const sessionsStored = useSyncExternalStore(
@@ -84,14 +88,14 @@ export default function Calendar() {
   const days = getCalendarDays(year, month, sessionsStored);
 
   return (
-    <View style={styles.calendar}>
+    <View style={[styles.calendar, { backgroundColor: currentTheme.background_2 }]}>
       <View style={styles.monthBar}>
-        <TouchableOpacity onPress={goToPreviousMonth} style={styles.monthButton}>
+        <TouchableOpacity onPress={goToPreviousMonth} style={[styles.monthButton, { backgroundColor: currentTheme.background_3 }]}>
           <PreviousIcon/>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => setMonthYearPickerModalVisible(true)}>
-          <Text style={styles.monthText}>
+          <Text style={[styles.monthText, { color:currentTheme.text_color }]}>
             {currentMonthName} {year}
           </Text>
         </TouchableOpacity>
@@ -118,21 +122,26 @@ export default function Calendar() {
             maxDate={moment(`${currentDate.getFullYear() + 10}-12-31`)}
             localeLanguage="fr"
             onMonthTapped={date => setMonthYearPickerValue(date)}
+            containerStyle={{ backgroundColor: currentTheme.background_1 }}
+            selectedBackgroundColor={currentTheme.background_3}
+            selectedMonthTextStyle={{ color: currentTheme.text_color }}
+            monthTextStyle={{ color: currentTheme.text_color }}
+            yearTextStyle={{ color: currentTheme.text_color }}
           />
         </CustomModal>
 
-        <TouchableOpacity onPress={goToNextMonth} style={styles.monthButton}>
+        <TouchableOpacity onPress={goToNextMonth} style={[styles.monthButton, { backgroundColor: currentTheme.background_3 }]}>
           <NextIcon/>
         </TouchableOpacity>
       </View>
 
       <View style={styles.calendarDaysOfWeek}>
         {daysOfWeek.map((dayOfWeek, index) => (
-          <Text key={index}>{dayOfWeek}</Text>
+          <Text key={index} style={{ color: currentTheme.text_color }}>{dayOfWeek}</Text>
         ))}
       </View>
 
-      <Suspense fallback={<Text>Chargement...</Text>}>
+      <Suspense fallback={<Text style={{ color: currentTheme.text_color }}>Chargement...</Text>}>
         <FlatList
           numColumns={7}
           data={days}
@@ -149,7 +158,6 @@ const styles = StyleSheet.create({
   calendar: {
     paddingTop: 10,
     paddingBottom: 5,
-    backgroundColor: '#f9f9f9'
   },
   monthBar: {
     flexDirection: 'row',
@@ -163,7 +171,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingRight: 12,
     paddingLeft: 12,
-    backgroundColor: '#e5e5e5',
     borderRadius: 5,
   },
   monthText: {

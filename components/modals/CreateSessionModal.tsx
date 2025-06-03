@@ -10,6 +10,8 @@ import { UserContext } from "@/context/UserContext";
 import { Session } from "@/types/SessionType";
 import { StyleSheet, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 
 
 type CreateSessionModalProps = {
@@ -22,6 +24,8 @@ type CreateSessionModalProps = {
 
 export default function CreateSessionModal({ date, sexWithoutProtection, visible, setVisible }: CreateSessionModalProps) {
   const { user } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
 
   const sessionStore = getSessionStore();
 
@@ -78,7 +82,8 @@ export default function CreateSessionModal({ date, sexWithoutProtection, visible
         onChangeText={text => setNote(text)}
         value={note}
         placeholder="Annotation"
-        style={styles.input}
+        placeholderTextColor={currentTheme.text_color_2}
+        style={[styles.input, { backgroundColor: currentTheme.background_2, color: currentTheme.text_color }]}
       />
     </CustomModal>
   )

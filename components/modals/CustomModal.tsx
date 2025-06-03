@@ -1,5 +1,7 @@
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 import { Toasts } from "@backpackapp-io/react-native-toast";
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
 
@@ -23,6 +25,8 @@ export default function CustomModal({
   actionFalse = null,
   children = null
 }: CustomModalProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
 
   return (
     <Modal
@@ -31,8 +35,8 @@ export default function CustomModal({
       visible={visible}
     >
       <View style={styles.modal}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>{title}</Text>
+        <View style={[styles.modalContainer, { backgroundColor: currentTheme.background_1 }]}>
+          <Text style={[styles.modalTitle, { color: currentTheme.text_color }]}>{title}</Text>
 
           {children && <View style={styles.modalContent}>{children}</View>}
 
@@ -43,9 +47,9 @@ export default function CustomModal({
               <Text style={[styles.buttonText, styles.modalButtonActionFalseText]}>{actionFalseText}</Text>
             </Pressable>}
             <Pressable
-              style={[styles.modalButton, styles.modalButtonActionTrue]}
+              style={[styles.modalButton, styles.modalButtonActionTrue, { backgroundColor: currentTheme.background_2 }]}
               onPress={actionTrue}>
-              <Text style={styles.buttonText}>{actionTrueText}</Text>
+              <Text style={[styles.buttonText, { color: currentTheme.text_color }]}>{actionTrueText}</Text>
             </Pressable>
           </View>
         </View>

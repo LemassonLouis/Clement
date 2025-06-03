@@ -1,8 +1,10 @@
+import { ThemeContext } from "@/context/ThemeContext";
 import { getAllSessionsBetweenDates, updateSessionsSexWithoutProtection } from "@/database/session";
+import { getTheme } from "@/services/appStyle";
 import { getStartAndEndDate, isDateToday } from "@/services/date";
 import { hasSessionsSexWithoutProtection } from "@/services/session";
 import { getSessionsStored, getSessionStore } from "@/store/SessionStore";
-import { memo, useEffect, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
 
@@ -12,6 +14,9 @@ type SexWithoutProtectionProps = {
 
 
 function SexWithoutProtection({ date }: SexWithoutProtectionProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
+
   const sessionStore = getSessionStore();
   const [currentSessions, setCurrentSessions] = useState<any[]>([]);
   const [sexWithoutProtection, setSexWithoutProtection] = useState<boolean>(false);
@@ -39,9 +44,7 @@ function SexWithoutProtection({ date }: SexWithoutProtectionProps) {
 
       const updatedSessions = currentSessions.map(session => {
         return {
-          id: session.id,
-          dateTimeStart: session.dateTimeStart,
-          dateTimeEnd: session.dateTimeEnd,
+          ...session,
           sexWithoutProtection: toggleValue
         }
       });
@@ -55,8 +58,15 @@ function SexWithoutProtection({ date }: SexWithoutProtectionProps) {
 
   return (
     <View style={styles.switchContainer}>
-      <Text style={[styles.switchText, disabled && {opacity: 0.4}]}>Rapport sexuel sans protection</Text>
-      <Switch style={styles.switch} value={sexWithoutProtection} onValueChange={toggleSexWithoutProtection} disabled={disabled}/>
+      <Text style={[styles.switchText, { color: currentTheme.text_color }, disabled && {opacity: 0.4}]}>Rapport sexuel sans protection</Text>
+      <Switch
+        style={styles.switch}
+        thumbColor={sexWithoutProtection ? currentTheme.background_3 : currentTheme.background_2}
+        trackColor={{ false: currentTheme.background_3, true: currentTheme.text_color_2 }}
+        value={sexWithoutProtection}
+        onValueChange={toggleSexWithoutProtection}
+        disabled={disabled}
+      />
     </View>
   )
 }

@@ -1,7 +1,9 @@
 import { Text } from "react-native";
 import CustomModal from "./CustomModal";
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import ContraceptionMethodFrom from "../forms/ContraceptionMethodForm";
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 
 
 type SetContraceptionMethodProps = {
@@ -11,6 +13,8 @@ type SetContraceptionMethodProps = {
 
 
 export default function SetContraceptionMethodModal({ visible, additionalActionTrue }: SetContraceptionMethodProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
   const contraceptionMethodFrom = useRef<{ saveForm: () => void }>();
 
   return (
@@ -24,7 +28,7 @@ export default function SetContraceptionMethodModal({ visible, additionalActionT
         additionalActionTrue();
       }}
     >
-      <Text style={{textAlign: "center"}}>Quelle méthode de contracepation thermique utilisez-vous ou souhaitez-vous utiliser ?</Text>
+      <Text style={{textAlign: "center", color: currentTheme.text_color}}>Quelle méthode de contracepation thermique utilisez-vous ou souhaitez-vous utiliser ?</Text>
       <ContraceptionMethodFrom ref={contraceptionMethodFrom}/>
     </CustomModal>
   )

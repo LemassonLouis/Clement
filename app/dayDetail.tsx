@@ -20,6 +20,9 @@ import { View, Text, StyleSheet, Dimensions, FlatList, ScrollView, TouchableOpac
 import * as Progress from 'react-native-progress';
 import { Session } from "@/types/SessionType";
 import { Day, SerializedDay } from "@/types/DayType";
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
+
 
 const deserializeDay = (day: SerializedDay): Day => {
   return {
@@ -29,10 +32,13 @@ const deserializeDay = (day: SerializedDay): Day => {
   }
 }
 
+
 export default function dayDetail() {
   const params = useLocalSearchParams();
   const navigation = useNavigation();
   const { user } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
 
   const day = deserializeDay(JSON.parse(String(params.day)));
   const sessionsStored = getSessionsStored();
@@ -89,7 +95,7 @@ export default function dayDetail() {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.title}> {day.date.toLocaleDateString('fr-FR', { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</Text>
+        <Text style={[styles.title, { color: currentTheme.text_color }]}> {day.date.toLocaleDateString('fr-FR', { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</Text>
 
         <View style={styles.iconContainer}>
           <CalendarIcon status={status} sexWithoutProtection={sexWithoutProtection} size={100} />
@@ -135,9 +141,9 @@ export default function dayDetail() {
             }
           </View>
         </TouchableOpacity>
-        
+
         <View style={styles.total}>
-          <Text>Temps de port total : {formatMilisecondsTime(totalWearing)}</Text>
+          <Text style={{ color: currentTheme.text_color }}>Temps de port total : {formatMilisecondsTime(totalWearing)}</Text>
         </View>
 
         <View style={styles.currentSession}>
@@ -158,8 +164,8 @@ export default function dayDetail() {
         />
 
         {(totalWearing > 0 || isDateInUserContraceptionRange(user, day.date)) && <>
-          <TouchableOpacity style={styles.plusButton} onPress={() => setCreateSessionModalVisible(true)}>
-            <Feather name='plus' size={35} color='#000'/>
+          <TouchableOpacity style={[styles.plusButton, { backgroundColor: currentTheme.background_2 }]} onPress={() => setCreateSessionModalVisible(true)}>
+            <Feather name='plus' size={35} color={currentTheme.text_color}/>
           </TouchableOpacity>
 
           <CreateSessionModal
@@ -211,7 +217,6 @@ const styles = StyleSheet.create({
   plusButton: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: '#ddd',
     borderRadius: 50,
   }
 });

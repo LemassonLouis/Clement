@@ -1,7 +1,9 @@
 import { Text, View } from "react-native";
 import CustomModal from "./CustomModal";
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import ContraceptionStartDateForm from "../forms/ContraceptionStartDateForm";
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 
 
 type SetContraceptionStartDateModalProps = {
@@ -11,6 +13,8 @@ type SetContraceptionStartDateModalProps = {
 
 
 export default function SetContraceptionStartDateModal({ visible, additionalActionTrue }: SetContraceptionStartDateModalProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
   const contraceptionStartDateForm = useRef<{ saveForm: () => void }>();
 
   return (
@@ -25,7 +29,7 @@ export default function SetContraceptionStartDateModal({ visible, additionalActi
       }}
     >
       <View style={{alignItems: 'center'}}>
-        <Text style={{textAlign: "center", marginBottom: 20}}>À quel date souhaitez vous ou avez commencé la contraception ?</Text>
+        <Text style={{textAlign: "center", marginBottom: 20, color: currentTheme.text_color}}>À quel date souhaitez vous ou avez commencé la contraception ?</Text>
         <ContraceptionStartDateForm ref={contraceptionStartDateForm} />
       </View>
     </CustomModal>

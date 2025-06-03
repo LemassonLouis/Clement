@@ -9,11 +9,16 @@ import SetContraceptionStartDateModal from "@/components/modals/SetContraception
 import { UserContext } from "@/context/UserContext";
 import { User } from "@/types/UserType";
 import { updateUser } from "@/database/user";
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
+
 
 export default function Index() {
   const now: Date = new Date();
   const { user, setUser } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
   const hasUserConfigured = useRef(false);
+  const currentTheme = getTheme(theme.slug);
 
   const [welcomeModalVisible, setWelcomeModalVisible] = useState<boolean>(false);
   const [contraceptionModalVisible, setContraceptionModalVisible] = useState<boolean>(false);
@@ -30,7 +35,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Calendar/>
-      <Text style={styles.text}>Accès rapide - {now.toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</Text>
+      <Text style={[styles.text, { color: currentTheme.text_color }]}>Accès rapide - {now.toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</Text>
       <CurrentSession/>
 
       <WelcomModal
@@ -73,8 +78,8 @@ export default function Index() {
           setUser(newUser);
         }}
       >
-        <Text style={{textAlign: "center", marginBottom: 10}}>Merci d'avoir télécharger Clément !</Text>
-        <Text style={{textAlign: "center"}}>Je vous souhaite de réussir votre contracéption</Text>
+        <Text style={{textAlign: "center", marginBottom: 10, color: currentTheme.text_color}}>Merci d'avoir télécharger Clément !</Text>
+        <Text style={{textAlign: "center", color: currentTheme.text_color }}>Je vous souhaite de réussir votre contracéption</Text>
       </CustomModal>
     </View>
   )
@@ -82,7 +87,6 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     flex: 1,
   },
   text: {

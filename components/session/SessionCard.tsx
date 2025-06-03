@@ -1,6 +1,6 @@
 import { formatMilisecondsTime, formatTimefromDate, getDateDifference } from "@/services/date";
 import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import DeleteSessionModal from "../modals/DeleteSessionModal";
 import EditSessionModal from "../modals/EditSessionModal";
@@ -8,10 +8,15 @@ import TimeText from "../dateAndTime/TimeText";
 import { TimeTextIcon } from "@/enums/TimeTextIcon";
 import { Session } from "@/types/SessionType";
 import SessionNote from "./SessionNote";
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 
 
 export default function SessionCard(session: Session) {
   if(!session.dateTimeEnd) return;
+
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
 
   const [deleteModalVisible, setDeleteSessionModalVisible] = useState(false);
   const [editModalVisible, setEditSessionModalVisible] = useState(false);
@@ -38,7 +43,7 @@ export default function SessionCard(session: Session) {
 
         <View>
           <TouchableOpacity style={styles.button} onPress={() => setEditSessionModalVisible(true)}>
-            <Feather name='edit-3' size={20} color='#000'/>
+            <Feather name='edit-3' size={20} color={currentTheme.text_color}/>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={() => setDeleteSessionModalVisible(true)}>

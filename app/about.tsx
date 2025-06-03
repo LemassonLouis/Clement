@@ -1,11 +1,15 @@
 import { useNavigation } from "expo-router";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Constants from 'expo-constants';
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 
 
 export default function About() {
   const navigation = useNavigation();
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
 
   useEffect(() => {
     navigation.setOptions({ title: "À propos"});
@@ -20,21 +24,21 @@ export default function About() {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
-        <Text style={styles.textTitle}>Version de l'application</Text>
-        <Text>{appVersion}</Text>
+        <Text style={[styles.textTitle, { color: currentTheme.text_color }]}>Version de l'application</Text>
+        <Text style={{ color: currentTheme.text_color }}>{appVersion}</Text>
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.textTitle}>Application développé par</Text>
-        <Text>LEMASSON Louis</Text>
+        <Text style={[styles.textTitle, { color: currentTheme.text_color }]}>Application développé par</Text>
+        <Text style={{ color: currentTheme.text_color }}>LEMASSON Louis</Text>
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.textTitle}>Application designé par</Text>
-        <Text>LEMASSON Louis</Text>
+        <Text style={[styles.textTitle, { color: currentTheme.text_color }]}>Application designé par</Text>
+        <Text style={{ color: currentTheme.text_color }}>LEMASSON Louis</Text>
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.textTitle}>Code source de l'application</Text>
+        <Text style={[styles.textTitle, { color: currentTheme.text_color }]}>Code source de l'application</Text>
         <TouchableOpacity onPress={handleSourceCodePress}>
-          <Text>https://github.com/LemassonLouis/Clement</Text>
+          <Text style={{ color: currentTheme.text_color }}>https://github.com/LemassonLouis/Clement</Text>
         </TouchableOpacity>
       </View>
     </View>

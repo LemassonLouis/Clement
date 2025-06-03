@@ -1,3 +1,4 @@
+import { AppStyles } from "@/enums/AppStyles";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 import { UserContextType } from "@/types/UserContextType";
 import { User } from "@/types/UserType";
@@ -16,6 +17,7 @@ export const defaultUser: User = {
   wantObjectiveMaxReachedNotification: true,
   wantObjectiveMaxExtraReachedNotification: true,
   isActive: true,
+  style: AppStyles.DEFAULT,
 }
 
 

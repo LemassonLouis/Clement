@@ -16,6 +16,8 @@ import SexWithoutProtection from "./SexWithoutProtection";
 import { UserContext } from "@/context/UserContext";
 import { Session } from "@/types/SessionType";
 import SessionNote from "./SessionNote";
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 
 
 const today: Date = new Date();
@@ -23,6 +25,9 @@ const today: Date = new Date();
 
 export default function CurrentSession() {
   const { user } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
+
 
   const currentSessionStore = getCurrentSessionStore();
   const currentSessionStored = getCurrentSessionStored();
@@ -211,12 +216,12 @@ export default function CurrentSession() {
       <Suspense fallback={<Text>Chargement...</Text>}>
         <View style={styles.main}>
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.sessionButton} onPress={() => currentSessionStored.sessionId ? stopSession() : startSession()}>
-              <Ionicons name={currentSessionStored.sessionId ? 'stop-outline' : 'play-outline'} size={30} color='#000'/>
+            <TouchableOpacity style={[styles.sessionButton, { backgroundColor: currentTheme.background_2 }]} onPress={() => currentSessionStored.sessionId ? stopSession() : startSession()}>
+              <Ionicons name={currentSessionStored.sessionId ? 'stop-outline' : 'play-outline'} size={30} color={currentTheme.text_color}/>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.durations}>
+          <View style={[styles.durations, { borderLeftColor: currentTheme.background_3 }]}>
             <View style={{marginLeft: -10}}>
               <TimeEditor
                 icon={TimeTextIcon.CALENDAR_START}
@@ -293,7 +298,6 @@ const styles = StyleSheet.create({
   sessionButton: {
     padding: 12,
     borderRadius: 50,
-    backgroundColor: '#e5e5e5',
   },
   durations: {
     flex: 4/7,
@@ -302,6 +306,5 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     paddingLeft: 10,
     borderLeftWidth: 1,
-    borderLeftColor: '#777'
   },
 })

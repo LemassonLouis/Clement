@@ -1,3 +1,4 @@
+import { AppStyles } from "@/enums/AppStyles";
 import { ContraceptionMethods } from "@/enums/ContraceptionMethod";
 
 export type User = {
@@ -12,6 +13,7 @@ export type User = {
   wantObjectiveMaxReachedNotification: boolean,
   wantObjectiveMaxExtraReachedNotification: boolean,
   isActive: boolean,
+  style: AppStyles,
 }
 
 export type SerializedUser = Omit<User, 'startDate'> & {

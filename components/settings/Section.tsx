@@ -1,4 +1,6 @@
-import { ReactNode } from "react"
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
+import { ReactNode, useContext } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
 type SectionProps = {
@@ -7,9 +9,12 @@ type SectionProps = {
 }
 
 export default function Section({ name, children }: SectionProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{name}</Text>
+      <Text style={[styles.title, { backgroundColor: currentTheme.background_2, borderColor: currentTheme.text_color_2, color: currentTheme.text_color }]}>{name}</Text>
       {children}
     </View>
   )
@@ -24,8 +29,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     fontSize: 18,
-    backgroundColor: "#e5e5e5",
-    borderColor: '#d5d5d5',
     borderBottomWidth: 1,
   }
 });

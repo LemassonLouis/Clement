@@ -1,6 +1,8 @@
+import { ThemeContext } from "@/context/ThemeContext";
+import { getTheme } from "@/services/appStyle";
 import { formatMilisecondsTime, isDateToday } from "@/services/date";
 import { calculateTimeUntilUnreachableObjective, getColorFromStatus, getStatusFromObjective } from "@/services/session";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import * as Progress from 'react-native-progress';
 
@@ -14,6 +16,9 @@ type ProgressBarDetailsProps = {
 
 
 export default function ProgressBarDetails({ progressBarWidth, objective, totalWearing, date }: ProgressBarDetailsProps) {
+  const { theme } = useContext(ThemeContext);
+  const currentTheme = getTheme(theme.slug);
+
   const [available, setAvailable] = useState<string>(formatMilisecondsTime(calculateTimeUntilUnreachableObjective(objective, isDateToday(date) ? new Date() : date)));
   const remaining = formatMilisecondsTime(objective - totalWearing);
   const hour = objective / 3_600_000;
@@ -32,10 +37,10 @@ export default function ProgressBarDetails({ progressBarWidth, objective, totalW
     <View style={styles.container}>
       <View style={styles.infos}>
         <View>
-          <Text>Restant : {remaining}</Text>
-          <Text>Disponible : {available}</Text>
+          <Text style={{ color: currentTheme.text_color }}>Restant : {remaining}</Text>
+          <Text style={{ color: currentTheme.text_color }}>Disponible : {available}</Text>
         </View>
-        <Text>{hour}h</Text>
+        <Text style={{ color: currentTheme.text_color }}>{hour}h</Text>
       </View>
       <Progress.Bar progress={progress} width={progressBarWidth} height={10} color={color}/>
     </View>
