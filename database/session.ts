@@ -151,7 +151,7 @@ export async function updateSession(session: Session): Promise<void> {
     const setters = keys.map(key =>  `${key} = ?`).join(', ');
     const values = [...Object.values(fields), id];
 
-    await db.runAsync(`UPDATE Session SET ${setters} WHERE id = ?`, [values]);
+    await db.runAsync(`UPDATE Session SET ${setters} WHERE id = ?`, values);
   }
   catch (error) {
     console.error("Error while trying to update session : " + error);

@@ -178,7 +178,7 @@ export default function CurrentSession() {
     if(currentSessionStored.sessionStartTime && currentSessionStored.sessionId) {
       setElapsedTime(0);
 
-      const splitedSession = splitSessionsByDay({
+      const splitedSessions = splitSessionsByDay({
         id: currentSessionStored.sessionId,
         dateTimeStart: currentSessionStored.sessionStartTime,
         dateTimeEnd: endTime,
@@ -186,7 +186,7 @@ export default function CurrentSession() {
         note: getCurrentSessionRelativeSession()?.note ?? null,
       });
 
-      splitedSession.forEach(async session => {
+      splitedSessions.forEach(async session => {
         if(session.id !== 0) {
           await updateSession(session);
 
