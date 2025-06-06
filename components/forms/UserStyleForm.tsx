@@ -7,7 +7,7 @@ import { getAllAppStyles, getAppStyle, getTheme } from "@/services/appStyle";
 import { User } from "@/types/UserType";
 import { Feather } from "@expo/vector-icons";
 import { forwardRef, useContext, useImperativeHandle, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Appearance, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 
 
@@ -39,7 +39,7 @@ const UserStyleForm = forwardRef(({ autoValidate = false }: UserStyleFormProps, 
 
     await updateUser(newUser);
     setUser(newUser);
-    setTheme(getAppStyle(style));
+    setTheme(getAppStyle(style === AppStyles.DEFAULT ? Appearance.getColorScheme() : style));
   }
 
   useImperativeHandle(ref, () => ({
