@@ -11,7 +11,7 @@ import { Toasts } from '@backpackapp-io/react-native-toast';
 import { createUser, getUser } from "@/database/user";
 import { defaultUser, UserContext } from "@/context/UserContext";
 import { User } from "@/types/UserType";
-import { Appearance, useColorScheme } from "react-native";
+import { Appearance } from "react-native";
 import { defaultTheme, ThemeContext } from "@/context/ThemeContext";
 import { AppStyleInterface } from "@/interfaces/AppStyle";
 import { AppStyles } from "@/enums/AppStyles";
@@ -53,7 +53,7 @@ export default function RootLayout() {
 
   return (
     <ThemeContext.Provider value={{theme, setTheme}}>
-      <SafeAreaProvider>
+      <SafeAreaProvider style={{ backgroundColor: currentTheme.background_1 }}>
         <GestureHandlerRootView>
           <UserContext.Provider value={{user, setUser}}>
             <Stack screenOptions={{
@@ -63,7 +63,6 @@ export default function RootLayout() {
               headerTintColor: currentTheme.text_color
             }}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }}/>
-              {/* <Stack.Screen name="+not-found" /> */}
             </Stack>
             <StatusBar style={theme.slug === 'dark' ? 'dark' : 'light'} />
             <Toasts/>
