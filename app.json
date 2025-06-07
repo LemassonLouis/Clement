@@ -2,7 +2,7 @@
   "expo": {
     "name": "Clément",
     "slug": "clement",
-    "version": "beta-1.9.1",
+    "version": "beta-1.9.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -12,13 +12,15 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.lemassonlouis.clement",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#fff"
+        "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.CMTanneautracker",
       "//TODO : change android package name": "com.lemassonlouis.clement",
@@ -53,7 +55,8 @@
             "./assets/sounds/clement_notification.wav"
           ]
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
