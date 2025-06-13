@@ -64,7 +64,7 @@ export default function RootLayout() {
             }}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }}/>
             </Stack>
-            <StatusBar style={theme.slug === 'dark' ? 'dark' : 'light'} />
+            <StatusBar backgroundColor={currentTheme.background_1} />
             <Toasts/>
           </UserContext.Provider>
         </GestureHandlerRootView>
