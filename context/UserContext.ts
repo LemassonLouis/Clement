@@ -9,6 +9,7 @@ export const defaultUser: User = {
   id: 0,
   method: ContraceptionMethods.ANDRO_SWITCH,
   startDate: new Date(),
+  endDate: new Date((new Date()).setFullYear((new Date()).getFullYear() + 4)),
   wantFiveMinutesRemainingNotification: true,
   wantOneHourRemainingNotification: true,
   wantTwoHoursRemainingNotification: true,

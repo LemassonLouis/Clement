@@ -116,6 +116,7 @@ function deserializeUser(user: SerializedUser): User {
   return {
     ...user,
     startDate: user.startDate === null ? new Date() : new Date(user.startDate),
+    endDate: user.endDate === null ? new Date() : new Date(user.endDate),
     wantFiveMinutesRemainingNotification: !!user.wantFiveMinutesRemainingNotification,
     wantOneHourRemainingNotification: !!user.wantOneHourRemainingNotification,
     wantTwoHoursRemainingNotification: !!user.wantTwoHoursRemainingNotification,
@@ -136,6 +137,7 @@ function deserializeUser(user: SerializedUser): User {
 function serializeUser(user: User): SerializedUser {
   return {
     ...user,
-    startDate: user.startDate.toISOString()
+    startDate: user.startDate.toISOString(),
+    endDate: user.endDate.toISOString(),
   }
 }

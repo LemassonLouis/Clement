@@ -5,6 +5,7 @@ export type User = {
   id: number,
   method: ContraceptionMethods,
   startDate: Date,
+  endDate: Date,
   wantFiveMinutesRemainingNotification: boolean,
   wantOneHourRemainingNotification: boolean,
   wantTwoHoursRemainingNotification: boolean,
@@ -16,6 +17,7 @@ export type User = {
   style: AppStyles,
 }
 
-export type SerializedUser = Omit<User, 'startDate'> & {
-  startDate: string
+export type SerializedUser = Omit<User, 'startDate' | 'endDate'> & {
+  startDate: string,
+  endDate: string,
 }

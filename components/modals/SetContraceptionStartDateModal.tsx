@@ -15,7 +15,7 @@ type SetContraceptionStartDateModalProps = {
 export default function SetContraceptionStartDateModal({ visible, additionalActionTrue }: SetContraceptionStartDateModalProps) {
   const { theme } = useContext(ThemeContext);
   const currentTheme = getTheme(theme.slug);
-  const contraceptionStartDateForm = useRef<{ saveForm: () => void }>();
+  const contraceptionStartDateForm = useRef<{ saveForm: (date: Date|undefined, force: boolean|undefined) => void }>();
 
   return (
     <CustomModal
@@ -23,7 +23,7 @@ export default function SetContraceptionStartDateModal({ visible, additionalActi
       visible={visible}
       actionTrueText="Suivant"
       actionTrue={() => {
-        if(contraceptionStartDateForm.current) contraceptionStartDateForm.current.saveForm();
+        if(contraceptionStartDateForm.current) contraceptionStartDateForm.current.saveForm(undefined, true);
 
         additionalActionTrue();
       }}

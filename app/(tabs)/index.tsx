@@ -6,6 +6,7 @@ import { StyleSheet, Text, View } from "react-native";
 import WelcomModal from "@/components/modals/WelcomeModal";
 import SetContraceptionMethodModal from "@/components/modals/SetContraceptionMethodModal";
 import SetContraceptionStartDateModal from "@/components/modals/SetContraceptionStartDateModal";
+import SetContraceptionEndDateModal from "@/components/modals/SetContraceptionEndDateModal";
 import { UserContext } from "@/context/UserContext";
 import { User } from "@/types/UserType";
 import { updateUser } from "@/database/user";
@@ -23,6 +24,7 @@ export default function Index() {
   const [welcomeModalVisible, setWelcomeModalVisible] = useState<boolean>(false);
   const [contraceptionModalVisible, setContraceptionModalVisible] = useState<boolean>(false);
   const [startDateModalVisible, setStartDateModalVisible] = useState<boolean>(false);
+  const [endDateModalVisible, setEndDateModalVisible] = useState<boolean>(false);
   const [thanksModalVisible, setThanksModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
@@ -58,6 +60,14 @@ export default function Index() {
         visible={startDateModalVisible}
         additionalActionTrue={async () => {
           setStartDateModalVisible(false);
+          setEndDateModalVisible(true);
+        }}
+      />
+
+      <SetContraceptionEndDateModal
+        visible={endDateModalVisible}
+        additionalActionTrue={async () => {
+          setEndDateModalVisible(false);
           setThanksModalVisible(true);
         }}
       />
