@@ -275,7 +275,7 @@ export default function CurrentSession() {
           setWarningModalVisible(false);
         }}
       >
-        <Text>Il ne vous reste plus que {formatMilisecondsTime(remainingTime)} avant de ne plus pouvoir réaliser l'objectif minimal</Text>
+        <Text style={{textAlign: "center", color: currentTheme.text_color}}>Il ne vous reste plus que {formatMilisecondsTime(remainingTime)} avant de ne plus pouvoir réaliser l'objectif minimal</Text>
       </CustomModal>
     </View>
   )
