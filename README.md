@@ -2,8 +2,8 @@
 
 Clément est l'application open source visant à aider au suivis de la contraception masculine thermique.
 
-<img src="./assets/images/app/calendar.jpg" style="width: 200">
-<img src="./assets/images/app/day_details.jpg" style="width: 200">
+<img src="./assets/images/app/calendar.jpg" style="width: 200px">
+<img src="./assets/images/app/day_details.jpg" style="width: 200px">
 <img src="./assets/images/app/day_details_time_details.jpg" style="display:block; width: 100%">
 <img src="./assets/images/app/settings.jpg" style="display:block; width: 100%">
 
