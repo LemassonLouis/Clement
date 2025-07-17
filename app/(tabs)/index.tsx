@@ -12,6 +12,7 @@ import { User } from "@/types/UserType";
 import { updateUser } from "@/database/user";
 import { ThemeContext } from "@/context/ThemeContext";
 import { getTheme } from "@/services/appStyle";
+import { isDateInUserContraceptionRange } from "@/services/date";
 
 
 export default function Index() {
@@ -38,7 +39,7 @@ export default function Index() {
     <View style={styles.container}>
       <Calendar/>
       <Text style={[styles.text, { color: currentTheme.text_color }]}>Accès rapide - {now.toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</Text>
-      <CurrentSession/>
+      {isDateInUserContraceptionRange(user, new Date()) ? <CurrentSession/> : <Text>La date d'aujourd'hui n'est pas comprise dans votre période de contraception.</Text>}
 
       <WelcomModal
         visible={welcomeModalVisible}

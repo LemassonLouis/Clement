@@ -147,7 +147,10 @@ export default function dayDetail() {
         </View>
 
         <View style={styles.currentSession}>
-          {isDateToday(day.date) ? <CurrentSession/> : <SexWithoutProtection date={day.date}/>}
+          {
+            !isDateInUserContraceptionRange(user, day.date) ? <Text>Cette date n'est pas comprise dans votre période de contraception.</Text> :
+            isDateToday(day.date) ? <CurrentSession/> : <SexWithoutProtection date={day.date}/>
+          }
         </View>
 
         <FlatList
