@@ -179,6 +179,24 @@ export async function reScheduleNotifications(user: User): Promise<void> {
 
   const today = new Date();
   const tomorrow = getStartAndEndDate(getNextDay(today)).dateStart;
+  const timeBeforeStart = user.startDate.getTime() - today.getTime();
+  const timeBeforeEnd = user.startDate.getTime() - today.getTime();
+
+  if(timeBeforeStart >= 43_200_000) {
+    scheduleNotificationPush(
+      "Ça commence bientôt !",
+      `Tout est prêt, demain vous commencez votre contraception.`,
+      new Date(user.startDate.getTime() - 43_200_000)
+    )
+  }
+
+  if(timeBeforeStart >= 43_200_000) {
+    scheduleNotificationPush(
+      "Ça se termine demain !",
+      `Vous arrivez au terme de votre contraception, aujourd'hui c'est le dernier jour !`,
+      new Date(user.endDate.getTime() - 43_200_000)
+    )
+  }
 
   await scheduleNotifications(user, today);
   await scheduleNotifications(user, tomorrow);
