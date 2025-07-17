@@ -1,4 +1,52 @@
-# Welcome to your Expo app 👋
+[TOC]
+
+# L'application Clément
+
+Clément est l'application open source visant à aider au suivis de la contraception masculine thermique.
+
+<div style="display: flex; column-gap: 20px">
+   <div style="width: 25%"><img src="./assets/images/app/calendar.jpg" style="display:block; width: 100%"></div>
+   <div style="width: 25%"><img src="./assets/images/app/day_details.jpg" style="display:block; width: 100%"></div>
+   <div style="width: 25%"><img src="./assets/images/app/day_details_time_details.jpg" style="display:block; width: 100%"></div>
+   <div style="width: 25%"><img src="./assets/images/app/settings.jpg" style="display:block; width: 100%"></div>
+</div>
+
+Fonctionnalités :
+* Supporte différentes méthodes de contraception thermique
+* Gestion de sessions de port par jour
+* Calendrier récapitulatif
+* Détail de chaque jour
+* Système de notification
+* Annotation des session de port
+* Gestion des dates de début et fin de contraception
+* Import et export de données
+* Mode clair/sombre
+
+
+## Télécharger l'application
+
+Rendez-vous dans les [releases de l'application](https://github.com/LemassonLouis/Clement/releases) et sélectionner le lien correspondant à votre appareil :
+* `.apk` pour Android (existe aussi en .zip)
+* `tar.gz` pour iOS
+<details>
+<img src="./assets/images/download/github_release.png" style="display:block">
+</details>
+
+
+## Installer l'application
+
+### Pour Android
+
+Une fois l'apk téléchargé (ou le zip téléchargé et dézippé), il suffit de cliquer sur l'apk pour lancer l'installation.
+
+### Pour iOS
+
+(prochainement)
+
+
+
+
+## Pour les développeurs
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
